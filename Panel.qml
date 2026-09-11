@@ -85,10 +85,19 @@ Item {
     }
   }
   Timer {
+    id: pollTimer
     interval: root.pollSec * 1000
     running: true; repeat: true; triggeredOnStart: true
-    onTriggered: if (!probe.running) probe.running = true
+    onTriggered: root.reprobe()
   }
+
+  function reprobe() { if (!probe.running) probe.running = true }
+
+  // The bar injects settings after the first probe has already run, so the
+  // startup probe uses an empty address and falls back to "first connected
+  // device". Without this the widget would show that stale verdict until the
+  // next poll -- up to pollSec seconds of lying about which TV it is talking to.
+  onTvAddressChanged: Qt.callLater(root.reprobe)
 
   Text {
     anchors.centerIn: parent
