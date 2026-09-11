@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "atv.remote",
+  "name": "Android TV Remote",
+  "version": "1.0.0",
+  "author": "Omarchy community",
+  "license": "MIT",
+  "description": "Drive an Android TV from the Omarchy bar over ADB: D-pad, volume, inputs, typing and app shortcuts.",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Panel.qml" },
+  "barWidget": {
+    "displayName": "Android TV Remote",
+    "description": "D-pad, volume, input picker, on-screen typing and app shortcuts for an Android TV over ADB.",
+    "category": "Media",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "tvAddress": "",
+      "pollSec": 60,
+      "app1Label": "APP1", "app1Package": "",
+      "app2Label": "APP2", "app2Package": "",
+      "app3Label": "APP3", "app3Package": ""
+    },
+    "schema": [
+      { "key": "tvAddress", "type": "string", "label": "TV address (host:port)", "defaultValue": "" },
+      { "key": "pollSec", "type": "integer", "label": "Reachability poll (seconds)", "min": 10, "max": 600, "step": 10, "defaultValue": 60 },
+      { "key": "app1Label", "type": "string", "label": "Shortcut 1 label", "defaultValue": "APP1" },
+      { "key": "app1Package", "type": "string", "label": "Shortcut 1 package", "defaultValue": "" },
+      { "key": "app2Label", "type": "string", "label": "Shortcut 2 label", "defaultValue": "APP2" },
+      { "key": "app2Package", "type": "string", "label": "Shortcut 2 package", "defaultValue": "" },
+      { "key": "app3Label", "type": "string", "label": "Shortcut 3 label", "defaultValue": "APP3" },
+      { "key": "app3Package", "type": "string", "label": "Shortcut 3 package", "defaultValue": "" }
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# ADB shim for the Omarchy Android TV remote bar widget.
+#
+#   tv-remote key <KEYCODE>        send a key event
+#   tv-remote text <string> [enter] type a string, optionally submit
+#   tv-remote clear [n]            send n backspaces (default 24) to wipe a field
+#   tv-remote app <package>        launch an app by package name
+#   tv-remote inputs               open the input / source picker
+#   tv-remote status               "up" / "down" / "noadb"
+#
+# The TV address comes from $TV_ADB_ADDR (the widget passes its configured
+# value). Falls back to the first already-connected device so the script is
+# usable by hand.
+#
+# adb-over-wifi drops when the TV sleeps, so every action reconnects on demand.
+set -uo pipefail
+
+TV="${TV_ADB_ADDR:-}"
+
+if ! command -v adb >/dev/null 2>&1; then
+  # Reported rather than fatal so the widget can show a distinct state.
+  [ "${1-}" = "status" ] && { echo noadb; exit 0; }
+  echo "adb not found — install it (Arch: pacman -S android-tools)" >&2
+  exit 127
+fi
+
+if [ -z "$TV" ]; then
+  TV=$(adb devices 2>/dev/null | awk '/\tdevice$/ {print $1; exit}')
+  [ -n "$TV" ] || { [ "${1-}" = "status" ] && { echo down; exit 0; }; echo "no TV address set (TV_ADB_ADDR)" >&2; exit 1; }
+fi
+
+connected() { adb devices 2>/dev/null | grep -q "^${TV}[[:space:]]*device$"; }
+
+ensure() {
+  connected && return 0
+  adb connect "$TV" >/dev/null 2>&1
+  for _ in 1 2 3; do connected && return 0; sleep 0.4; done
+  return 1
+}
+
+need() { ensure || { echo "tv unreachable" >&2; exit 1; }; }
+sh_() { adb -s "$TV" shell "$1" >/dev/null 2>&1; }
+
+case "${1:-}" in
+  key)
+    need; sh_ "input keyevent ${2:?keycode required}" ;;
+
+  text)
+    # Single-quoted for the device shell (embedded quotes escaped), which keeps
+    # shell metacharacters inert.
+    #
+    # Caveat: Android's `input text` treats %s as a space with no escape for a
+    # literal %, so "100%sure" types as "100 ure".
+    need
+    payload=${2-}
+    [ -n "$payload" ] || exit 0
+    quoted=$(printf "'%s'" "$(printf '%s' "$payload" | sed "s/'/'\\\\''/g")")
+    sh_ "input text $quoted"
+    # A trailing "enter" submits in THIS process. Firing the text and the ENTER
+    # as two detached calls races them: the ENTER lands mid-string and submits
+    # after the first character.
+    if [ "${3-}" = "enter" ]; then
+      sleep 0.3
+      sh_ "input keyevent KEYCODE_ENTER"
+    fi
+    ;;
+
+  clear)
+    need
+    n=${2:-24}
+    # One adb round-trip rather than n of them.
+    seq=""; i=0
+    while [ "$i" -lt "$n" ]; do seq="$seq KEYCODE_DEL"; i=$((i+1)); done
+    sh_ "input keyevent$seq"
+    ;;
+
+  app)
+    need; sh_ "monkey -p ${2:?package required} -c android.intent.category.LEANBACK_LAUNCHER 1" ;;
+
+  inputs)
+    # KEYCODE_TV_INPUT first (works on some brands), then the standard Android
+    # TV input picker. On Hisense the keycode is a no-op and the vendor source
+    # panel is only reachable via protected broadcasts, so SETUP_INPUTS is what
+    # actually opens a picker there.
+    need
+    sh_ "input keyevent KEYCODE_TV_INPUT"
+    sleep 0.4
+    sh_ "am start -a android.media.tv.action.SETUP_INPUTS"
+    ;;
+
+  status)
+    ensure && echo up || echo down ;;
+
+  *)
+    echo "usage: tv-remote {key <KEYCODE>|text <string> [enter]|clear [n]|app <package>|inputs|status}" >&2
+    exit 2 ;;
+esac
