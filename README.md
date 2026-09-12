@@ -16,7 +16,7 @@ with a real keyboard instead of pecking at an on-screen grid.
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/<you>/omarchy-tv-remote --enable
+omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable
 ```
 
 Then set your TV's address (Settings → Network → Status on the TV):
