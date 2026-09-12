@@ -98,3 +98,19 @@ TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status     # up | down | noadb
 ## Licence
 
 MIT — see [LICENSE](LICENSE).
+
+## Development
+
+The plugin is plain QML plus a shell script, so edits apply without a rebuild:
+
+```bash
+$EDITOR ~/.config/omarchy/plugins/atv.remote/Panel.qml
+omarchy restart shell
+```
+
+Files under `~/.config/omarchy/plugins/` hot-reload on save, but the bar widget
+is mounted at startup — a restart is the reliable way to see a change. The
+`tv-remote` script needs no restart at all.
+
+If you installed with `omarchy plugin add`, the directory is a git checkout, so
+`omarchy plugin update atv.remote` pulls new commits.
