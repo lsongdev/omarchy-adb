@@ -157,6 +157,6 @@ case "${1:-}" in
     report connected ;;
 
   *)
-    echo "usage: tv-remote {key <KEYCODE>|text <string> [enter]|clear [n]|app <package>|inputs|status|reauth}" >&2
+    echo "usage: tv-remote {key <KEYCODE>|text <string> [enter]|clear [n]|app <package>|inputs|apps|status|reauth}" >&2
     exit 2 ;;
 esac
