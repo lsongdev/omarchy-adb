@@ -354,6 +354,13 @@ Item {
   function setHint(t) { if (t !== "") hoverHint = t }
   function clearHint(t) { if (hoverHint === t) hoverHint = "" }
 
+  // Same guess, title-cased for reading. The button label derivation uppercases
+  // anyway, so the casing only matters where the name is shown as prose.
+  function appNiceName(pkg) {
+    var n = appName(pkg)
+    return n === "" ? "" : n.charAt(0).toUpperCase() + n.slice(1)
+  }
+
   function appName(pkg) {
     var noise = ["com", "org", "net", "tv", "android", "google", "app", "apps",
                  "stable", "livingroom", "one", "main", "mobile"]
@@ -819,7 +826,7 @@ Item {
           keyHint: "1"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
-                              : root.setting("app1Package", "")
+                              : root.appNiceName(root.setting("app1Package", ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(1); return }
             root.sh("app " + Util.shellQuote(root.setting("app1Package", "")))
@@ -830,7 +837,7 @@ Item {
           keyHint: "2"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
-                              : root.setting("app2Package", "")
+                              : root.appNiceName(root.setting("app2Package", ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(2); return }
             root.sh("app " + Util.shellQuote(root.setting("app2Package", "")))
@@ -841,7 +848,7 @@ Item {
           keyHint: "3"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
-                              : root.setting("app3Package", "")
+                              : root.appNiceName(root.setting("app3Package", ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(3); return }
             root.sh("app " + Util.shellQuote(root.setting("app3Package", "")))
