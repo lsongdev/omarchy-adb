@@ -87,16 +87,10 @@ TV it is not addressing.
 
 **Never commit a personal identifier — including in commit metadata.** Checking file
 contents is not enough: `git config user.email` has leaked a real name and address into an
-author field here before, and the global config still holds one, so a fresh clone will do
-it again unless the repo-local identity is set. This repo commits as:
-
-```
-swey-l1 <264918026+swey-l1@users.noreply.github.com>
-```
-
-GitHub's noreply form, so commits attach to the account without carrying an address.
-Verify with `git log --format='%an <%ae>' | sort -u` before pushing, and check screenshots
-for desktop content before adding them to `docs/`.
+author field here before. This repo carries its own `user.name` / `user.email`, but a fresh
+clone does not inherit them and falls back to the global identity silently, so set them
+before the first commit. Verify with `git log --format='%an <%ae>' | sort -u` before
+pushing, and check screenshots for desktop content before adding them to `docs/`.
 
 ## TV-side behaviour worth knowing
 
