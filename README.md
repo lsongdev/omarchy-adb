@@ -1,4 +1,4 @@
-# Android TV Remote — an Omarchy bar widget
+# Android TV Remote: an Omarchy bar widget
 
 Drive an Android TV from the Omarchy bar over ADB. D-pad, volume, input
 picker, app shortcuts, and a text field so you can type into TV search boxes
@@ -9,7 +9,7 @@ with a real keyboard instead of pecking at an on-screen grid.
 ## Requirements
 
 - Omarchy with the Quickshell-based shell (`omarchy-shell`)
-- `adb` — on Arch: `sudo pacman -S android-tools`
+- `adb` (on Arch: `sudo pacman -S android-tools`)
 - An Android TV with **Developer options → USB/Wireless debugging** enabled,
   reachable on your network
 
@@ -31,14 +31,15 @@ Then set your TV's address (Settings → Network → Status on the TV):
 ```
 
 Up to three sets can be configured; the pad drives one at a time and the picker
-at its foot switches between them. You do not have to write that by hand — open
-the picker and use **+ Add TV**, which writes the set into `shell.json` for you. One TV is the normal case — configure `tv1`
-alone and the picker stays a single status line.
+at its foot switches between them. You do not have to write that by hand:
+open the picker and use **+ Add TV**, which writes the set into `shell.json` for
+you. One TV is the normal case; configure `tv1` alone and the picker stays a
+single status line.
 
 The first connection prompts **"Allow USB debugging?"** on the TV. Tick
 "Always allow from this computer". If that prompt is dismissed the set is stuck
 in `unauth`, which the picker shows with an **AUTH** button to put the prompt
-back on screen — see [Re-authorising a TV](#re-authorising-a-tv).
+back on screen. See [Re-authorising a TV](#re-authorising-a-tv).
 
 ## Use
 
@@ -72,7 +73,7 @@ Which TV you are on is remembered across restarts. Reachability for the other se
 is open, so three configured TVs do not mean three times the adb traffic on
 every poll.
 
-**Typing**: click the field, type, press Enter — the string is sent and
+**Typing**: click the field, type, press Enter, and the string is sent and
 submitted. **Up/Down** walks the last 10 things you typed.
 
 **The icon turns your theme's urgent colour when the TV is unreachable**, and
@@ -81,8 +82,8 @@ needs authorising.
 
 ### Re-authorising a TV
 
-A set whose debugging prompt was dismissed — or that was reset, or had this
-machine's key revoked — sits in `unauth` forever. Reconnecting does not help:
+A set whose debugging prompt was dismissed (or that was reset, or had this
+machine's key revoked) sits in `unauth` forever. Reconnecting does not help:
 `adb` remembers the refusal and fails the handshake silently, with nothing on
 the TV's screen. The **AUTH** button beside an `unauth` entry bounces the local
 adb server, which forces a fresh key exchange and puts the prompt back up.
@@ -145,7 +146,7 @@ TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote reauth     # re-show the debugging pro
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
 
 ## Development
 
@@ -157,7 +158,7 @@ omarchy restart shell
 ```
 
 Files under `~/.config/omarchy/plugins/` hot-reload on save, but the bar widget
-is mounted at startup — a restart is the reliable way to see a change. The
+is mounted at startup, so a restart is the reliable way to see a change. The
 `tv-remote` script needs no restart at all.
 
 If you installed with `omarchy plugin add`, the directory is a git checkout, so
