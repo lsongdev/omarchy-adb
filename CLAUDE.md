@@ -107,6 +107,12 @@ on a pad button was dead for months before this was noticed. The pad shows hover
 its own hint line instead, via `setHint()` / `clearHint()`. Only the bar icon itself, which
 really is in the bar window, can use `bar.showTooltip`.
 
+**Every key binding lives in `keyMap` in `Panel.qml`, and only there.** What a key does,
+the shortcut shown when hovering a button, and the line in the shortcut list are all read
+from it. Adding a binding anywhere else puts the pad's behaviour and its own documentation
+out of step, which is how `+` ended up working as volume up while appearing in no list.
+Buttons name an action (`action: "volUp"`) rather than repeating the keycode.
+
 **The text field must not hold focus by default.** The pad is modal: `keyCatcher`
 owns the keyboard in control mode so single letters can be remote keys, and `entry` only
 takes it while `root.typing`. Binding `focus:` on the field instead means every control

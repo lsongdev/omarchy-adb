@@ -119,6 +119,58 @@ Item {
   function startTyping() { typing = true; entry.forceActiveFocus() }
   function stopTyping()  { typing = false; keyCatcher.forceActiveFocus() }
 
+  // Every binding, once. Behaviour, the hover hint on a button and the line in
+  // the shortcut list all read from here, so a key cannot end up doing one thing
+  // and being advertised as another -- which had already happened: "+" worked as
+  // volume up and appeared in no list.
+  //
+  // `mods` is matched exactly, so Shift+S and S, or Alt+1 and 1, are separate
+  // entries and order does not matter.
+  readonly property var keyMap: [
+    { id: "dpadUp",    keys: [Qt.Key_W, Qt.Key_Up],          hint: "W or Up",        label: "Up",           act: function() { key("KEYCODE_DPAD_UP") } },
+    { id: "dpadDown",  keys: [Qt.Key_S, Qt.Key_Down],        hint: "S or Down",      label: "Down",         act: function() { key("KEYCODE_DPAD_DOWN") } },
+    { id: "dpadLeft",  keys: [Qt.Key_A, Qt.Key_Left],        hint: "A or Left",      label: "Left",         act: function() { key("KEYCODE_DPAD_LEFT") } },
+    { id: "dpadRight", keys: [Qt.Key_D, Qt.Key_Right],       hint: "D or Right",     label: "Right",        act: function() { key("KEYCODE_DPAD_RIGHT") } },
+    { id: "ok",        keys: [Qt.Key_Return, Qt.Key_Enter],  hint: "Enter",          label: "Select / OK",  act: function() { key("KEYCODE_DPAD_CENTER") } },
+    { id: "back",      keys: [Qt.Key_B, Qt.Key_Backspace],   hint: "B or Backspace", label: "Back",         act: function() { key("KEYCODE_BACK") } },
+    { id: "home",      keys: [Qt.Key_H],                     hint: "H",              label: "Home",         act: function() { key("KEYCODE_HOME") } },
+    { id: "menu",      keys: [Qt.Key_M],                     hint: "M",              label: "Menu",         act: function() { key("KEYCODE_MENU") } },
+    { id: "inputs",    keys: [Qt.Key_I],                     hint: "I",              label: "Inputs",       act: function() { sh("inputs") } },
+    { id: "clear",     keys: [Qt.Key_C],                     hint: "C",              label: "Clear the field", act: function() { sh("clear") } },
+    { id: "playPause", keys: [Qt.Key_P],                     hint: "P",              label: "Play / pause", act: function() { key("KEYCODE_MEDIA_PLAY_PAUSE") } },
+    { id: "rewind",    keys: [Qt.Key_R],                     hint: "R",              label: "Rewind",       act: function() { key("KEYCODE_MEDIA_REWIND") } },
+    { id: "forward",   keys: [Qt.Key_F],                     hint: "F",              label: "Fast-forward", act: function() { key("KEYCODE_MEDIA_FAST_FORWARD") } },
+    { id: "previous",  keys: [Qt.Key_BracketLeft],           hint: "[",              label: "Previous",     act: function() { key("KEYCODE_MEDIA_PREVIOUS") } },
+    { id: "next",      keys: [Qt.Key_BracketRight],          hint: "]",              label: "Next",         act: function() { key("KEYCODE_MEDIA_NEXT") } },
+    { id: "volDown",   keys: [Qt.Key_Minus],                 hint: "-",              label: "Volume down",  act: function() { key("KEYCODE_VOLUME_DOWN") } },
+    { id: "volUp",     keys: [Qt.Key_Equal, Qt.Key_Plus],    hint: "= or +",         label: "Volume up",    act: function() { key("KEYCODE_VOLUME_UP") } },
+    { id: "mute",      keys: [Qt.Key_X],                     hint: "X",              label: "Mute",         act: function() { key("KEYCODE_VOLUME_MUTE") } },
+    { id: "wake",      keys: [Qt.Key_W], mods: Qt.ShiftModifier, hint: "Shift+W",    label: "Wake",         act: function() { key("KEYCODE_WAKEUP") } },
+    { id: "power",     keys: [Qt.Key_S], mods: Qt.ShiftModifier, hint: "Shift+S",    label: "Power",        act: function() { key("KEYCODE_POWER") } },
+    { id: "app1",      keys: [Qt.Key_1],                     hint: "1",              label: "App shortcut 1", act: function() { launchApp(1) } },
+    { id: "app2",      keys: [Qt.Key_2],                     hint: "2",              label: "App shortcut 2", act: function() { launchApp(2) } },
+    { id: "app3",      keys: [Qt.Key_3],                     hint: "3",              label: "App shortcut 3", act: function() { launchApp(3) } },
+    { id: "type",      keys: [Qt.Key_T, Qt.Key_Slash],       hint: "T or /",         label: "Type at the TV", act: function() { startTyping() } },
+    { id: "nextTv",    keys: [Qt.Key_Tab],                   hint: "Tab",            label: "Next TV",      act: function() { cycleTv() } },
+    { id: "tv1",       keys: [Qt.Key_1], mods: Qt.AltModifier, hint: "Alt+1",        label: "Jump to TV 1", act: function() { selectTv(0) } },
+    { id: "tv2",       keys: [Qt.Key_2], mods: Qt.AltModifier, hint: "Alt+2",        label: "Jump to TV 2", act: function() { selectTv(1) } },
+    { id: "tv3",       keys: [Qt.Key_3], mods: Qt.AltModifier, hint: "Alt+3",        label: "Jump to TV 3", act: function() { selectTv(2) } },
+    { id: "close",     keys: [Qt.Key_Escape, Qt.Key_Q],      hint: "Esc or Q",       label: "Close",         act: function() { close() } }
+  ]
+
+  function entryFor(id) {
+    for (var i = 0; i < keyMap.length; i++) if (keyMap[i].id === id) return keyMap[i]
+    return null
+  }
+  function hintFor(id)  { var e = entryFor(id); return e ? e.hint  : "" }
+  function labelFor(id) { var e = entryFor(id); return e ? e.label : "" }
+  function runAction(id) { var e = entryFor(id); if (e) e.act() }
+
+  function launchApp(n) { sh("app " + Util.shellQuote(setting("app" + n + "Package", ""))) }
+
+  // The shortcut list, written once by the same table.
+  readonly property var keyHelp: keyMap.map(function (e) { return e.hint + "  " + e.label })
+
   // Control mode. Returns true when the key was ours, so the caller can accept
   // it -- anything unclaimed falls through rather than being swallowed.
   function handleKey(ev) {
@@ -127,54 +179,14 @@ Item {
     // typing mode on the t.
     if (picker.formOpen) return picker.handleFormKey(ev)
 
-    // Alt+digit still picks a set; the unmodified digits are app shortcuts now.
-    if (ev.modifiers & Qt.AltModifier) {
-      if (ev.key === Qt.Key_1) { selectTv(0); return true }
-      if (ev.key === Qt.Key_2) { selectTv(1); return true }
-      if (ev.key === Qt.Key_3) { selectTv(2); return true }
-      return false
-    }
-    // Both power-state keys sit behind Shift, because W and S are D-pad
-    // directions now. Power especially: it is the one key here that cannot be
-    // undone from this side, since a TV that is off does not answer ADB, and a
-    // stray press from someone who forgot to hit T would end the session.
-    if (ev.modifiers & Qt.ShiftModifier) {
-      if (ev.key === Qt.Key_S) { key("KEYCODE_POWER");  return true }
-      if (ev.key === Qt.Key_W) { key("KEYCODE_WAKEUP"); return true }
-    }
-    if (ev.modifiers & (Qt.ShiftModifier | Qt.ControlModifier | Qt.MetaModifier)) return false
-
-    switch (ev.key) {
-      case Qt.Key_Up:    case Qt.Key_W: key("KEYCODE_DPAD_UP");     return true
-      case Qt.Key_Down:  case Qt.Key_S: key("KEYCODE_DPAD_DOWN");   return true
-      case Qt.Key_Left:  case Qt.Key_A: key("KEYCODE_DPAD_LEFT");   return true
-      case Qt.Key_Right: case Qt.Key_D: key("KEYCODE_DPAD_RIGHT");  return true
-      case Qt.Key_Return: case Qt.Key_Enter: key("KEYCODE_DPAD_CENTER"); return true
-
-      case Qt.Key_B: case Qt.Key_Backspace: key("KEYCODE_BACK"); return true
-      case Qt.Key_H: key("KEYCODE_HOME");  return true
-      case Qt.Key_M: key("KEYCODE_MENU");  return true
-
-      case Qt.Key_P: key("KEYCODE_MEDIA_PLAY_PAUSE"); return true
-      case Qt.Key_R: key("KEYCODE_MEDIA_REWIND");     return true
-      case Qt.Key_F: key("KEYCODE_MEDIA_FAST_FORWARD"); return true
-      case Qt.Key_BracketLeft:  key("KEYCODE_MEDIA_PREVIOUS"); return true
-      case Qt.Key_BracketRight: key("KEYCODE_MEDIA_NEXT");     return true
-
-      case Qt.Key_Minus: key("KEYCODE_VOLUME_DOWN"); return true
-      case Qt.Key_Equal: case Qt.Key_Plus: key("KEYCODE_VOLUME_UP"); return true
-      case Qt.Key_X:     key("KEYCODE_VOLUME_MUTE"); return true
-
-      case Qt.Key_I: sh("inputs"); return true
-      case Qt.Key_C: sh("clear");  return true
-
-      case Qt.Key_1: sh("app " + Util.shellQuote(setting("app1Package", ""))); return true
-      case Qt.Key_2: sh("app " + Util.shellQuote(setting("app2Package", ""))); return true
-      case Qt.Key_3: sh("app " + Util.shellQuote(setting("app3Package", ""))); return true
-
-      case Qt.Key_T: case Qt.Key_Slash: startTyping(); return true
-      case Qt.Key_Tab: cycleTv(); return true
-      case Qt.Key_Escape: case Qt.Key_Q: close(); return true
+    var mods = ev.modifiers & (Qt.ShiftModifier | Qt.ControlModifier
+                               | Qt.AltModifier | Qt.MetaModifier)
+    for (var i = 0; i < keyMap.length; i++) {
+      var e = keyMap[i]
+      if (mods !== (e.mods || 0)) continue
+      if (e.keys.indexOf(ev.key) === -1) continue
+      e.act()
+      return true
     }
     return false
   }
@@ -256,33 +268,6 @@ Item {
 
   function loadApps() { svc.loadApps() }
 
-  // The device has no display names to give -- PackageManager hands labels to
-  // apps, not to `cmd package` -- so derive something readable: drop the
-  // segments nearly every package carries and keep the longest of the rest,
-  // which is usually the brand. Only ever a suggestion; the label is editable.
-  // Several bindings have no button to hover -- menu, fast-forward, previous and
-  // next, wake, switching sets -- so the list has to exist somewhere whole.
-  readonly property var keyHelp: [
-    "Arrows or WASD  D-pad",
-    "Enter  OK",
-    "B or Bksp  Back",
-    "H  Home",
-    "M  Menu",
-    "I  Inputs",
-    "C  Clear field",
-    "P  Play / pause",
-    "R / F  Rew / fwd",
-    "[ / ]  Prev / next",
-    "- / =  Volume",
-    "X  Mute",
-    "Shift+W  Wake",
-    "Shift+S  Power",
-    "1 2 3  App shortcuts",
-    "T or /  Type at TV",
-    "Tab  Next TV",
-    "Alt+1/2/3  Jump to TV",
-    "Esc or Q  Close"
-  ]
 
   // The bar's tooltip PopupWindow only draws when the hovered target belongs to
   // the bar window (targetBelongsToWindow in Bar.qml), and the pad is its own
@@ -387,15 +372,16 @@ Item {
     id: k
     property string glyph: ""
     property string label: ""
-    property string tip: ""
+    // Naming the action is enough: the description, the shortcut shown on hover
+    // and what pressing it does all come from the one table.
+    property string action: ""
+    property string tip: action !== "" ? root.labelFor(action) : ""
+    property string keyHint: action !== "" ? root.hintFor(action) : ""
     property var onPress: null
     // Outlined while the key does something other than what its face says --
     // the shortcut buttons configure rather than launch in edit mode, and
     // nothing else on them would show that.
     property bool marked: false
-    // Appended to the tooltip so the pad teaches its own key bindings: hovering
-    // a button is the obvious place to ask "what key is this?".
-    property string keyHint: ""
     readonly property string hintText: tip === "" ? ""
       : (keyHint === "" ? tip : tip + "  [" + keyHint + "]")
 
@@ -424,7 +410,7 @@ Item {
       hoverEnabled: true
       onEntered: root.setHint(k.hintText)
       onExited: root.clearHint(k.hintText)
-      onClicked: if (k.onPress) k.onPress()
+      onClicked: { if (k.onPress) k.onPress(); else if (k.action !== "") root.runAction(k.action) }
     }
   }
 
@@ -496,48 +482,48 @@ Item {
 
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰐥"; tip: "Power"; keyHint: "Shift+S";  onPress: function() { root.key("KEYCODE_POWER") } }
-        Key { label: "INPT"; tip: "Inputs"; keyHint: "I"; onPress: function() { root.sh("inputs") } }
-        Key { glyph: "󰋜"; tip: "Home"; keyHint: "H";   onPress: function() { root.key("KEYCODE_HOME") } }
+        Key { glyph: "󰐥"; action: "power" }
+        Key { label: "INPT"; action: "inputs" }
+        Key { glyph: "󰋜"; action: "home" }
       }
 
       Row {
         spacing: Style.space(6)
         Item { width: Style.space(38); height: Style.space(34) }
-        Key { glyph: "󰁝"; tip: "Up"; keyHint: "W or Up"; onPress: function() { root.key("KEYCODE_DPAD_UP") } }
+        Key { glyph: "󰁝"; action: "dpadUp" }
         Item { width: Style.space(38); height: Style.space(34) }
       }
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰁍"; tip: "Left"; keyHint: "A or Left"; onPress: function() { root.key("KEYCODE_DPAD_LEFT") } }
-        Key { label: "OK"; tip: "Select"; keyHint: "Enter"; onPress: function() { root.key("KEYCODE_DPAD_CENTER") } }
-        Key { glyph: "󰁔"; tip: "Right"; keyHint: "D or Right"; onPress: function() { root.key("KEYCODE_DPAD_RIGHT") } }
+        Key { glyph: "󰁍"; action: "dpadLeft" }
+        Key { label: "OK"; action: "ok" }
+        Key { glyph: "󰁔"; action: "dpadRight" }
       }
       Row {
         spacing: Style.space(6)
         Item { width: Style.space(38); height: Style.space(34) }
-        Key { glyph: "󰁅"; tip: "Down"; keyHint: "S or Down"; onPress: function() { root.key("KEYCODE_DPAD_DOWN") } }
+        Key { glyph: "󰁅"; action: "dpadDown" }
         Item { width: Style.space(38); height: Style.space(34) }
       }
 
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰁮"; tip: "Back"; keyHint: "B or Backspace"; onPress: function() { root.key("KEYCODE_BACK") } }
-        Key { glyph: "󰕿"; tip: "Volume down"; keyHint: "-"; onPress: function() { root.key("KEYCODE_VOLUME_DOWN") } }
-        Key { glyph: "󰕾"; tip: "Volume up"; keyHint: "="; onPress: function() { root.key("KEYCODE_VOLUME_UP") } }
+        Key { glyph: "󰁮"; action: "back" }
+        Key { glyph: "󰕿"; action: "volDown" }
+        Key { glyph: "󰕾"; action: "volUp" }
       }
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰝟"; tip: "Mute"; keyHint: "X"; onPress: function() { root.key("KEYCODE_VOLUME_MUTE") } }
-        Key { glyph: "󰐊"; tip: "Play/Pause"; keyHint: "P"; onPress: function() { root.key("KEYCODE_MEDIA_PLAY_PAUSE") } }
-        Key { glyph: "󰒫"; tip: "Rewind"; keyHint: "R"; onPress: function() { root.key("KEYCODE_MEDIA_REWIND") } }
+        Key { glyph: "󰝟"; action: "mute" }
+        Key { glyph: "󰐊"; action: "playPause" }
+        Key { glyph: "󰒫"; action: "rewind" }
       }
 
       Row {
         spacing: Style.space(6)
         Key {
           label: root.setting("app1Label", "NFLX")
-          keyHint: "1"
+          action: "app1"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.appNiceName(root.setting("app1Package", ""))
@@ -548,7 +534,7 @@ Item {
         }
         Key {
           label: root.setting("app2Label", "TUBE")
-          keyHint: "2"
+          action: "app2"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.appNiceName(root.setting("app2Package", ""))
@@ -559,7 +545,7 @@ Item {
         }
         Key {
           label: root.setting("app3Label", "SPFY")
-          keyHint: "3"
+          action: "app3"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.appNiceName(root.setting("app3Package", ""))
@@ -639,7 +625,7 @@ Item {
           }
         }
 
-        Key { label: "CLR"; tip: "Clear the field on the TV"; keyHint: "C"; onPress: function() { root.sh("clear") } }
+        Key { label: "CLR"; action: "clear" }
       }
 
       // ---- which set the pad is driving ---------------------------------
