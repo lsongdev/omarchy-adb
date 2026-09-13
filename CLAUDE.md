@@ -14,8 +14,9 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
 - `Config.qml` — everything read from or written back to the widget's `shell.json` entry:
   the sets, the active slot, the shortcut buttons, and `persist()`. Panel re-exports what
   the components use, the same way it fronts Service.
-- `SetPicker.qml` — the strip along the foot of the pad: the sets, the add/rename form,
-  the app chooser and the shortcut list.
+- `SetPicker.qml` — the strip along the foot of the pad: the sets, the shortcut list, and
+  whichever of its two forms is open. `TvForm.qml` adds or renames a set; `AppChooser.qml`
+  points a shortcut button at an app. Each owns its own state and key handling.
 - `PadKey.qml`, `TvRow.qml`, `Field.qml`, `TypeField.qml`, `Action.qml`, `FormButton.qml`,
   `HintArea.qml`, `PadText.qml` — the pieces those are built from. Each takes `panel`, since a component in its own file
   cannot reach the Panel lexically the way an inline one can. Theme values (`textColour`,
