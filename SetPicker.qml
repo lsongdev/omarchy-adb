@@ -14,6 +14,8 @@ import qs.Commons
 // layer-shell surface that takes keyboard focus on demand, so `activeInput`
 // says where they should go.
 Column {
+  id: picker
+
   // The Panel this belongs to: the sets, the settings writer, the shim and the
   // hint line all live there.
   property var panel: null
@@ -25,7 +27,6 @@ Column {
                                    : !tvFormOpen ? null
                                    : formField === 0 ? nameField.input : addrField.input
 
-  id: picker
   property bool expanded: false
   property bool adding: false
   // While on, clicking a row opens it for rename/remove instead of
@@ -53,8 +54,9 @@ Column {
   // Union: used for releasing the type-at-the-TV field's focus, not for
   // deciding which form to draw.
   readonly property bool formOpen: tvFormOpen || appFormOpen
-  // DELETE only exists when editing, and the row has to divide evenly.
-  readonly property int buttonCount: editSlot !== 0 ? 3 : 2
+  // Whatever form is open has to divide its row evenly, and only the rename
+  // form has three buttons: DELETE exists nowhere else.
+  readonly property int buttonCount: (tvFormOpen && editSlot !== 0) ? 3 : 2
   readonly property real buttonWidth:
     (panel.padWidth - Style.space(6) * (buttonCount - 1)) / buttonCount
 
@@ -337,14 +339,14 @@ Column {
 
     FormButton {
       panel: picker.panel
-      width: (picker.panel.padWidth - Style.space(6)) / 2
+      width: picker.buttonWidth
       label: "SAVE"
       active: picker.appPkg !== ""
       onPress: function() { picker.commitAppForm() }
     }
     FormButton {
       panel: picker.panel
-      width: (picker.panel.padWidth - Style.space(6)) / 2
+      width: picker.buttonWidth
       label: "CANCEL"
       onPress: function() { picker.closeAppForm() }
     }
