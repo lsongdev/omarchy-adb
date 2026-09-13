@@ -420,44 +420,6 @@ Item {
     }
   }
 
-  // A full-width, left-aligned line in the picker: reads as a menu entry
-  // rather than a key, which is what separates "+ Add TV" from the D-pad.
-  component Action: Rectangle {
-    id: ac
-    property string label: ""
-    property string tip: ""
-    property var onPress: null
-
-    width: root.padWidth
-    height: Style.space(24)
-    radius: Style.cornerRadius
-    color: acMa.pressed ? Color.popups.border
-         : acMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
-    Behavior on color { ColorAnimation { duration: 90 } }
-
-    Text {
-      anchors.left: parent.left
-      anchors.leftMargin: Style.space(6)
-      anchors.verticalCenter: parent.verticalCenter
-      width: parent.width - Style.space(12)
-      elide: Text.ElideRight
-      text: ac.label
-      color: root.bar ? root.bar.foreground : "white"
-      opacity: 0.72
-      font.family: root.bar ? root.bar.fontFamily : "monospace"
-      font.pixelSize: 10
-    }
-
-    MouseArea {
-      id: acMa
-      anchors.fill: parent
-      hoverEnabled: true
-      onEntered: root.setHint(ac.tip)
-      onExited: root.clearHint(ac.tip)
-      onClicked: if (ac.onPress) ac.onPress()
-    }
-  }
-
   component FormButton: Rectangle {
     id: fb
     property string label: ""
@@ -482,163 +444,6 @@ Item {
       anchors.fill: parent
       hoverEnabled: true
       onClicked: if (fb.active && fb.onPress) fb.onPress()
-    }
-  }
-
-  // Same treatment as the type-at-the-TV field, minus the history handling.
-  component Field: Rectangle {
-    id: f
-    property string placeholder: ""
-    property alias text: fi.text
-    function focusMe() { fi.forceActiveFocus() }
-
-    width: root.padWidth
-    height: Style.space(26)
-    radius: Style.cornerRadius
-    color: Qt.rgba(1, 1, 1, 0.06)
-    border.width: fi.activeFocus ? 1 : 0
-    border.color: root.bar ? root.bar.foreground : "white"
-
-    TextInput {
-      id: fi
-      anchors.fill: parent
-      anchors.leftMargin: Style.space(6)
-      anchors.rightMargin: Style.space(6)
-      verticalAlignment: TextInput.AlignVCenter
-      clip: true
-      color: root.bar ? root.bar.foreground : "white"
-      font.family: root.bar ? root.bar.fontFamily : "monospace"
-      font.pixelSize: 10
-      selectByMouse: true
-
-      Text {
-        anchors.verticalCenter: parent.verticalCenter
-        visible: fi.text.length === 0 && !fi.activeFocus
-        text: f.placeholder
-        color: root.bar ? root.bar.foreground : "white"
-        opacity: 0.35
-        font.family: fi.font.family
-        font.pixelSize: fi.font.pixelSize
-      }
-    }
-  }
-
-  // One line of the set picker. Its own state falls back to the active set's
-  // live `state` so the row a user looks at most is never showing a stale
-  // verdict from the last time the picker happened to be open.
-  component TvRow: Rectangle {
-    id: tr
-    property int idx: 0
-    property bool editMode: false
-    property string trailing: ""
-    property var onActivate: null
-    readonly property bool isActive: idx === root.activeIndex
-    readonly property string st: (root.tvStates.length > idx && root.tvStates[idx] !== "")
-                                 ? root.tvStates[idx]
-                                 : (isActive ? root.state : "")
-
-    width: root.padWidth
-    height: Style.space(24)
-    radius: Style.cornerRadius
-    color: trMa.pressed ? Color.popups.border
-         : trMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10)
-         : tr.isActive ? Qt.rgba(1, 1, 1, 0.06)
-         : "transparent"
-    Behavior on color { ColorAnimation { duration: 90 } }
-
-    // Declared before the content so the AUTH button, a later sibling, stacks
-    // above it and keeps its own clicks.
-    MouseArea {
-      id: trMa
-      anchors.fill: parent
-      hoverEnabled: true
-      onClicked: if (tr.onActivate) tr.onActivate()
-    }
-
-    Row {
-      id: leftGroup
-      anchors.left: parent.left
-      anchors.leftMargin: Style.space(6)
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: Style.space(6)
-
-      Text {
-        id: dot
-        text: tr.st === "up" ? "●" : "○"
-        color: tr.st === "up" ? "#98c379"
-             : tr.st === "unauth" ? "#e5c07b"
-             : tr.st === "noadb" ? (root.bar && root.bar.urgent ? root.bar.urgent : "#e06c75")
-             : (root.bar ? root.bar.foreground : "white")
-        opacity: tr.st === "up" ? 1.0 : 0.55
-        font.family: root.bar ? root.bar.fontFamily : "monospace"
-        font.pixelSize: 10
-      }
-      // Both groups are anchored to their own edge, so nothing stops a long
-      // name running under the right-hand one -- and the right-hand one grows
-      // when AUTH appears. Hand the name whatever is left over and let it
-      // elide, rather than letting the two collide in the unauth state.
-      Text {
-        width: Math.max(0, tr.width - Style.space(6) * 3 - dot.width - rightGroup.width)
-        elide: Text.ElideRight
-        text: root.tvs.length > tr.idx ? root.tvs[tr.idx].label : ""
-        color: root.bar ? root.bar.foreground : "white"
-        opacity: tr.isActive ? 1.0 : 0.72
-        font.family: root.bar ? root.bar.fontFamily : "monospace"
-        font.pixelSize: 10
-      }
-    }
-
-    Row {
-      id: rightGroup
-      anchors.right: parent.right
-      anchors.rightMargin: Style.space(6)
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: Style.space(6)
-
-      // Offered only when it is actually the problem: an unauthorised set needs
-      // someone to tap Allow on the TV, which no amount of reconnecting fixes.
-      Rectangle {
-        visible: tr.st === "unauth"
-        width: Style.space(30)
-        height: Style.space(18)
-        radius: Style.cornerRadius
-        color: authMa.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(1, 1, 1, 0.08)
-        Text {
-          anchors.centerIn: parent
-          text: "AUTH"
-          color: root.bar ? root.bar.foreground : "white"
-          font.family: root.bar ? root.bar.fontFamily : "monospace"
-          font.pixelSize: 8
-        }
-        MouseArea {
-          id: authMa
-          anchors.fill: parent
-          hoverEnabled: true
-          onEntered: root.setHint("Re-show the USB-debugging prompt on this TV")
-          onExited: root.clearHint("Re-show the USB-debugging prompt on this TV")
-          onClicked: root.reauth(tr.idx)
-        }
-      }
-
-      // The AUTH button already says what the state is, and the row is only as
-      // wide as the pad -- showing both squeezes the name down to "Hi…".
-      Text {
-        visible: tr.st !== "unauth" && !tr.editMode
-        text: tr.st === "" ? "…" : tr.st
-        color: root.bar ? root.bar.foreground : "white"
-        opacity: 0.45
-        font.family: root.bar ? root.bar.fontFamily : "monospace"
-        font.pixelSize: 9
-      }
-      Text {
-        text: tr.trailing
-        color: root.bar ? root.bar.foreground : "white"
-        // "edit" is an affordance, not decoration, so it carries the same weight
-        // as the row's own name. The expand chevrons stay quiet.
-        opacity: tr.editMode ? (tr.isActive ? 1.0 : 0.72) : 0.45
-        font.family: root.bar ? root.bar.fontFamily : "monospace"
-        font.pixelSize: 9
-      }
     }
   }
 
@@ -914,6 +719,7 @@ Item {
         }
 
         TvRow {
+          panel: root
           visible: !picker.expanded && root.tvs.length > 0
           idx: root.activeIndex
           trailing: picker.hasMore ? "▸" : ""
@@ -923,6 +729,7 @@ Item {
         Repeater {
           model: picker.expanded ? root.tvs.length : 0
           TvRow {
+            panel: root
             idx: index
             editMode: picker.editing
             trailing: picker.editing ? "edit" : (index === root.activeIndex ? "▾" : "")
@@ -938,6 +745,7 @@ Item {
         // row stands in for the picker entirely -- otherwise the only way to
         // get a first TV in would be to hand-edit shell.json.
         Action {
+          panel: root
           visible: !picker.formOpen && root.freeSlot() !== 0
                    && (picker.expanded || root.tvs.length === 0)
           label: "+ Add TV"
@@ -945,6 +753,7 @@ Item {
         }
 
         Action {
+          panel: root
           visible: !picker.formOpen && picker.expanded && root.tvs.length > 0
           label: picker.editing ? "Done" : "Edit / remove"
           onPress: function() { picker.editing = !picker.editing }
@@ -953,6 +762,7 @@ Item {
         // Hover-only: there is nothing to click, it is just where the bindings
         // that have no button of their own are written down.
         Action {
+          panel: root
           visible: !picker.formOpen && picker.expanded
           label: picker.showKeys ? "Hide shortcuts" : "Keyboard shortcuts"
           tip: picker.showKeys ? "Hide the list" : "Show every key"
@@ -985,6 +795,7 @@ Item {
         }
 
         Field {
+          panel: root
           id: nameField
           visible: picker.tvFormOpen
           placeholder: "name (e.g. Bedroom)"
@@ -993,6 +804,7 @@ Item {
           Keys.onEscapePressed: picker.closeForm()
         }
         Field {
+          panel: root
           id: addrField
           visible: picker.tvFormOpen
           placeholder: "192.168.1.50  (:5555 assumed)"
@@ -1027,6 +839,7 @@ Item {
 
         // ---- point a shortcut button at an app ---------------------------
         Field {
+          panel: root
           id: appLabelField
           visible: picker.appFormOpen
           placeholder: "button label (e.g. NFLX)"
