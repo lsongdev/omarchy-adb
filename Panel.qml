@@ -413,6 +413,8 @@ Item {
     // the shortcut buttons configure rather than launch in edit mode, and
     // nothing else on them would show that.
     property bool marked: false
+    // Nothing configured behind it. Still pressable, so the hint can say why.
+    property bool unset: false
     readonly property string hintText: tip === "" ? ""
       : (keyHint === "" ? tip : tip + "  [" + keyHint + "]")
 
@@ -421,6 +423,7 @@ Item {
     radius: Style.cornerRadius
     border.width: k.marked ? 1 : 0
     border.color: root.bar ? root.bar.foreground : "white"
+    opacity: k.unset ? 0.45 : 1.0
     color: ma.pressed ? Color.popups.border
          : ma.containsMouse ? root.surfaceHover
          : k.marked ? root.surfaceHover
@@ -524,36 +527,54 @@ Item {
       Row {
         spacing: Style.space(6)
         Key {
-          label: root.setting("app1Label", "NFLX")
+          // The fallback label matches the manifest default rather than naming
+          // an app nobody configured: a fresh install used to show NFLX on a
+          // button with no package behind it.
+          label: root.setting("app1Label", "APP1")
           action: "app1"
           marked: picker.editing
+          unset: !picker.editing && root.setting("app1Package", "") === ""
           tip: picker.editing ? "Choose the app for this button"
-                              : root.appNiceName(root.setting("app1Package", ""))
+             : root.setting("app1Package", "") === ""
+               ? "Nothing set yet. Use Edit / remove to pick an app"
+               : root.appNiceName(root.setting("app1Package", ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(1); return }
-            root.sh("app " + Util.shellQuote(root.setting("app1Package", "")))
+            root.launchApp(1)
           }
         }
         Key {
-          label: root.setting("app2Label", "TUBE")
+          // The fallback label matches the manifest default rather than naming
+          // an app nobody configured: a fresh install used to show NFLX on a
+          // button with no package behind it.
+          label: root.setting("app2Label", "APP2")
           action: "app2"
           marked: picker.editing
+          unset: !picker.editing && root.setting("app2Package", "") === ""
           tip: picker.editing ? "Choose the app for this button"
-                              : root.appNiceName(root.setting("app2Package", ""))
+             : root.setting("app2Package", "") === ""
+               ? "Nothing set yet. Use Edit / remove to pick an app"
+               : root.appNiceName(root.setting("app2Package", ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(2); return }
-            root.sh("app " + Util.shellQuote(root.setting("app2Package", "")))
+            root.launchApp(2)
           }
         }
         Key {
-          label: root.setting("app3Label", "SPFY")
+          // The fallback label matches the manifest default rather than naming
+          // an app nobody configured: a fresh install used to show NFLX on a
+          // button with no package behind it.
+          label: root.setting("app3Label", "APP3")
           action: "app3"
           marked: picker.editing
+          unset: !picker.editing && root.setting("app3Package", "") === ""
           tip: picker.editing ? "Choose the app for this button"
-                              : root.appNiceName(root.setting("app3Package", ""))
+             : root.setting("app3Package", "") === ""
+               ? "Nothing set yet. Use Edit / remove to pick an app"
+               : root.appNiceName(root.setting("app3Package", ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(3); return }
-            root.sh("app " + Util.shellQuote(root.setting("app3Package", "")))
+            root.launchApp(3)
           }
         }
       }
