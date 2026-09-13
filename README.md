@@ -85,9 +85,9 @@ could be a control.
 | `Alt+1` / `Alt+2` / `Alt+3` | Jump straight to that TV |
 | `Esc` or `Q` | Close the pad |
 
-Hovering anything in the pad names it, and its key, on the line along the
-bottom. **Keyboard shortcuts** in the picker lists the lot, including the keys
-with no button of their own.
+Hovering anything in the pad names it, and its key, along the bottom of the
+pad. **Keyboard shortcuts** in the picker lists the lot, including the keys with
+no button of their own.
 
 Both power-state keys sit behind `Shift`, since `W` and `S` are D-pad directions.
 Power especially: it cannot be undone from this side, because a TV that is off
