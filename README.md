@@ -19,7 +19,20 @@ with a real keyboard instead of pecking at an on-screen grid.
 omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable
 ```
 
-Then set your TV's address (Settings → Network → Status on the TV):
+`--enable` is what puts the widget into the bar; without it the plugin installs
+and nothing appears.
+
+Everything else is done from the pad. Open it, click the picker along its foot,
+and use **+ Add TV**: it takes a name and the TV's address (Settings → Network →
+Status on the TV), and a bare IP gets `:5555` appended for you. Up to three sets
+can be configured and the pad drives one at a time, though one TV is the normal
+case, and with a single set the picker stays one status line.
+
+**Edit / remove** in the same list renames or deletes a set, and turns the three
+shortcut buttons into app choosers, so no part of setup needs a package name
+looked up by hand.
+
+Nothing stops you writing it out instead, if you prefer configuration in a file:
 
 ```jsonc
 // ~/.config/omarchy/shell.json  → bar.layout.<section>
@@ -29,12 +42,6 @@ Then set your TV's address (Settings → Network → Status on the TV):
   "tv2Label": "Bedroom",     "tv2Address": "192.168.1.51:5555"
 }
 ```
-
-Up to three sets can be configured; the pad drives one at a time and the picker
-at its foot switches between them. You do not have to write that by hand:
-open the picker and use **+ Add TV**, which writes the set into `shell.json` for
-you. One TV is the normal case; configure `tv1` alone and the picker stays a
-single status line.
 
 The first connection prompts **"Allow USB debugging?"** on the TV. Tick
 "Always allow from this computer". If that prompt is dismissed the set is stuck
@@ -100,20 +107,23 @@ switch to it. **+ Add TV** at the foot of that list takes a name and an address
 and saves them; a bare IP gets `:5555` appended. The row disappears once all
 three slots are used.
 
-**Edit / remove** below it flips the list into edit mode: a click then opens that
-set for rename or deletion rather than switching to it. While edit mode is on, the three
-shortcut buttons outline to show they are configurable, and clicking one sets
-what it launches rather than launching it:
-the pad reads the launchable apps off the TV and lists them to pick from, so you
-never have to look a package name up by hand. Deleting the set you are
+**Edit / remove** below it flips the list into edit mode, where a click opens a
+set for rename or deletion rather than switching to it. Deleting the set you are
 currently driving moves you to the first one left.
 
-Which TV you are on is remembered across restarts. Reachability for the other sets is only refreshed while that list
-is open, so three configured TVs do not mean three times the adb traffic on
-every poll.
+Edit mode also outlines the three shortcut buttons, and clicking one then sets
+what it launches rather than launching it: the pad reads the launchable apps off
+the TV and lists them to choose from.
 
-**Typing**: click the field, type, press Enter, and the string is sent and
-submitted. **Up/Down** walks the last 10 things you typed.
+![edit mode](docs/edit-mode.png)
+
+Which TV you are on is remembered across restarts. The other sets only have
+their reachability refreshed while the list is open, so three configured TVs do
+not mean three times the adb traffic on every poll.
+
+**Typing**: press `T` (or click the field), type, press Enter, and the string is
+sent and submitted. `Esc` hands the keyboard back to the controls. **Up/Down**
+walks the last 10 things you typed.
 
 **The icon turns your theme's urgent colour when the TV is unreachable**, and
 the tooltip distinguishes "TV unreachable", "adb not installed" and a TV that
@@ -182,6 +192,7 @@ to set.
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote key KEYCODE_DPAD_DOWN
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote text "jazz piano" enter
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote clear 30
+TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote apps       # launchable packages
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status     # up | down | unauth | noadb
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote reauth     # re-show the debugging prompt
 ```
