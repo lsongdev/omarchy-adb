@@ -135,6 +135,14 @@ key is swallowed as text bound for the TV's search box. A layer-shell panel stil
 route keys somewhere, which is why `keyCatcher` exists as a zero-sized item rather than
 nothing at all.
 
+**A field's keys go through `Field`'s `onKey`, never `Keys.on*` on the field.** Keys reach
+a field by two routes: directly while it holds focus, and forwarded from `keyCatcher` when
+the panel has not granted focus yet. `onKey` sees both, and returning `true` claims the key.
+Handling Return or Escape with a `Keys.onReturnPressed` on the field instead only covers
+the focused route, and the forwarded one silently does something else -- which is how the
+add-TV form once advanced its forwarding target without moving focus. The forms hand every
+key to `handleFormKey` in `SetPicker.qml`; the type-at-the-TV entry has its own `onKey`.
+
 **Never use `PopupCard` for anything that needs typing.** It is an xdg-popup and only
 receives keys after a click routes focus through its parent surface. `KeyboardPanel`
 (layer-shell + `WlrKeyboardFocus`) is the drop-in with a compatible API subset.
