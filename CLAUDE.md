@@ -38,6 +38,16 @@ journalctl --user --since "30 seconds ago" | grep -i atv.remote
 A clean log only proves nothing crashed. It does **not** prove an edit loaded — a silently
 failed string replacement, or a file in the wrong directory, both log nothing.
 
+Two traps worth knowing:
+
+- **A QML syntax error makes the widget vanish from the bar**, and the only sign is
+  `WARN qml: Plugin widget atv.remote failed: … Unexpected token` — no "Error:" and no
+  stack. Grep for `WARN qml` or `Plugin widget .* failed`, not for `Error`.
+- **Saving into `~/.config/omarchy/plugins/` does not reliably re-render an open pad.**
+  The log says `Local plugin changed, reloading`, and the pad keeps drawing the previous
+  instance — so a change appears not to work when it simply has not loaded. `omarchy
+  restart shell`, then reopen the pad, is the only dependable way to see an edit.
+
 ## Hard rules
 
 **Never write nerd-font glyphs as `\u` escapes.** QML's `\u` takes exactly four hex digits

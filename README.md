@@ -62,7 +62,13 @@ The picker is one line showing the TV being driven and whether it is reachable.
 Click it to list every configured set with its own status, and click a set to
 switch to it. **+ Add TV** at the foot of that list takes a name and an address
 and saves them; a bare IP gets `:5555` appended. The row disappears once all
-three slots are used. Removing or renaming a set is still a `shell.json` edit. Reachability for the other sets is only refreshed while that list
+three slots are used.
+
+**Edit / remove** below it flips the list into edit mode: a click then opens that
+set for rename or deletion rather than switching to it. Deleting the set you are
+currently driving moves you to the first one left.
+
+Which TV you are on is remembered across restarts. Reachability for the other sets is only refreshed while that list
 is open, so three configured TVs do not mean three times the adb traffic on
 every poll.
 
@@ -101,6 +107,7 @@ Every key goes in the widget's entry in `shell.json`.
 | `tv1Label` / `tv1Address` | *(empty)* | Name and `host:port` of the first TV |
 | `tv2Label` / `tv2Address` | *(empty)* | Second TV, if you have one |
 | `tv3Label` / `tv3Address` | *(empty)* | Third TV |
+| `activeSlot` | `0` | Which slot the pad is driving. Written by the picker; you should not need to set it |
 | `tvAddress` | *(empty)* | Deprecated single-TV key, still read as `tv1Address` when that is unset. Empty everywhere = use the first connected adb device |
 | `pollSec` | `60` | How often to check reachability |
 | `app1Label` / `app1Package` | `APP1` | First shortcut button (e.g. `NFLX` / `com.netflix.ninja`) |

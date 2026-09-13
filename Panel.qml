@@ -40,15 +40,24 @@ Item {
     for (var i = 1; i <= 3; i++) {
       var addr = root.setting("tv" + i + "Address", i === 1 ? legacy : "")
       if (addr === "") continue
-      out.push({ addr: addr, label: root.setting("tv" + i + "Label", "TV " + i) })
+      out.push({ slot: i, addr: addr, label: root.setting("tv" + i + "Label", "TV " + i) })
     }
     return out
   }
 
-  // Which set the pad is driving. Runtime-only by choice: switching TV is a
-  // "for now" action, not a preference worth rewriting shell.json for.
-  property int activeTv: 0
-  readonly property string tvAddress: (tvs.length > activeTv) ? tvs[activeTv].addr : ""
+  // Which set the pad is driving, kept as the slot number rather than a
+  // position in `tvs`: positions shift the moment a set is removed, slots do
+  // not. Seeded from settings so the pad comes back where it was left; the
+  // binding is broken by the first switch, which then persists it explicitly.
+  property int activeSlot: parseInt(root.setting("activeSlot", 0), 10) || 0
+
+  // Falls back to the first configured set whenever the remembered slot is not
+  // there any more -- exactly what happens after removing the set you were on.
+  readonly property int activeIndex: {
+    for (var ai = 0; ai < tvs.length; ai++) if (tvs[ai].slot === activeSlot) return ai
+    return 0
+  }
+  readonly property string tvAddress: (tvs.length > activeIndex) ? tvs[activeIndex].addr : ""
 
   readonly property int padWidth: Style.space(38) * 3 + Style.space(6) * 2
 
@@ -169,27 +178,53 @@ Item {
     return 0
   }
 
-  function addTv(label, addr) {
-    var slot = root.freeSlot()
-    if (slot === 0) return false
+  // Writing one slot, used by both the add and the rename paths.
+  function writeTv(slot, label, addr) {
+    if (slot < 1 || slot > 3) return false
     var a = String(addr || "").trim()
     if (a === "") return false
     // A bare IP is what people read off the TV's own network screen; adb needs
-    // the port, so fill in the standard one rather than failing the add.
+    // the port, so fill in the standard one rather than failing the write.
     if (a.indexOf(":") === -1) a += ":5555"
     var name = String(label || "").trim()
     var patch = ({})
     patch["tv" + slot + "Address"] = a
     patch["tv" + slot + "Label"] = name === "" ? ("TV " + slot) : name
+    // Slot 1 can be fed by the deprecated tvAddress key. Once the tv1 pair is
+    // written it is dead weight, and leaving it means two sources of truth.
+    if (slot === 1) patch["tvAddress"] = ""
+    return root.persist(patch)
+  }
+
+  function addTv(label, addr) {
+    var slot = root.freeSlot()
+    return slot === 0 ? false : root.writeTv(slot, label, addr)
+  }
+
+  function removeTv(slot) {
+    if (slot < 1 || slot > 3) return false
+    var patch = ({})
+    patch["tv" + slot + "Label"] = ""
+    patch["tv" + slot + "Address"] = ""
+    // Clearing only the tv1 pair would let the deprecated key resurrect the set
+    // on the next reload, which reads as the removal silently not working.
+    if (slot === 1) patch["tvAddress"] = ""
+    if (slot === activeSlot) {
+      var next = 0
+      for (var i = 0; i < tvs.length; i++) if (tvs[i].slot !== slot) { next = tvs[i].slot; break }
+      activeSlot = next
+      patch["activeSlot"] = next
+    }
     return root.persist(patch)
   }
 
   function selectTv(i) {
-    if (i < 0 || i >= tvs.length || i === activeTv) return
-    activeTv = i
+    if (i < 0 || i >= tvs.length || tvs[i].slot === activeSlot) return
+    activeSlot = tvs[i].slot
+    root.persist({ activeSlot: activeSlot })
     reprobe()
   }
-  function cycleTv() { if (tvs.length > 1) selectTv((activeTv + 1) % tvs.length) }
+  function cycleTv() { if (tvs.length > 1) selectTv((activeIndex + 1) % tvs.length) }
 
   // Re-showing the prompt bounces the whole adb server, which drops the other
   // sets too -- so every state on screen is stale the moment it returns, and all
@@ -319,6 +354,68 @@ Item {
     }
   }
 
+  // A full-width, left-aligned line in the picker: reads as a menu entry
+  // rather than a key, which is what separates "+ Add TV" from the D-pad.
+  component Action: Rectangle {
+    id: ac
+    property string label: ""
+    property var onPress: null
+
+    width: root.padWidth
+    height: Style.space(24)
+    radius: Style.cornerRadius
+    color: acMa.pressed ? Color.popups.border
+         : acMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
+    Behavior on color { ColorAnimation { duration: 90 } }
+
+    Text {
+      anchors.left: parent.left
+      anchors.leftMargin: Style.space(6)
+      anchors.verticalCenter: parent.verticalCenter
+      width: parent.width - Style.space(12)
+      elide: Text.ElideRight
+      text: ac.label
+      color: root.bar ? root.bar.foreground : "white"
+      opacity: 0.72
+      font.family: root.bar ? root.bar.fontFamily : "monospace"
+      font.pixelSize: 10
+    }
+
+    MouseArea {
+      id: acMa
+      anchors.fill: parent
+      hoverEnabled: true
+      onClicked: if (ac.onPress) ac.onPress()
+    }
+  }
+
+  component FormButton: Rectangle {
+    id: fb
+    property string label: ""
+    property bool active: true
+    property var onPress: null
+
+    height: Style.space(24)
+    radius: Style.cornerRadius
+    opacity: fb.active ? 1.0 : 0.4
+    color: fbMa.containsMouse && fb.active ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.08)
+
+    Text {
+      anchors.centerIn: parent
+      text: fb.label
+      color: root.bar ? root.bar.foreground : "white"
+      font.family: root.bar ? root.bar.fontFamily : "monospace"
+      font.pixelSize: 9
+    }
+
+    MouseArea {
+      id: fbMa
+      anchors.fill: parent
+      hoverEnabled: true
+      onClicked: if (fb.active && fb.onPress) fb.onPress()
+    }
+  }
+
   // Same treatment as the type-at-the-TV field, minus the history handling.
   component Field: Rectangle {
     id: f
@@ -362,12 +459,13 @@ Item {
   // verdict from the last time the picker happened to be open.
   component TvRow: Rectangle {
     id: tr
-    property int slot: 0
+    property int idx: 0
+    property bool editMode: false
     property string trailing: ""
     property var onActivate: null
-    readonly property bool isActive: slot === root.activeTv
-    readonly property string st: (root.tvStates.length > slot && root.tvStates[slot] !== "")
-                                 ? root.tvStates[slot]
+    readonly property bool isActive: idx === root.activeIndex
+    readonly property string st: (root.tvStates.length > idx && root.tvStates[idx] !== "")
+                                 ? root.tvStates[idx]
                                  : (isActive ? root.state : "")
 
     width: root.padWidth
@@ -413,7 +511,7 @@ Item {
       Text {
         width: Math.max(0, tr.width - Style.space(6) * 3 - dot.width - rightGroup.width)
         elide: Text.ElideRight
-        text: root.tvs.length > tr.slot ? root.tvs[tr.slot].label : ""
+        text: root.tvs.length > tr.idx ? root.tvs[tr.idx].label : ""
         color: root.bar ? root.bar.foreground : "white"
         opacity: tr.isActive ? 1.0 : 0.72
         font.family: root.bar ? root.bar.fontFamily : "monospace"
@@ -450,14 +548,14 @@ Item {
           onEntered: if (root.bar && root.bar.showTooltip)
             root.bar.showTooltip(tr, "Re-show the USB-debugging prompt on this TV")
           onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(tr)
-          onClicked: root.reauth(tr.slot)
+          onClicked: root.reauth(tr.idx)
         }
       }
 
       // The AUTH button already says what the state is, and the row is only as
       // wide as the pad -- showing both squeezes the name down to "Hi…".
       Text {
-        visible: tr.st !== "unauth"
+        visible: tr.st !== "unauth" && !tr.editMode
         text: tr.st === "" ? "…" : tr.st
         color: root.bar ? root.bar.foreground : "white"
         opacity: 0.45
@@ -570,7 +668,7 @@ Item {
             font.family: root.bar ? root.bar.fontFamily : "monospace"
             font.pixelSize: 11
             selectByMouse: true
-            focus: root.opened && !picker.adding
+            focus: root.opened && !picker.formOpen
 
             Keys.onReturnPressed: entry.send()
             Keys.onEnterPressed: entry.send()
@@ -638,6 +736,10 @@ Item {
         id: picker
         property bool expanded: false
         property bool adding: false
+        // While on, clicking a row opens it for rename/remove instead of
+        // switching to it. A mode rather than per-row buttons because the pad
+        // is three keys wide and the rows already collide at that width.
+        property bool editing: false
         // Expandable when there is something to expand to: another set, or a
         // free slot to add one into.
         readonly property bool hasMore: root.tvs.length > 1 || root.freeSlot() !== 0
@@ -647,26 +749,54 @@ Item {
         // list is actually being looked at rather than on every poll tick.
         onExpandedChanged: if (expanded) root.reprobeAll()
 
+        // 0 while adding, otherwise the slot being renamed. The form is the
+        // same either way; only where it writes differs.
+        property int editSlot: 0
+        readonly property bool formOpen: adding || editSlot !== 0
+        // DELETE only exists when editing, and the row has to divide evenly.
+        readonly property int buttonCount: editSlot !== 0 ? 3 : 2
+        readonly property real buttonWidth:
+          (root.padWidth - Style.space(6) * (buttonCount - 1)) / buttonCount
+
         function startAdd() {
+          editSlot = 0
           nameField.text = ""
           addrField.text = ""
           adding = true
           nameField.focusMe()
         }
-        function cancelAdd() {
+        function startEdit(i) {
+          if (i < 0 || i >= root.tvs.length) return
           adding = false
+          nameField.text = root.tvs[i].label
+          addrField.text = root.tvs[i].addr
+          editSlot = root.tvs[i].slot
+          nameField.focusMe()
+        }
+        function closeForm() {
+          adding = false
+          editSlot = 0
           entry.forceActiveFocus()
         }
-        function commitAdd() {
-          if (!root.addTv(nameField.text, addrField.text)) return
-          adding = false
-          entry.forceActiveFocus()
+        function commitForm() {
+          var ok = editSlot !== 0
+            ? root.writeTv(editSlot, nameField.text, addrField.text)
+            : root.addTv(nameField.text, addrField.text)
+          if (!ok) return
+          closeForm()
+          Qt.callLater(root.reprobeAll)
+        }
+        function deleteForm() {
+          if (editSlot === 0) return
+          root.removeTv(editSlot)
+          closeForm()
+          editing = false
           Qt.callLater(root.reprobeAll)
         }
 
         TvRow {
           visible: !picker.expanded && root.tvs.length > 0
-          slot: root.activeTv
+          idx: root.activeIndex
           trailing: picker.hasMore ? "▸" : ""
           onActivate: function() { if (picker.hasMore) picker.expanded = true }
         }
@@ -674,104 +804,71 @@ Item {
         Repeater {
           model: picker.expanded ? root.tvs.length : 0
           TvRow {
-            slot: index
-            trailing: index === root.activeTv ? "▾" : ""
-            onActivate: function() { root.selectTv(index); picker.expanded = false }
+            idx: index
+            editMode: picker.editing
+            trailing: picker.editing ? "edit" : (index === root.activeIndex ? "▾" : "")
+            onActivate: function() {
+              if (picker.editing) { picker.startEdit(index); return }
+              root.selectTv(index)
+              picker.expanded = false
+            }
           }
         }
 
         // With no sets configured at all there is nothing to expand, so the add
         // row stands in for the picker entirely -- otherwise the only way to
         // get a first TV in would be to hand-edit shell.json.
-        Rectangle {
-          visible: !picker.adding && root.freeSlot() !== 0
+        Action {
+          visible: !picker.formOpen && root.freeSlot() !== 0
                    && (picker.expanded || root.tvs.length === 0)
-          width: root.padWidth
-          height: Style.space(24)
-          radius: Style.cornerRadius
-          color: addMa.pressed ? Color.popups.border
-               : addMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
-          Behavior on color { ColorAnimation { duration: 90 } }
+          label: "+ Add TV"
+          onPress: function() { picker.startAdd() }
+        }
 
-          Text {
-            anchors.left: parent.left
-            anchors.leftMargin: Style.space(6)
-            anchors.verticalCenter: parent.verticalCenter
-            text: "+ Add TV"
-            color: root.bar ? root.bar.foreground : "white"
-            opacity: 0.72
-            font.family: root.bar ? root.bar.fontFamily : "monospace"
-            font.pixelSize: 10
-          }
-
-          MouseArea {
-            id: addMa
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: picker.startAdd()
-          }
+        Action {
+          visible: !picker.formOpen && picker.expanded && root.tvs.length > 0
+          label: picker.editing ? "Done" : "Edit / remove"
+          onPress: function() { picker.editing = !picker.editing }
         }
 
         Field {
           id: nameField
-          visible: picker.adding
+          visible: picker.formOpen
           placeholder: "name (e.g. Bedroom)"
           Keys.onReturnPressed: addrField.focusMe()
           Keys.onEnterPressed: addrField.focusMe()
-          Keys.onEscapePressed: picker.cancelAdd()
+          Keys.onEscapePressed: picker.closeForm()
         }
         Field {
           id: addrField
-          visible: picker.adding
+          visible: picker.formOpen
           placeholder: "192.168.1.50  (:5555 assumed)"
-          Keys.onReturnPressed: picker.commitAdd()
-          Keys.onEnterPressed: picker.commitAdd()
-          Keys.onEscapePressed: picker.cancelAdd()
+          Keys.onReturnPressed: picker.commitForm()
+          Keys.onEnterPressed: picker.commitForm()
+          Keys.onEscapePressed: picker.closeForm()
         }
         Row {
-          visible: picker.adding
+          visible: picker.formOpen
           spacing: Style.space(6)
 
-          Rectangle {
-            width: (root.padWidth - Style.space(6)) / 2
-            height: Style.space(24)
-            radius: Style.cornerRadius
-            // Nothing to save without an address, and saying so by going flat
-            // beats writing a half-configured set into shell.json.
-            opacity: addrField.text.trim() === "" ? 0.4 : 1.0
-            color: saveMa.containsMouse ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.08)
-            Text {
-              anchors.centerIn: parent
-              text: "SAVE"
-              color: root.bar ? root.bar.foreground : "white"
-              font.family: root.bar ? root.bar.fontFamily : "monospace"
-              font.pixelSize: 9
-            }
-            MouseArea {
-              id: saveMa
-              anchors.fill: parent
-              hoverEnabled: true
-              onClicked: picker.commitAdd()
-            }
+          FormButton {
+            width: picker.buttonWidth
+            label: "SAVE"
+            // Nothing to save without an address, and going flat says so more
+            // clearly than writing a half-configured set into shell.json.
+            active: addrField.text.trim() !== ""
+            onPress: function() { picker.commitForm() }
           }
-          Rectangle {
-            width: (root.padWidth - Style.space(6)) / 2
-            height: Style.space(24)
-            radius: Style.cornerRadius
-            color: cancelMa.containsMouse ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.08)
-            Text {
-              anchors.centerIn: parent
-              text: "CANCEL"
-              color: root.bar ? root.bar.foreground : "white"
-              font.family: root.bar ? root.bar.fontFamily : "monospace"
-              font.pixelSize: 9
-            }
-            MouseArea {
-              id: cancelMa
-              anchors.fill: parent
-              hoverEnabled: true
-              onClicked: picker.cancelAdd()
-            }
+          FormButton {
+            visible: picker.editSlot !== 0
+            width: picker.buttonWidth
+            label: "DELETE"
+            onPress: function() { picker.deleteForm() }
+          }
+          FormButton {
+            width: picker.buttonWidth
+            label: "CANCEL"
+            onPress: function() { picker.closeForm() }
           }
         }
       }
