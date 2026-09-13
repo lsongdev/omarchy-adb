@@ -22,8 +22,8 @@ Rectangle {
   height: Style.space(24)
   radius: Style.cornerRadius
   color: trMa.pressed ? Color.popups.border
-       : trMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10)
-       : tr.isActive ? Qt.rgba(1, 1, 1, 0.06)
+       : trMa.containsMouse ? panel.surfaceHover
+       : tr.isActive ? panel.surfaceRaised
        : "transparent"
   Behavior on color { ColorAnimation { duration: 90 } }
 
@@ -46,9 +46,9 @@ Rectangle {
     Text {
       id: dot
       text: tr.st === "up" ? "●" : "○"
-      color: tr.st === "up" ? "#98c379"
-           : tr.st === "unauth" ? "#e5c07b"
-           : tr.st === "noadb" ? (panel.bar && panel.bar.urgent ? panel.bar.urgent : "#e06c75")
+      color: tr.st === "up" ? panel.okColour
+           : tr.st === "unauth" ? panel.warnColour
+           : tr.st === "noadb" ? panel.badColour
            : (panel.bar ? panel.bar.foreground : "white")
       opacity: tr.st === "up" ? 1.0 : 0.55
       font.family: panel.bar ? panel.bar.fontFamily : "monospace"
@@ -83,7 +83,7 @@ Rectangle {
       width: Style.space(30)
       height: Style.space(18)
       radius: Style.cornerRadius
-      color: authMa.containsMouse ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(1, 1, 1, 0.08)
+      color: authMa.containsMouse ? panel.surfaceButtonHover : panel.surfaceButton
       Text {
         anchors.centerIn: parent
         text: "AUTH"

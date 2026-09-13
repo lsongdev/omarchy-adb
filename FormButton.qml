@@ -13,7 +13,7 @@ Rectangle {
   height: Style.space(24)
   radius: Style.cornerRadius
   opacity: fb.active ? 1.0 : 0.4
-  color: fbMa.containsMouse && fb.active ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.08)
+  color: fbMa.containsMouse && fb.active ? panel.surfaceButtonHover : panel.surfaceButton
 
   Text {
     anchors.centerIn: parent

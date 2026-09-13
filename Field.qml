@@ -29,7 +29,7 @@ FocusScope {
   Rectangle {
     anchors.fill: parent
     radius: Style.cornerRadius
-    color: Qt.rgba(1, 1, 1, 0.06)
+    color: panel.surfaceRaised
     border.width: fi.activeFocus ? 1 : 0
     border.color: panel.bar ? panel.bar.foreground : "white"
 

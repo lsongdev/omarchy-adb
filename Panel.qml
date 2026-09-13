@@ -58,6 +58,21 @@ Item {
   }
   readonly property string tvAddress: (tvs.length > activeIndex) ? tvs[activeIndex].addr : ""
 
+  // The pad's surfaces and status colours, named once. Every component file
+  // draws with these, and a literal repeated across five files is one that
+  // drifts the first time somebody adjusts it -- the AUTH button had already
+  // ended up a shade brighter on hover than every other button.
+  readonly property color surfaceIdle:        Qt.rgba(1, 1, 1, 0.04)
+  readonly property color surfaceRaised:      Qt.rgba(1, 1, 1, 0.06)
+  readonly property color surfaceButton:      Qt.rgba(1, 1, 1, 0.08)
+  readonly property color surfaceHover:       Qt.rgba(1, 1, 1, 0.10)
+  readonly property color surfaceButtonHover: Qt.rgba(1, 1, 1, 0.16)
+
+  readonly property color okColour:   "#98c379"
+  readonly property color warnColour: "#e5c07b"
+  // Urgent is themed; the literal is only the fallback when the bar has no bar.
+  readonly property color badColour:  bar && bar.urgent ? bar.urgent : "#e06c75"
+
   readonly property int padWidth: Style.space(38) * 3 + Style.space(6) * 2
 
   function setting(key, fallback) {
@@ -322,7 +337,7 @@ Item {
     text: "󰠹"
     // Colour, not just opacity: a dimmed icon on a dark bar is easy to miss.
     color: root.online ? (root.bar ? root.bar.foreground : "white")
-                       : (root.bar && root.bar.urgent ? root.bar.urgent : "#e06c75")
+                       : root.badColour
     opacity: root.online ? (root.opened ? 1.0 : 0.85) : 0.9
     font.family: root.bar ? root.bar.fontFamily : "monospace"
     font.pixelSize: 14
@@ -391,9 +406,9 @@ Item {
     border.width: k.marked ? 1 : 0
     border.color: root.bar ? root.bar.foreground : "white"
     color: ma.pressed ? Color.popups.border
-         : ma.containsMouse ? Qt.rgba(1, 1, 1, 0.10)
-         : k.marked ? Qt.rgba(1, 1, 1, 0.10)
-         : Qt.rgba(1, 1, 1, 0.04)
+         : ma.containsMouse ? root.surfaceHover
+         : k.marked ? root.surfaceHover
+         : root.surfaceIdle
     Behavior on color { ColorAnimation { duration: 90 } }
 
     Text {
@@ -535,7 +550,7 @@ Item {
           width: Style.space(38) * 2 + Style.space(6)
           height: Style.space(34)
           radius: Style.cornerRadius
-          color: Qt.rgba(1, 1, 1, 0.06)
+          color: root.surfaceRaised
           border.width: entry.activeFocus ? 1 : 0
           border.color: root.bar ? root.bar.foreground : "white"
 

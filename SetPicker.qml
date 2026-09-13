@@ -290,8 +290,8 @@ Column {
       height: Style.space(22)
       radius: Style.cornerRadius
       color: appMa.pressed ? Color.popups.border
-           : appMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10)
-           : modelData === picker.appPkg ? Qt.rgba(1, 1, 1, 0.06)
+           : appMa.containsMouse ? panel.surfaceHover
+           : modelData === picker.appPkg ? panel.surfaceRaised
            : "transparent"
 
       Text {

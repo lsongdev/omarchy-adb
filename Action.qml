@@ -16,7 +16,7 @@ Rectangle {
   height: Style.space(24)
   radius: Style.cornerRadius
   color: acMa.pressed ? Color.popups.border
-       : acMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
+       : acMa.containsMouse ? panel.surfaceHover : "transparent"
   Behavior on color { ColorAnimation { duration: 90 } }
 
   Text {
