@@ -85,13 +85,6 @@ so the first reachability probe runs with an empty address and falls back to "fi
 connected device". `onTvAddressChanged` re-probes; without it the widget reports `up` for a
 TV it is not addressing.
 
-**Never commit a personal identifier — including in commit metadata.** Checking file
-contents is not enough: `git config user.email` has leaked a real name and address into an
-author field here before. This repo carries its own `user.name` / `user.email`, but a fresh
-clone does not inherit them and falls back to the global identity silently, so set them
-before the first commit. Verify with `git log --format='%an <%ae>' | sort -u` before
-pushing, and check screenshots for desktop content before adding them to `docs/`.
-
 ## TV-side behaviour worth knowing
 
 - **`KEYCODE_TV_INPUT` is a no-op on Hisense.** Its source panel (`com.hisense.mixbar`,
