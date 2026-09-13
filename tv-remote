@@ -31,13 +31,19 @@ if [ -z "$TV" ]; then
   [ -n "$TV" ] || { [ "${1-}" = "status" ] && { echo down; exit 0; }; echo "no TV address set (TV_ADB_ADDR)" >&2; exit 1; }
 fi
 
-connected() { adb devices 2>/dev/null | grep -q "^${TV}[[:space:]]*device$"; }
+# awk with a string compare rather than grep with an interpolated pattern: an
+# address is full of dots, and in a regex each one matches any character.
+connected() {
+  adb devices 2>/dev/null | awk -v t="$TV" '$1 == t && $2 == "device" { hit = 1 } END { exit !hit }'
+}
 
 # A device that answered but whose debugging prompt was dismissed (or was never
 # accepted) sits in "unauthorized" indefinitely. That needs a human to tap Allow,
 # not another reconnect, so it gets its own state instead of being flattened
 # into "down" where the widget cannot tell the two apart.
-unauthorized() { adb devices 2>/dev/null | grep -q "^${TV}[[:space:]]*unauthorized$"; }
+unauthorized() {
+  adb devices 2>/dev/null | awk -v t="$TV" '$1 == t && $2 == "unauthorized" { hit = 1 } END { exit !hit }'
+}
 
 ensure() {
   connected && return 0
@@ -76,6 +82,8 @@ case "${1:-}" in
   clear)
     need
     n=${2:-24}
+    case "$n" in (''|*[!0-9]*) n=24 ;; esac
+    [ "$n" -gt 200 ] && n=200
     # One adb round-trip rather than n of them.
     seq=""; i=0
     while [ "$i" -lt "$n" ]; do seq="$seq KEYCODE_DEL"; i=$((i+1)); done
@@ -104,7 +112,7 @@ case "${1:-}" in
     # The device has no display names to offer -- PackageManager exposes labels
     # to apps, not to `cmd package` -- so this returns package names only and the
     # widget derives something readable from them.
-    ensure || { echo "tv unreachable" >&2; exit 1; }
+    need
     adb -s "$TV" shell "cmd package query-activities --brief \
       -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER" 2>/dev/null \
       | tr -d '\r' \

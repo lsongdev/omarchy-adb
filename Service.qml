@@ -18,6 +18,12 @@ Item {
   property var addresses: []
   property int pollSec: 60
 
+  // The manifest declares a minimum of 10, but nothing enforces it: shell.json
+  // is hand-editable and no settings UI renders that schema. A zero or a
+  // negative would leave the Timer below firing on every event loop iteration,
+  // spawning a probe as fast as the previous one finishes.
+  readonly property int pollInterval: Math.max(10, pollSec) * 1000
+
   readonly property string shim: String(Qt.resolvedUrl("tv-remote")).replace(/^file:\/\//, "")
 
   // "up" | "down" | "unauth" | "noadb", for the active set.
@@ -49,7 +55,7 @@ Item {
 
   Timer {
     id: pollTimer
-    interval: svc.pollSec * 1000
+    interval: svc.pollInterval
     running: true; repeat: true; triggeredOnStart: true
     onTriggered: svc.reprobe()
   }
