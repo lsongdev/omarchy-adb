@@ -100,6 +100,13 @@ TV submit after roughly the first character. Anything ordered must be one shim i
 in the shell. Use `Util.shellQuote` from `qs.Commons`. Always quote anything reaching a
 shell — user-typed text reaches two of them (local bash, then the device shell).
 
+**`bar.showTooltip` does nothing from inside the pad.** The bar's tooltip window is
+gated on `targetBelongsToWindow(target, barWindow)` (see `Bar.qml`), and the pad is its
+own layer-shell window, so the call is accepted and silently draws nothing. Every `tip:`
+on a pad button was dead for months before this was noticed. The pad shows hover text on
+its own hint line instead, via `setHint()` / `clearHint()`. Only the bar icon itself, which
+really is in the bar window, can use `bar.showTooltip`.
+
 **The text field must not hold focus by default.** The pad is modal: `keyCatcher`
 owns the keyboard in control mode so single letters can be remote keys, and `entry` only
 takes it while `root.typing`. Binding `focus:` on the field instead means every control

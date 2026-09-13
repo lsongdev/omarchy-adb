@@ -321,6 +321,39 @@ Item {
   // apps, not to `cmd package` -- so derive something readable: drop the
   // segments nearly every package carries and keep the longest of the rest,
   // which is usually the brand. Only ever a suggestion; the label is editable.
+  // Several bindings have no button to hover -- menu, fast-forward, previous and
+  // next, wake, switching sets -- so the list has to exist somewhere whole.
+  readonly property var keyHelp: [
+    "Arrows or WASD  D-pad",
+    "Enter  OK",
+    "B or Bksp  Back",
+    "H  Home",
+    "M  Menu",
+    "I  Inputs",
+    "C  Clear field",
+    "P  Play / pause",
+    "R / F  Rew / fwd",
+    "[ / ]  Prev / next",
+    "- / =  Volume",
+    "X  Mute",
+    "Shift+W  Wake",
+    "Shift+S  Power",
+    "1 2 3  App shortcuts",
+    "T or /  Type at TV",
+    "Tab  Next TV",
+    "Alt+1/2/3  Jump to TV",
+    "Esc or Q  Close"
+  ]
+
+  // The bar's tooltip PopupWindow only draws when the hovered target belongs to
+  // the bar window (targetBelongsToWindow in Bar.qml), and the pad is its own
+  // layer-shell window -- so every bar.showTooltip call from in here was a
+  // no-op. The pad carries its own hint line instead, which has the side
+  // benefit of fitting a narrow column better than a floating bubble.
+  property string hoverHint: ""
+  function setHint(t) { if (t !== "") hoverHint = t }
+  function clearHint(t) { if (hoverHint === t) hoverHint = "" }
+
   function appName(pkg) {
     var noise = ["com", "org", "net", "tv", "android", "google", "app", "apps",
                  "stable", "livingroom", "one", "main", "mobile"]
@@ -455,6 +488,11 @@ Item {
     // the shortcut buttons configure rather than launch in edit mode, and
     // nothing else on them would show that.
     property bool marked: false
+    // Appended to the tooltip so the pad teaches its own key bindings: hovering
+    // a button is the obvious place to ask "what key is this?".
+    property string keyHint: ""
+    readonly property string hintText: tip === "" ? ""
+      : (keyHint === "" ? tip : tip + "  [" + keyHint + "]")
 
     implicitWidth: Style.space(38)
     implicitHeight: Style.space(34)
@@ -479,8 +517,8 @@ Item {
       id: ma
       anchors.fill: parent
       hoverEnabled: true
-      onEntered: if (k.tip !== "" && root.bar && root.bar.showTooltip) root.bar.showTooltip(k, k.tip)
-      onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(k)
+      onEntered: root.setHint(k.hintText)
+      onExited: root.clearHint(k.hintText)
       onClicked: if (k.onPress) k.onPress()
     }
   }
@@ -490,6 +528,7 @@ Item {
   component Action: Rectangle {
     id: ac
     property string label: ""
+    property string tip: ""
     property var onPress: null
 
     width: root.padWidth
@@ -516,6 +555,8 @@ Item {
       id: acMa
       anchors.fill: parent
       hoverEnabled: true
+      onEntered: root.setHint(ac.tip)
+      onExited: root.clearHint(ac.tip)
       onClicked: if (ac.onPress) ac.onPress()
     }
   }
@@ -676,9 +717,8 @@ Item {
           id: authMa
           anchors.fill: parent
           hoverEnabled: true
-          onEntered: if (root.bar && root.bar.showTooltip)
-            root.bar.showTooltip(tr, "Re-show the USB-debugging prompt on this TV")
-          onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(tr)
+          onEntered: root.setHint("Re-show the USB-debugging prompt on this TV")
+          onExited: root.clearHint("Re-show the USB-debugging prompt on this TV")
           onClicked: root.reauth(tr.idx)
         }
       }
@@ -735,47 +775,48 @@ Item {
 
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰐥"; tip: "Power";  onPress: function() { root.key("KEYCODE_POWER") } }
-        Key { label: "INPT"; tip: "Inputs"; onPress: function() { root.sh("inputs") } }
-        Key { glyph: "󰋜"; tip: "Home";   onPress: function() { root.key("KEYCODE_HOME") } }
+        Key { glyph: "󰐥"; tip: "Power"; keyHint: "Shift+S";  onPress: function() { root.key("KEYCODE_POWER") } }
+        Key { label: "INPT"; tip: "Inputs"; keyHint: "I"; onPress: function() { root.sh("inputs") } }
+        Key { glyph: "󰋜"; tip: "Home"; keyHint: "H";   onPress: function() { root.key("KEYCODE_HOME") } }
       }
 
       Row {
         spacing: Style.space(6)
         Item { width: Style.space(38); height: Style.space(34) }
-        Key { glyph: "󰁝"; tip: "Up"; onPress: function() { root.key("KEYCODE_DPAD_UP") } }
+        Key { glyph: "󰁝"; tip: "Up"; keyHint: "W or Up"; onPress: function() { root.key("KEYCODE_DPAD_UP") } }
         Item { width: Style.space(38); height: Style.space(34) }
       }
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰁍"; tip: "Left"; onPress: function() { root.key("KEYCODE_DPAD_LEFT") } }
-        Key { label: "OK"; tip: "Select"; onPress: function() { root.key("KEYCODE_DPAD_CENTER") } }
-        Key { glyph: "󰁔"; tip: "Right"; onPress: function() { root.key("KEYCODE_DPAD_RIGHT") } }
+        Key { glyph: "󰁍"; tip: "Left"; keyHint: "A or Left"; onPress: function() { root.key("KEYCODE_DPAD_LEFT") } }
+        Key { label: "OK"; tip: "Select"; keyHint: "Enter"; onPress: function() { root.key("KEYCODE_DPAD_CENTER") } }
+        Key { glyph: "󰁔"; tip: "Right"; keyHint: "D or Right"; onPress: function() { root.key("KEYCODE_DPAD_RIGHT") } }
       }
       Row {
         spacing: Style.space(6)
         Item { width: Style.space(38); height: Style.space(34) }
-        Key { glyph: "󰁅"; tip: "Down"; onPress: function() { root.key("KEYCODE_DPAD_DOWN") } }
+        Key { glyph: "󰁅"; tip: "Down"; keyHint: "S or Down"; onPress: function() { root.key("KEYCODE_DPAD_DOWN") } }
         Item { width: Style.space(38); height: Style.space(34) }
       }
 
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰁮"; tip: "Back"; onPress: function() { root.key("KEYCODE_BACK") } }
-        Key { glyph: "󰕿"; tip: "Volume down"; onPress: function() { root.key("KEYCODE_VOLUME_DOWN") } }
-        Key { glyph: "󰕾"; tip: "Volume up"; onPress: function() { root.key("KEYCODE_VOLUME_UP") } }
+        Key { glyph: "󰁮"; tip: "Back"; keyHint: "B or Backspace"; onPress: function() { root.key("KEYCODE_BACK") } }
+        Key { glyph: "󰕿"; tip: "Volume down"; keyHint: "-"; onPress: function() { root.key("KEYCODE_VOLUME_DOWN") } }
+        Key { glyph: "󰕾"; tip: "Volume up"; keyHint: "="; onPress: function() { root.key("KEYCODE_VOLUME_UP") } }
       }
       Row {
         spacing: Style.space(6)
-        Key { glyph: "󰝟"; tip: "Mute"; onPress: function() { root.key("KEYCODE_VOLUME_MUTE") } }
-        Key { glyph: "󰐊"; tip: "Play/Pause"; onPress: function() { root.key("KEYCODE_MEDIA_PLAY_PAUSE") } }
-        Key { glyph: "󰒫"; tip: "Rewind"; onPress: function() { root.key("KEYCODE_MEDIA_REWIND") } }
+        Key { glyph: "󰝟"; tip: "Mute"; keyHint: "X"; onPress: function() { root.key("KEYCODE_VOLUME_MUTE") } }
+        Key { glyph: "󰐊"; tip: "Play/Pause"; keyHint: "P"; onPress: function() { root.key("KEYCODE_MEDIA_PLAY_PAUSE") } }
+        Key { glyph: "󰒫"; tip: "Rewind"; keyHint: "R"; onPress: function() { root.key("KEYCODE_MEDIA_REWIND") } }
       }
 
       Row {
         spacing: Style.space(6)
         Key {
           label: root.setting("app1Label", "NFLX")
+          keyHint: "1"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.setting("app1Package", "")
@@ -786,6 +827,7 @@ Item {
         }
         Key {
           label: root.setting("app2Label", "TUBE")
+          keyHint: "2"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.setting("app2Package", "")
@@ -796,6 +838,7 @@ Item {
         }
         Key {
           label: root.setting("app3Label", "SPFY")
+          keyHint: "3"
           marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.setting("app3Package", "")
@@ -875,7 +918,7 @@ Item {
           }
         }
 
-        Key { label: "CLR"; tip: "Clear the field on the TV"; onPress: function() { root.sh("clear") } }
+        Key { label: "CLR"; tip: "Clear the field on the TV"; keyHint: "C"; onPress: function() { root.sh("clear") } }
       }
 
       // ---- which set the pad is driving ---------------------------------
@@ -890,6 +933,7 @@ Item {
         // switching to it. A mode rather than per-row buttons because the pad
         // is three keys wide and the rows already collide at that width.
         property bool editing: false
+        property bool showKeys: false
         // Expandable when there is something to expand to: another set, or a
         // free slot to add one into.
         readonly property bool hasMore: root.tvs.length > 1 || root.freeSlot() !== 0
@@ -1009,6 +1053,40 @@ Item {
           onPress: function() { picker.editing = !picker.editing }
         }
 
+        // Hover-only: there is nothing to click, it is just where the bindings
+        // that have no button of their own are written down.
+        Action {
+          visible: !picker.formOpen && picker.expanded
+          label: picker.showKeys ? "Hide shortcuts" : "Keyboard shortcuts"
+          tip: picker.showKeys ? "Hide the list" : "Show every key"
+          onPress: function() { picker.showKeys = !picker.showKeys }
+        }
+
+        ListView {
+          visible: picker.showKeys && picker.expanded && !picker.formOpen
+          width: root.padWidth
+          height: Style.space(120)
+          clip: true
+          model: root.keyHelp
+          boundsBehavior: Flickable.StopAtBounds
+          // Reopening kept whatever scroll position it was left at, which shows
+          // the list starting halfway down its own contents.
+          onVisibleChanged: if (visible) positionViewAtBeginning()
+
+          delegate: Text {
+            width: root.padWidth
+            height: Style.space(16)
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: Style.space(6)
+            elide: Text.ElideRight
+            text: modelData
+            color: root.bar ? root.bar.foreground : "white"
+            opacity: 0.72
+            font.family: root.bar ? root.bar.fontFamily : "monospace"
+            font.pixelSize: 9
+          }
+        }
+
         Field {
           id: nameField
           visible: picker.tvFormOpen
@@ -1110,9 +1188,8 @@ Item {
               anchors.fill: parent
               hoverEnabled: true
               // The derived name is a guess, so the real package is one hover away.
-              onEntered: if (root.bar && root.bar.showTooltip)
-                root.bar.showTooltip(parent, modelData)
-              onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(parent)
+              onEntered: root.setHint(modelData)
+              onExited: root.clearHint(modelData)
               onClicked: {
                 picker.appPkg = modelData
                 if (appLabelField.text.trim() === "")
@@ -1138,6 +1215,20 @@ Item {
             onPress: function() { picker.closeAppForm() }
           }
         }
+      }
+
+      // Whatever the pointer is on, and the key that does the same thing.
+      // Fixed height, so hovering never makes the pad jump about.
+      Text {
+        width: root.padWidth
+        height: Style.space(14)
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+        text: root.hoverHint
+        color: root.bar ? root.bar.foreground : "white"
+        opacity: 0.55
+        font.family: root.bar ? root.bar.fontFamily : "monospace"
+        font.pixelSize: 9
       }
     }
   }
