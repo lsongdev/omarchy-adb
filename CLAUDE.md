@@ -12,6 +12,43 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
 The widget shells out to the script; the script owns all ADB. That split keeps the remote
 usable from a terminal without the shell running, and makes the ADB half testable alone.
 
+## Setup
+
+Needs omarchy with the Quickshell shell (`omarchy-shell`) and `adb`
+(`pacman -S android-tools`). The TV needs **Developer options -> USB/Wireless debugging**
+switched on and has to be reachable on the network.
+
+```sh
+omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable
+```
+
+`--enable` is what puts the widget into the bar layout in `shell.json`; without it the
+plugin is installed but nothing appears. The installed directory
+(`~/.config/omarchy/plugins/atv.remote`) is itself a git checkout, so
+`omarchy plugin update atv.remote` pulls new commits straight into the running plugin.
+
+Add a TV from the pad rather than by hand: open it, click the picker along the foot, then
+**+ Add TV**. It writes the `tv1Label` / `tv1Address` pair into the widget's `shell.json`
+entry, appending `:5555` to a bare IP. The TV shows **"Allow USB debugging?"** on the first
+connection -- accept it and tick "Always allow from this computer", or the set sits in
+`unauth` and the picker offers an **AUTH** button to put the prompt back.
+
+Confirm the shim can reach it before touching anything else, since every other symptom
+looks the same when it cannot:
+
+```sh
+TV_ADB_ADDR=<host:port> ~/.config/omarchy/plugins/atv.remote/tv-remote status   # want: up
+```
+
+### Working from a clone instead
+
+Editing the installed checkout directly is the shortest loop. Working in a clone elsewhere
+is fine, but the files still have to reach `~/.config/omarchy/plugins/atv.remote` to run at
+all -- and copying over that directory leaves it dirty, at which point
+`omarchy plugin update` refuses to fast-forward and reports "local changes" even though
+nothing was edited there. Push first, `git checkout -- .` in the installed copy, then
+update. Otherwise the two drift and it is not obvious which one the bar is running.
+
 ## Commands
 
 ```sh
