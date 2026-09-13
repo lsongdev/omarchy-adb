@@ -109,7 +109,7 @@ Item {
   readonly property int listRowHeight: Style.space(22)  // a row of the app list
   readonly property int helpRowHeight: Style.space(16)  // a line of the shortcut list
   readonly property int fieldHeight:   Style.space(26)  // a text field
-  readonly property int hintHeight:    Style.space(14)  // the hover line along the foot
+  readonly property int hintHeight:    Style.space(26)  // the hover text along the foot, two lines
 
   readonly property int badgeWidth:  Style.space(30)   // the AUTH button on a row
   readonly property int badgeHeight: Style.space(18)
@@ -464,7 +464,7 @@ Item {
             marked: picker.editing
             unset: !picker.editing && pkg === ""
             tip: picker.editing ? "Choose the app for this button"
-               : pkg === "" ? "Nothing set yet. Use Edit / remove to pick an app"
+               : pkg === "" ? "Not set. Edit / remove picks an app"
                : root.appNiceName(pkg)
             onPress: function() {
               if (picker.editing) { picker.startAppEdit(slot); return }
@@ -536,12 +536,18 @@ Item {
       }
 
       // Whatever the pointer is on, and the key that does the same thing.
-      // Fixed height, so hovering never makes the pad jump about.
+      // Fixed height, so hovering never makes the pad jump about. The pad is
+      // only about twenty characters wide and a hint with its key in brackets
+      // is often more, so the text wraps onto a second line rather than being
+      // cut short with an ellipsis. Anywhere-wrapping is for package names,
+      // which have no spaces to break at.
       PadText {
         panel: root
         width: root.padWidth
         height: root.hintHeight
         verticalAlignment: Text.AlignVCenter
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        maximumLineCount: 2
         elide: Text.ElideRight
         text: root.hoverHint
         opacity: 0.55
