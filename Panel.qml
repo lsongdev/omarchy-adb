@@ -162,7 +162,30 @@ Item {
   Process {
     id: reauthProc
     command: ["bash", "-c", "true"]
-    onExited: { root.reprobe(); root.reprobeAll() }
+    onExited: authWatch.ticksLeft = 20
+  }
+
+  // Accepting the prompt happens on the TV, seconds after reauth has already
+  // exited -- so probing once on exit just re-reads "unauth", and the poll timer
+  // is a minute wide. Without this the row sits on a stale state until something
+  // else forces a probe (reopening the pad, which is how this got noticed).
+  // Watch briefly and often instead, and stop the moment it takes.
+  Timer {
+    id: authWatch
+    property int ticksLeft: 0
+    interval: 2000
+    repeat: true
+    running: ticksLeft > 0
+    onTriggered: {
+      ticksLeft -= 1
+      root.reprobe()
+      // Only the active set is worth probing this often; the others are stale
+      // from the server bounce too, so they get one sweep once this settles.
+      if (root.state === "up" || ticksLeft === 0) {
+        ticksLeft = 0
+        root.reprobeAll()
+      }
+    }
   }
   function reauth(i) {
     if (reauthProc.running || i < 0 || i >= tvs.length) return
@@ -293,12 +316,14 @@ Item {
     }
 
     Row {
+      id: leftGroup
       anchors.left: parent.left
       anchors.leftMargin: Style.space(6)
       anchors.verticalCenter: parent.verticalCenter
       spacing: Style.space(6)
 
       Text {
+        id: dot
         text: tr.st === "up" ? "●" : "○"
         color: tr.st === "up" ? "#98c379"
              : tr.st === "unauth" ? "#e5c07b"
@@ -308,7 +333,13 @@ Item {
         font.family: root.bar ? root.bar.fontFamily : "monospace"
         font.pixelSize: 10
       }
+      // Both groups are anchored to their own edge, so nothing stops a long
+      // name running under the right-hand one -- and the right-hand one grows
+      // when AUTH appears. Hand the name whatever is left over and let it
+      // elide, rather than letting the two collide in the unauth state.
       Text {
+        width: Math.max(0, tr.width - Style.space(6) * 3 - dot.width - rightGroup.width)
+        elide: Text.ElideRight
         text: root.tvs.length > tr.slot ? root.tvs[tr.slot].label : ""
         color: root.bar ? root.bar.foreground : "white"
         opacity: tr.isActive ? 1.0 : 0.72
@@ -318,6 +349,7 @@ Item {
     }
 
     Row {
+      id: rightGroup
       anchors.right: parent.right
       anchors.rightMargin: Style.space(6)
       anchors.verticalCenter: parent.verticalCenter
@@ -349,7 +381,10 @@ Item {
         }
       }
 
+      // The AUTH button already says what the state is, and the row is only as
+      // wide as the pad -- showing both squeezes the name down to "Hi…".
       Text {
+        visible: tr.st !== "unauth"
         text: tr.st === "" ? "…" : tr.st
         color: root.bar ? root.bar.foreground : "white"
         opacity: 0.45
