@@ -61,10 +61,11 @@ could be a control.
 |---|---|
 | Arrows or `W` `A` `S` `D` | D-pad |
 | `Enter` | Select / OK |
-| `B` | Back |
+| `B` or `Backspace` | Back |
 | `H` | Home |
 | `M` | Menu |
 | `I` | Input / source picker |
+| `C` | Clear the field on the TV |
 | `P` | Play / pause |
 | `R` / `F` | Rewind / fast-forward |
 | `[` / `]` | Previous / next |

@@ -146,7 +146,7 @@ Item {
       case Qt.Key_Right: case Qt.Key_D: key("KEYCODE_DPAD_RIGHT");  return true
       case Qt.Key_Return: case Qt.Key_Enter: key("KEYCODE_DPAD_CENTER"); return true
 
-      case Qt.Key_B: key("KEYCODE_BACK");  return true
+      case Qt.Key_B: case Qt.Key_Backspace: key("KEYCODE_BACK"); return true
       case Qt.Key_H: key("KEYCODE_HOME");  return true
       case Qt.Key_M: key("KEYCODE_MENU");  return true
 
@@ -161,6 +161,7 @@ Item {
       case Qt.Key_X:     key("KEYCODE_VOLUME_MUTE"); return true
 
       case Qt.Key_I: sh("inputs"); return true
+      case Qt.Key_C: sh("clear");  return true
 
       case Qt.Key_1: sh("app " + Util.shellQuote(setting("app1Package", ""))); return true
       case Qt.Key_2: sh("app " + Util.shellQuote(setting("app2Package", ""))); return true
