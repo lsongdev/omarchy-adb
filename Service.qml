@@ -26,7 +26,12 @@ Item {
 
   readonly property string shim: String(Qt.resolvedUrl("tv-remote")).replace(/^file:\/\//, "")
 
-  // "up" | "down" | "unauth" | "noadb", for the active set.
+  // What the shim can report. Anything else is ignored rather than stored, so a
+  // state added to the shim before the widget knows how to draw it cannot leave
+  // the pad showing something it has no UI for.
+  readonly property var validStates: ["up", "down", "unauth", "noadb"]
+
+  // One of validStates, for the active set.
   property string state: "up"
   property var states: []
 
@@ -48,7 +53,7 @@ Item {
     stdout: SplitParser {
       onRead: function(line) {
         var v = String(line).trim()
-        if (v === "up" || v === "down" || v === "unauth" || v === "noadb") svc.state = v
+        if (svc.validStates.indexOf(v) !== -1) svc.state = v
       }
     }
   }
