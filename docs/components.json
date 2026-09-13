@@ -1,0 +1,557 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Android TV Remote: the QML files",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1240,
+      700
+    ],
+    "repository": {
+      "url": "https://github.com/swey-l1/omarchy-android-tv-remote",
+      "provider": "github",
+      "link_mode": "local-only",
+      "revision": "8ca3315f88162e16c5161352b7334aa1e22575cc"
+    },
+    "views": [
+      {
+        "id": "model",
+        "label": "Panel and its model",
+        "focus": [
+          "theme",
+          "panel",
+          "config",
+          "service",
+          "bindings"
+        ],
+        "note": "Panel is a Theme and fronts Config, Service and Bindings; the components read all of it as panel.x."
+      },
+      {
+        "id": "pad",
+        "label": "The pad",
+        "focus": [
+          "pad",
+          "padkey",
+          "typefield",
+          "setpicker"
+        ],
+        "note": "Pad owns focus: keys land on its key catcher, or on the entry, or are forwarded to the open form."
+      },
+      {
+        "id": "picker",
+        "label": "The picker",
+        "focus": [
+          "setpicker",
+          "tvrow",
+          "action",
+          "tvform",
+          "appchooser"
+        ],
+        "note": "One row per set, three action rows, and whichever of the two forms is open."
+      },
+      {
+        "id": "primitives",
+        "label": "The primitives",
+        "focus": [
+          "field",
+          "typefield",
+          "hintarea",
+          "padtext",
+          "formbutton"
+        ],
+        "note": "Every readable thing is a PadText and every hover a HintArea; they are inside all of the components above."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "theme",
+      "type": "frontend",
+      "label": "Theme.qml",
+      "sublabel": "palette, metrics",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Theme.qml"
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "type": "frontend",
+      "label": "Panel.qml",
+      "sublabel": "the bar widget",
+      "pos": [
+        210,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Panel.qml"
+        }
+      ]
+    },
+    {
+      "id": "config",
+      "type": "backend",
+      "label": "Config.qml",
+      "sublabel": "shell.json I/O",
+      "pos": [
+        40,
+        170
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Config.qml"
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "Service.qml",
+      "sublabel": "the ADB half",
+      "pos": [
+        210,
+        170
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Service.qml"
+        }
+      ]
+    },
+    {
+      "id": "bindings",
+      "type": "backend",
+      "label": "Bindings.qml",
+      "sublabel": "keyMap",
+      "pos": [
+        380,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Bindings.qml"
+        }
+      ]
+    },
+    {
+      "id": "pad",
+      "type": "frontend",
+      "label": "Pad.qml",
+      "sublabel": "the popup",
+      "pos": [
+        550,
+        170
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Pad.qml"
+        }
+      ]
+    },
+    {
+      "id": "padkey",
+      "type": "frontend",
+      "label": "PadKey.qml",
+      "sublabel": "one grid button",
+      "pos": [
+        380,
+        300
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "PadKey.qml"
+        }
+      ]
+    },
+    {
+      "id": "typefield",
+      "type": "frontend",
+      "label": "TypeField.qml",
+      "sublabel": "entry, history",
+      "pos": [
+        550,
+        300
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "TypeField.qml"
+        }
+      ]
+    },
+    {
+      "id": "setpicker",
+      "type": "frontend",
+      "label": "SetPicker.qml",
+      "sublabel": "strip at the foot",
+      "pos": [
+        720,
+        300
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "SetPicker.qml"
+        }
+      ]
+    },
+    {
+      "id": "tvrow",
+      "type": "frontend",
+      "label": "TvRow.qml",
+      "sublabel": "a set's row",
+      "pos": [
+        550,
+        430
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "TvRow.qml"
+        }
+      ]
+    },
+    {
+      "id": "action",
+      "type": "frontend",
+      "label": "Action.qml",
+      "sublabel": "menu-style row",
+      "pos": [
+        1060,
+        430
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Action.qml"
+        }
+      ]
+    },
+    {
+      "id": "tvform",
+      "type": "frontend",
+      "label": "TvForm.qml",
+      "sublabel": "add or rename",
+      "pos": [
+        720,
+        430
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "TvForm.qml"
+        }
+      ]
+    },
+    {
+      "id": "appchooser",
+      "type": "frontend",
+      "label": "AppChooser.qml",
+      "sublabel": "pick an app",
+      "pos": [
+        890,
+        430
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "AppChooser.qml"
+        }
+      ]
+    },
+    {
+      "id": "field",
+      "type": "frontend",
+      "label": "Field.qml",
+      "sublabel": "a text field",
+      "pos": [
+        380,
+        560
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Field.qml"
+        }
+      ]
+    },
+    {
+      "id": "hintarea",
+      "type": "frontend",
+      "label": "HintArea.qml",
+      "sublabel": "hover reporting",
+      "pos": [
+        890,
+        560
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "HintArea.qml"
+        }
+      ]
+    },
+    {
+      "id": "padtext",
+      "type": "frontend",
+      "label": "PadText.qml",
+      "sublabel": "themed Text",
+      "pos": [
+        1060,
+        560
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "PadText.qml"
+        }
+      ]
+    },
+    {
+      "id": "formbutton",
+      "type": "frontend",
+      "label": "FormButton.qml",
+      "sublabel": "SAVE, CANCEL, AUTH",
+      "pos": [
+        720,
+        560
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "FormButton.qml"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Panel and its model",
+      "wraps": [
+        "theme",
+        "panel",
+        "config",
+        "service",
+        "bindings"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "the pad",
+      "wraps": [
+        "pad",
+        "padkey",
+        "typefield",
+        "setpicker",
+        "tvrow",
+        "action",
+        "tvform",
+        "appchooser"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "primitives, used everywhere",
+      "wraps": [
+        "field",
+        "hintarea",
+        "padtext",
+        "formbutton"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "theme-panel",
+      "from": "theme",
+      "to": "panel",
+      "label": "inherits",
+      "labelDy": -30,
+      "variant": "emphasis"
+    },
+    {
+      "id": "panel-config",
+      "from": "panel",
+      "to": "config"
+    },
+    {
+      "id": "panel-service",
+      "from": "panel",
+      "to": "service"
+    },
+    {
+      "id": "panel-bindings",
+      "from": "panel",
+      "to": "bindings"
+    },
+    {
+      "id": "panel-pad",
+      "from": "panel",
+      "to": "pad",
+      "label": "opened, theme"
+    },
+    {
+      "id": "pad-padkey",
+      "from": "pad",
+      "to": "padkey",
+      "label": "x14"
+    },
+    {
+      "id": "pad-typefield",
+      "from": "pad",
+      "to": "typefield"
+    },
+    {
+      "id": "pad-setpicker",
+      "from": "pad",
+      "to": "setpicker",
+      "label": "foot of the pad"
+    },
+    {
+      "id": "setpicker-tvrow",
+      "from": "setpicker",
+      "to": "tvrow",
+      "label": "per set",
+      "labelDy": 24,
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "setpicker-action",
+      "from": "setpicker",
+      "to": "action",
+      "label": "x3"
+    },
+    {
+      "id": "setpicker-tvform",
+      "from": "setpicker",
+      "to": "tvform"
+    },
+    {
+      "id": "setpicker-appchooser",
+      "from": "setpicker",
+      "to": "appchooser"
+    },
+    {
+      "id": "field-typefield",
+      "from": "field",
+      "to": "typefield",
+      "label": "inherits",
+      "variant": "emphasis",
+      "labelSegment": 0,
+      "labelDx": 34
+    },
+    {
+      "id": "tvform-field",
+      "from": "tvform",
+      "to": "field",
+      "label": "x2",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "tvform-formbutton",
+      "from": "tvform",
+      "to": "formbutton"
+    },
+    {
+      "id": "appchooser-formbutton",
+      "from": "appchooser",
+      "to": "formbutton"
+    },
+    {
+      "id": "action-hintarea",
+      "from": "action",
+      "to": "hintarea"
+    },
+    {
+      "id": "action-padtext",
+      "from": "action",
+      "to": "padtext"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Each file once",
+      "items": [
+        "17 files, 17 nodes, each linked to its source",
+        "An arrow means built from; unlabeled is one instance"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Two inheritances, two primitives",
+      "items": [
+        "Panel is a Theme; TypeField is a Field",
+        "PadText, HintArea: inside every component, drawn once"
+      ]
+    }
+  ]
+}
