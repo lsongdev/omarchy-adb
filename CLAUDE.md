@@ -114,8 +114,9 @@ shell — user-typed text reaches two of them (local bash, then the device shell
 gated on `targetBelongsToWindow(target, barWindow)` (see `Bar.qml`), and the pad is its
 own layer-shell window, so the call is accepted and silently draws nothing. Every `tip:`
 on a pad button was dead for months before this was noticed. The pad shows hover text on
-its own hint line instead, via `setHint()` / `clearHint()`. Only the bar icon itself, which
-really is in the bar window, can use `bar.showTooltip`.
+its own hint line instead: use a `HintArea` rather than a bare `MouseArea`, which reports
+through `panel.setHint()` / `clearHint()` for you. Only the bar icon itself, which really
+is in the bar window, can use `bar.showTooltip`.
 
 **Every key binding lives in `keyMap` in `Panel.qml`, and only there.** What a key does,
 the shortcut shown when hovering a button, and the line in the shortcut list are all read
