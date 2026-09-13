@@ -147,7 +147,7 @@ Item {
       case Qt.Key_Return: case Qt.Key_Enter: key("KEYCODE_DPAD_CENTER"); return true
 
       case Qt.Key_B: key("KEYCODE_BACK");  return true
-      case Qt.Key_G: key("KEYCODE_HOME");  return true
+      case Qt.Key_H: key("KEYCODE_HOME");  return true
       case Qt.Key_M: key("KEYCODE_MENU");  return true
 
       case Qt.Key_P: key("KEYCODE_MEDIA_PLAY_PAUSE"); return true

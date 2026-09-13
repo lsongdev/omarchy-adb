@@ -62,7 +62,7 @@ could be a control.
 | Arrows or `W` `A` `S` `D` | D-pad |
 | `Enter` | Select / OK |
 | `B` | Back |
-| `G` | Home |
+| `H` | Home |
 | `M` | Menu |
 | `I` | Input / source picker |
 | `P` | Play / pause |
