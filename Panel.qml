@@ -111,6 +111,71 @@ Item {
   }
   function key(code) { sh("key " + code) }
 
+  // The pad is modal, like a real remote: keys drive the TV, and typing at it is
+  // something you enter deliberately. Without that, every letter would be text
+  // bound for the TV's search box and none of them could be a control.
+  property bool typing: false
+
+  function startTyping() { typing = true; entry.forceActiveFocus() }
+  function stopTyping()  { typing = false; keyCatcher.forceActiveFocus() }
+
+  // Control mode. Returns true when the key was ours, so the caller can accept
+  // it -- anything unclaimed falls through rather than being swallowed.
+  function handleKey(ev) {
+    // Alt+digit still picks a set; the unmodified digits are app shortcuts now.
+    if (ev.modifiers & Qt.AltModifier) {
+      if (ev.key === Qt.Key_1) { selectTv(0); return true }
+      if (ev.key === Qt.Key_2) { selectTv(1); return true }
+      if (ev.key === Qt.Key_3) { selectTv(2); return true }
+      return false
+    }
+    // Power is the one irreversible key here: a TV that is off does not answer
+    // ADB, so it cannot be undone from this side. It takes Shift so a stray
+    // press by someone who forgot to hit T cannot switch the set off.
+    if (ev.key === Qt.Key_S && (ev.modifiers & Qt.ShiftModifier)) {
+      key("KEYCODE_POWER"); return true
+    }
+    if (ev.modifiers & (Qt.ShiftModifier | Qt.ControlModifier | Qt.MetaModifier)) return false
+
+    switch (ev.key) {
+      case Qt.Key_Up:    case Qt.Key_K: key("KEYCODE_DPAD_UP");     return true
+      case Qt.Key_Down:  case Qt.Key_J: key("KEYCODE_DPAD_DOWN");   return true
+      case Qt.Key_Left:  case Qt.Key_H: key("KEYCODE_DPAD_LEFT");   return true
+      case Qt.Key_Right: case Qt.Key_L: key("KEYCODE_DPAD_RIGHT");  return true
+      case Qt.Key_Return: case Qt.Key_Enter: key("KEYCODE_DPAD_CENTER"); return true
+
+      case Qt.Key_B: key("KEYCODE_BACK");  return true
+      case Qt.Key_G: key("KEYCODE_HOME");  return true
+      case Qt.Key_M: key("KEYCODE_MENU");  return true
+      case Qt.Key_W: key("KEYCODE_WAKEUP"); return true
+
+      case Qt.Key_P: key("KEYCODE_MEDIA_PLAY_PAUSE"); return true
+      case Qt.Key_R: key("KEYCODE_MEDIA_REWIND");     return true
+      case Qt.Key_F: key("KEYCODE_MEDIA_FAST_FORWARD"); return true
+      case Qt.Key_BracketLeft:  key("KEYCODE_MEDIA_PREVIOUS"); return true
+      case Qt.Key_BracketRight: key("KEYCODE_MEDIA_NEXT");     return true
+
+      case Qt.Key_Minus: key("KEYCODE_VOLUME_DOWN"); return true
+      case Qt.Key_Equal: case Qt.Key_Plus: key("KEYCODE_VOLUME_UP"); return true
+      case Qt.Key_X:     key("KEYCODE_VOLUME_MUTE"); return true
+
+      case Qt.Key_I: sh("inputs"); return true
+
+      case Qt.Key_1: sh("app " + Util.shellQuote(setting("app1Package", ""))); return true
+      case Qt.Key_2: sh("app " + Util.shellQuote(setting("app2Package", ""))); return true
+      case Qt.Key_3: sh("app " + Util.shellQuote(setting("app3Package", ""))); return true
+
+      case Qt.Key_T: case Qt.Key_Slash: startTyping(); return true
+      case Qt.Key_Tab: cycleTv(); return true
+      case Qt.Key_Escape: case Qt.Key_Q: close(); return true
+    }
+    return false
+  }
+
+  // Opening always lands in control mode, so the pad behaves the same way every
+  // time rather than depending on how it was left.
+  onOpenedChanged: if (opened) { typing = false; Qt.callLater(keyCatcher.forceActiveFocus) }
+
   function open()  { opened = true }
   function close() { opened = false }
   function toggle() { opened = !opened }
@@ -590,6 +655,16 @@ Item {
     contentWidth: pane.implicitWidth + padding * 2
     contentHeight: pane.implicitHeight + padding * 2
 
+    // Zero-sized, and exists only to own the keyboard while the pad is in
+    // control mode. A layer-shell panel still has to route keys to *something*,
+    // and the text field cannot be it without swallowing every control.
+    Item {
+      id: keyCatcher
+      width: 0
+      height: 0
+      Keys.onPressed: function(ev) { if (root.handleKey(ev)) ev.accepted = true }
+    }
+
     Column {
       id: pane
       spacing: Style.space(6)
@@ -672,26 +747,14 @@ Item {
             font.family: root.bar ? root.bar.fontFamily : "monospace"
             font.pixelSize: 11
             selectByMouse: true
-            focus: root.opened && !picker.formOpen
-
+            onActiveFocusChanged: if (activeFocus) root.typing = true
             Keys.onReturnPressed: entry.send()
             Keys.onEnterPressed: entry.send()
             Keys.onUpPressed: entry.recall(1)
             Keys.onDownPressed: entry.recall(-1)
-
-            // Switching sets has to dodge the field: plain digits are text the
-            // user is typing at the TV, so the jumps take Alt. Tab has nothing
-            // else to focus inside the pad, so it cycles.
-            Keys.onPressed: function(ev) {
-              if (ev.modifiers & Qt.AltModifier) {
-                if (ev.key === Qt.Key_1) { root.selectTv(0); ev.accepted = true }
-                else if (ev.key === Qt.Key_2) { root.selectTv(1); ev.accepted = true }
-                else if (ev.key === Qt.Key_3) { root.selectTv(2); ev.accepted = true }
-              } else if (ev.key === Qt.Key_Tab) {
-                root.cycleTv()
-                ev.accepted = true
-              }
-            }
+            // Escape hands the keyboard back to control mode rather than
+            // closing the pad, so a mistyped search does not cost the session.
+            Keys.onEscapePressed: root.stopTyping()
 
             // Walk the history: Up goes further back, Down returns toward the
             // empty field. -1 means "not browsing".
@@ -720,7 +783,8 @@ Item {
             Text {
               anchors.verticalCenter: parent.verticalCenter
               visible: entry.text.length === 0 && !entry.activeFocus
-              text: "type\u2026"
+              // Doubles as the only on-screen hint that the pad is modal.
+              text: "T to type\u2026"
               color: root.bar ? root.bar.foreground : "white"
               opacity: 0.35
               font.family: entry.font.family

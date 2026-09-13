@@ -49,11 +49,41 @@ back on screen. See [Re-authorising a TV](#re-authorising-a-tv).
 | Right click | Input / source picker |
 | Middle click | Home |
 | Scroll over the icon | TV volume |
-| `Tab` (pad open) | Switch to the next configured TV |
-| `Alt+1` / `Alt+2` / `Alt+3` (pad open) | Jump straight to that TV |
 
-Plain digits are left alone so they still type into the text field, which is why
-the jumps take `Alt`.
+### Keyboard
+
+With the pad open the keyboard drives the TV. It is modal, the way a real remote
+is: typing at the TV is something you enter deliberately with `T`, because
+otherwise every letter would be text bound for the search box and none of them
+could be a control.
+
+| Key | Does |
+|---|---|
+| Arrows or `H` `J` `K` `L` | D-pad |
+| `Enter` | Select / OK |
+| `B` | Back |
+| `G` | Home |
+| `M` | Menu |
+| `I` | Input / source picker |
+| `P` | Play / pause |
+| `R` / `F` | Rewind / fast-forward |
+| `[` / `]` | Previous / next |
+| `-` / `=` | Volume down / up |
+| `X` | Mute |
+| `W` | Wake |
+| `Shift+S` | Power |
+| `1` `2` `3` | The three app shortcuts |
+| `T` or `/` | Type at the TV. `Esc` hands the keyboard back |
+| `Tab` | Switch to the next configured TV |
+| `Alt+1` / `Alt+2` / `Alt+3` | Jump straight to that TV |
+| `Esc` or `Q` | Close the pad |
+
+Power takes `Shift` rather than a bare key because it cannot be undone from this
+side: a TV that is off does not answer ADB, so a stray press by someone who
+forgot to hit `T` first would end the session.
+
+Clicking the text field enters typing mode too, and the placeholder reads
+**T to type…** as a reminder that the pad is modal.
 
 In the pad: a D-pad with OK, power, inputs, home, back, volume, mute,
 play/pause, rewind, three app shortcuts, a text field, **CLR** (wipes the TV's

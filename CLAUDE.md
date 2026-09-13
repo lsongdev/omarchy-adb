@@ -100,6 +100,13 @@ TV submit after roughly the first character. Anything ordered must be one shim i
 in the shell. Use `Util.shellQuote` from `qs.Commons`. Always quote anything reaching a
 shell — user-typed text reaches two of them (local bash, then the device shell).
 
+**The text field must not hold focus by default.** The pad is modal: `keyCatcher`
+owns the keyboard in control mode so single letters can be remote keys, and `entry` only
+takes it while `root.typing`. Binding `focus:` on the field instead means every control
+key is swallowed as text bound for the TV's search box. A layer-shell panel still has to
+route keys somewhere, which is why `keyCatcher` exists as a zero-sized item rather than
+nothing at all.
+
 **Never use `PopupCard` for anything that needs typing.** It is an xdg-popup and only
 receives keys after a click routes focus through its parent surface. `KeyboardPanel`
 (layer-shell + `WlrKeyboardFocus`) is the drop-in with a compatible API subset.
