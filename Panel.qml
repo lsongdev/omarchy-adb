@@ -70,8 +70,11 @@ Item {
   // "up" | "down" | "unauth" | "noadb" — noadb means adb isn't installed and
   // unauth means the set answered but nobody accepted its debugging prompt.
   // Both are distinct from a sleeping TV and each deserves its own message.
-  property string state: svc.state
-  readonly property bool online: state === "up"
+  // Not `state`: Item already has one, driving QML's own state machine. Naming
+  // this one after it worked only because nothing here declares states or
+  // transitions, and would collide confusingly the moment something did.
+  readonly property string tvState: svc.state
+  readonly property bool online: tvState === "up"
 
   // Per-slot states, parallel to `tvs`. Only refreshed when the picker is open:
   // the poll timer probes the active set alone, so three configured TVs do not
@@ -350,9 +353,9 @@ Item {
     anchors.fill: parent
     acceptedButtons: Qt.LeftButton
     hoverEnabled: true
-    onEntered: if (root.bar && root.bar.showTooltip) root.bar.showTooltip(root, root.state === "up" ? "TV remote"
-      : root.state === "noadb" ? "adb not installed"
-      : root.state === "unauth" ? "TV needs authorising — open the pad and hit AUTH" : "TV unreachable")
+    onEntered: if (root.bar && root.bar.showTooltip) root.bar.showTooltip(root, root.tvState === "up" ? "TV remote"
+      : root.tvState === "noadb" ? "adb not installed"
+      : root.tvState === "unauth" ? "TV needs authorising — open the pad and hit AUTH" : "TV unreachable")
     onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(root)
     onClicked: root.toggle()
   }

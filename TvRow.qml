@@ -16,7 +16,7 @@ Rectangle {
   readonly property bool isActive: idx === panel.activeIndex
   readonly property string st: (panel.tvStates.length > idx && panel.tvStates[idx] !== "")
                                ? panel.tvStates[idx]
-                               : (isActive ? panel.state : "")
+                               : (isActive ? panel.tvState : "")
 
   width: panel.padWidth
   height: Style.space(24)
