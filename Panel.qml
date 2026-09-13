@@ -119,6 +119,11 @@ Item {
   // Control mode. Returns true when the key was ours, so the caller can accept
   // it -- anything unclaimed falls through rather than being swallowed.
   function handleKey(ev) {
+    // A form open means the keyboard belongs to it. Without this, typing a name
+    // fires controls at the TV: "Kitchen" sends Inputs on the i and flips into
+    // typing mode on the t.
+    if (picker.formOpen) return picker.handleFormKey(ev)
+
     // Alt+digit still picks a set; the unmodified digits are app shortcuts now.
     if (ev.modifiers & Qt.AltModifier) {
       if (ev.key === Qt.Key_1) { selectTv(0); return true }
@@ -458,6 +463,11 @@ Item {
     bar: root.bar
     owner: root
     open: root.opened
+    // Layer-shell hands the surface keyboard focus, but Qt still needs an item
+    // to make active, and it will not pick one on its own. Without this nothing
+    // in the pad ever holds focus and forceActiveFocus has nothing to take it
+    // from, which is why opening a form left the keyboard nowhere.
+    focusTarget: keyCatcher
     contentWidth: pane.implicitWidth + padding * 2
     contentHeight: pane.implicitHeight + padding * 2
 
@@ -468,6 +478,12 @@ Item {
       id: keyCatcher
       width: 0
       height: 0
+      // Whatever this does not claim goes to the open form's field. Focus alone
+      // is not dependable here: the panel takes keyboard focus on demand, so
+      // right after a form opens the keys can still arrive at this item.
+      Keys.forwardTo: picker.appFormOpen ? [appLabelField.input]
+                    : !picker.tvFormOpen ? []
+                    : picker.formField === 0 ? [nameField.input] : [addrField.input]
       Keys.onPressed: function(ev) { if (root.handleKey(ev)) ev.accepted = true }
     }
 
@@ -661,11 +677,32 @@ Item {
         readonly property real buttonWidth:
           (root.padWidth - Style.space(6) * (buttonCount - 1)) / buttonCount
 
+        // Which field of the open form the keys should reach. Focus is not
+        // dependable inside a panel that takes keyboard focus on demand, so the
+        // form navigates from the key catcher instead of from the fields.
+        property int formField: 0
+
+        function handleFormKey(ev) {
+          if (ev.key === Qt.Key_Escape) {
+            if (appFormOpen) closeAppForm()
+            else closeForm()
+            return true
+          }
+          if (ev.key === Qt.Key_Return || ev.key === Qt.Key_Enter) {
+            if (appFormOpen) { commitAppForm(); return true }
+            if (formField === 0) { formField = 1; return true }
+            commitForm()
+            return true
+          }
+          return false
+        }
+
         function startAdd() {
           editSlot = 0
           nameField.text = ""
           addrField.text = ""
           adding = true
+          formField = 0
           nameField.focusMe()
         }
         function startAppEdit(slot) {
@@ -680,7 +717,7 @@ Item {
         function closeAppForm() {
           appSlot = 0
           appPkg = ""
-          entry.forceActiveFocus()
+          root.stopTyping()
         }
         function commitAppForm() {
           if (appPkg === "") return
@@ -694,13 +731,14 @@ Item {
           nameField.text = root.tvs[i].label
           addrField.text = root.tvs[i].addr
           editSlot = root.tvs[i].slot
+          formField = 0
           nameField.focusMe()
         }
         function closeForm() {
           adding = false
           editSlot = 0
           appSlot = 0
-          entry.forceActiveFocus()
+          root.stopTyping()
         }
         function commitForm() {
           var ok = editSlot !== 0
