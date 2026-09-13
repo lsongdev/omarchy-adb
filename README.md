@@ -97,8 +97,9 @@ and saves them; a bare IP gets `:5555` appended. The row disappears once all
 three slots are used.
 
 **Edit / remove** below it flips the list into edit mode: a click then opens that
-set for rename or deletion rather than switching to it. While edit mode is on,
-clicking one of the three shortcut buttons configures it instead of launching:
+set for rename or deletion rather than switching to it. While edit mode is on, the three
+shortcut buttons outline to show they are configurable, and clicking one sets
+what it launches rather than launching it:
 the pad reads the launchable apps off the TV and lists them to pick from, so you
 never have to look a package name up by hand. Deleting the set you are
 currently driving moves you to the first one left.

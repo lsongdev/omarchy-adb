@@ -451,12 +451,19 @@ Item {
     property string label: ""
     property string tip: ""
     property var onPress: null
+    // Outlined while the key does something other than what its face says --
+    // the shortcut buttons configure rather than launch in edit mode, and
+    // nothing else on them would show that.
+    property bool marked: false
 
     implicitWidth: Style.space(38)
     implicitHeight: Style.space(34)
     radius: Style.cornerRadius
+    border.width: k.marked ? 1 : 0
+    border.color: root.bar ? root.bar.foreground : "white"
     color: ma.pressed ? Color.popups.border
          : ma.containsMouse ? Qt.rgba(1, 1, 1, 0.10)
+         : k.marked ? Qt.rgba(1, 1, 1, 0.10)
          : Qt.rgba(1, 1, 1, 0.04)
     Behavior on color { ColorAnimation { duration: 90 } }
 
@@ -767,6 +774,7 @@ Item {
         spacing: Style.space(6)
         Key {
           label: root.setting("app1Label", "NFLX")
+          marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.setting("app1Package", "")
           onPress: function() {
@@ -776,6 +784,7 @@ Item {
         }
         Key {
           label: root.setting("app2Label", "TUBE")
+          marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.setting("app2Package", "")
           onPress: function() {
@@ -785,6 +794,7 @@ Item {
         }
         Key {
           label: root.setting("app3Label", "SPFY")
+          marked: picker.editing
           tip: picker.editing ? "Choose the app for this button"
                               : root.setting("app3Package", "")
           onPress: function() {
