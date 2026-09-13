@@ -22,7 +22,7 @@ Rectangle {
                                : (isActive ? panel.tvState : "")
 
   width: panel.padWidth
-  height: Style.space(24)
+  height: panel.rowHeight
   radius: Style.cornerRadius
   color: trMa.pressed ? Color.popups.border
        : trMa.containsMouse ? panel.surfaceHover
@@ -42,18 +42,18 @@ Rectangle {
   Row {
     id: leftGroup
     anchors.left: parent.left
-    anchors.leftMargin: Style.space(6)
+    anchors.leftMargin: panel.inset
     anchors.verticalCenter: parent.verticalCenter
-    spacing: Style.space(6)
+    spacing: panel.inset
 
     Text {
       id: dot
-      text: tr.st === "up" ? "●" : "○"
-      color: tr.st === "up" ? panel.okColour
-           : tr.st === "unauth" ? panel.warnColour
-           : tr.st === "noadb" ? panel.badColour
+      text: tr.st === panel.stateName.up ? "●" : "○"
+      color: tr.st === panel.stateName.up ? panel.okColour
+           : tr.st === panel.stateName.unauth ? panel.warnColour
+           : tr.st === panel.stateName.noadb ? panel.badColour
            : (panel.bar ? panel.bar.foreground : "white")
-      opacity: tr.st === "up" ? 1.0 : 0.55
+      opacity: tr.st === panel.stateName.up ? 1.0 : 0.55
       font.family: panel.bar ? panel.bar.fontFamily : "monospace"
       font.pixelSize: 10
     }
@@ -62,7 +62,7 @@ Rectangle {
     // when AUTH appears. Hand the name whatever is left over and let it
     // elide, rather than letting the two collide in the unauth state.
     Text {
-      width: Math.max(0, tr.width - Style.space(6) * 3 - dot.width - rightGroup.width)
+      width: Math.max(0, tr.width - panel.inset * 3 - dot.width - rightGroup.width)
       elide: Text.ElideRight
       text: panel.tvs.length > tr.idx ? panel.tvs[tr.idx].label : ""
       color: panel.bar ? panel.bar.foreground : "white"
@@ -75,16 +75,16 @@ Rectangle {
   Row {
     id: rightGroup
     anchors.right: parent.right
-    anchors.rightMargin: Style.space(6)
+    anchors.rightMargin: panel.inset
     anchors.verticalCenter: parent.verticalCenter
-    spacing: Style.space(6)
+    spacing: panel.inset
 
     // Offered only when it is actually the problem: an unauthorised set needs
     // someone to tap Allow on the TV, which no amount of reconnecting fixes.
     Rectangle {
-      visible: tr.st === "unauth"
-      width: Style.space(30)
-      height: Style.space(18)
+      visible: tr.st === panel.stateName.unauth
+      width: panel.badgeWidth
+      height: panel.badgeHeight
       radius: Style.cornerRadius
       color: authMa.containsMouse ? panel.surfaceButtonHover : panel.surfaceButton
       Text {
@@ -107,7 +107,7 @@ Rectangle {
     // The AUTH button already says what the state is, and the row is only as
     // wide as the pad -- showing both squeezes the name down to "Hi…".
     Text {
-      visible: tr.st !== "unauth" && !tr.editMode
+      visible: tr.st !== panel.stateName.unauth && !tr.editMode
       text: tr.st === "" ? "…" : tr.st
       color: panel.bar ? panel.bar.foreground : "white"
       opacity: 0.45

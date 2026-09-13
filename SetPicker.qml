@@ -37,7 +37,7 @@ Column {
   // Expandable when there is something to expand to: another set, or a
   // free slot to add one into.
   readonly property bool hasMore: panel.tvs.length > 1 || panel.freeSlot() !== 0
-  spacing: Style.space(4)
+  spacing: panel.tightGap
 
   // Probing three TVs costs three adb round-trips, so it happens when the
   // list is actually being looked at rather than on every poll tick.
@@ -58,7 +58,7 @@ Column {
   // form has three buttons: DELETE exists nowhere else.
   readonly property int buttonCount: (tvFormOpen && editSlot !== 0) ? 3 : 2
   readonly property real buttonWidth:
-    (panel.padWidth - Style.space(6) * (buttonCount - 1)) / buttonCount
+    (panel.padWidth - panel.gap * (buttonCount - 1)) / buttonCount
 
   // Which field of the open form the keys should reach. Focus is not
   // dependable inside a panel that takes keyboard focus on demand, so the
@@ -92,8 +92,8 @@ Column {
     adding = false
     editSlot = 0
     appSlot = slot
-    appPkg = panel.setting("app" + slot + "Package", "")
-    appLabelField.text = panel.setting("app" + slot + "Label", "")
+    appPkg = panel.setting(panel.appKey(slot, "Package"), "")
+    appLabelField.text = panel.setting(panel.appKey(slot, "Label"), "")
     panel.loadApps()
     appLabelField.focusMe()
   }
@@ -193,7 +193,7 @@ Column {
   ListView {
     visible: picker.showKeys && picker.expanded && !picker.formOpen
     width: panel.padWidth
-    height: Style.space(120)
+    height: panel.helpListHeight
     clip: true
     model: panel.keyHelp
     boundsBehavior: Flickable.StopAtBounds
@@ -203,9 +203,9 @@ Column {
 
     delegate: Text {
       width: panel.padWidth
-      height: Style.space(16)
+      height: panel.helpRowHeight
       verticalAlignment: Text.AlignVCenter
-      leftPadding: Style.space(6)
+      leftPadding: panel.inset
       elide: Text.ElideRight
       text: modelData
       color: panel.bar ? panel.bar.foreground : "white"
@@ -235,7 +235,7 @@ Column {
   }
   Row {
     visible: picker.tvFormOpen
-    spacing: Style.space(6)
+    spacing: panel.gap
 
     FormButton {
       panel: picker.panel
@@ -290,14 +290,14 @@ Column {
   ListView {
     visible: picker.appFormOpen
     width: panel.padWidth
-    height: Style.space(150)
+    height: panel.appListHeight
     clip: true
     model: panel.appList
     boundsBehavior: Flickable.StopAtBounds
 
     delegate: Rectangle {
       width: panel.padWidth
-      height: Style.space(22)
+      height: panel.listRowHeight
       radius: Style.cornerRadius
       color: appMa.pressed ? Color.popups.border
            : appMa.containsMouse ? panel.surfaceHover
@@ -306,9 +306,9 @@ Column {
 
       Text {
         anchors.left: parent.left
-        anchors.leftMargin: Style.space(6)
+        anchors.leftMargin: panel.inset
         anchors.verticalCenter: parent.verticalCenter
-        width: parent.width - Style.space(12)
+        width: parent.width - panel.inset * 2
         elide: Text.ElideRight
         text: panel.appName(modelData)
         color: panel.bar ? panel.bar.foreground : "white"
@@ -335,7 +335,7 @@ Column {
 
   Row {
     visible: picker.appFormOpen
-    spacing: Style.space(6)
+    spacing: panel.gap
 
     FormButton {
       panel: picker.panel

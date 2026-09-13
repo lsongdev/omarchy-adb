@@ -26,13 +26,24 @@ Item {
 
   readonly property string shim: String(Qt.resolvedUrl("tv-remote")).replace(/^file:\/\//, "")
 
-  // What the shim can report. Anything else is ignored rather than stored, so a
-  // state added to the shim before the widget knows how to draw it cannot leave
-  // the pad showing something it has no UI for.
-  readonly property var validStates: ["up", "down", "unauth", "noadb"]
+  // The protocol with the shim, in one place. Every comparison in the widget
+  // goes through these, so a misspelling is a missing property rather than a
+  // comparison that silently never matches.
+  readonly property var stateName: ({
+    up:     "up",      // reachable and authorised
+    down:   "down",    // asleep, off, or not answering
+    unauth: "unauth",  // answered, but nobody accepted the debugging prompt
+    noadb:  "noadb"    // adb is not installed on this machine
+  })
+
+  // Anything the shim reports that is not one of these is ignored rather than
+  // stored, so a state added to the shim before the widget knows how to draw it
+  // cannot leave the pad showing something it has no UI for.
+  readonly property var validStates: [stateName.up, stateName.down,
+                                      stateName.unauth, stateName.noadb]
 
   // One of validStates, for the active set.
-  property string state: "up"
+  property string state: stateName.up
   property var states: []
 
   property var appList: []
@@ -150,7 +161,7 @@ Item {
       svc.reprobe()
       // Only the active set is worth probing this often; the others are stale
       // from the server bounce too, so they get one sweep once this settles.
-      if (svc.state === "up" || ticksLeft === 0) {
+      if (svc.state === svc.stateName.up || ticksLeft === 0) {
         ticksLeft = 0
         svc.reprobeAll()
       }

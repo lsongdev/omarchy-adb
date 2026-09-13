@@ -13,7 +13,7 @@ Rectangle {
   property var onPress: null
 
   width: panel.padWidth
-  height: Style.space(24)
+  height: panel.rowHeight
   radius: Style.cornerRadius
   color: acMa.pressed ? Color.popups.border
        : acMa.containsMouse ? panel.surfaceHover : "transparent"
@@ -21,9 +21,9 @@ Rectangle {
 
   Text {
     anchors.left: parent.left
-    anchors.leftMargin: Style.space(6)
+    anchors.leftMargin: panel.inset
     anchors.verticalCenter: parent.verticalCenter
-    width: parent.width - Style.space(12)
+    width: parent.width - panel.inset * 2
     elide: Text.ElideRight
     text: ac.label
     color: panel.bar ? panel.bar.foreground : "white"

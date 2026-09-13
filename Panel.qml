@@ -45,9 +45,9 @@ Item {
     var out = []
     var legacy = root.setting("tvAddress", "")
     for (var i = 1; i <= maxSets; i++) {
-      var addr = root.setting("tv" + i + "Address", i === 1 ? legacy : "")
+      var addr = root.setting(tvKey(i, "Address"), i === 1 ? legacy : "")
       if (addr === "") continue
-      out.push({ slot: i, addr: addr, label: root.setting("tv" + i + "Label", "TV " + i) })
+      out.push({ slot: i, addr: addr, label: root.setting(tvKey(i, "Label"), "TV " + i) })
     }
     return out
   }
@@ -84,7 +84,38 @@ Item {
   // bar has not handed one over yet.
   readonly property color badColour:  bar && bar.urgent ? bar.urgent : "#e06c75"
 
-  readonly property int padWidth: Style.space(38) * 3 + Style.space(6) * 2
+  // ---- metrics -------------------------------------------------------------
+  //
+  // Named once here rather than as Style.space(N) scattered over seven files,
+  // where the same number means a key in one place and a list row in another and
+  // nothing says which is which.
+  readonly property int gap:        Style.space(6)    // between anything and its neighbour
+  readonly property int tightGap:   Style.space(4)    // between the picker's own rows
+  readonly property int inset:      Style.space(6)    // text away from an edge
+
+  readonly property int keyWidth:   Style.space(38)   // one button of the D-pad grid
+  readonly property int keyHeight:  Style.space(34)
+
+  readonly property int rowHeight:     Style.space(24)  // a picker row, a form button
+  readonly property int listRowHeight: Style.space(22)  // a row of the app list
+  readonly property int helpRowHeight: Style.space(16)  // a line of the shortcut list
+  readonly property int fieldHeight:   Style.space(26)  // a text field
+  readonly property int hintHeight:    Style.space(14)  // the hover line along the foot
+
+  readonly property int badgeWidth:  Style.space(30)   // the AUTH button on a row
+  readonly property int badgeHeight: Style.space(18)
+
+  // Both lists scroll; these bound the pad rather than letting it run off-screen.
+  readonly property int appListHeight:  Style.space(150)
+  readonly property int helpListHeight: Style.space(120)
+
+  readonly property int padWidth: keyWidth * 3 + gap * 2
+
+  // Settings keys are spelled in a dozen places across two files. One function
+  // per family, so the convention exists once and a caller cannot invent a
+  // variant that reads fine and resolves to nothing.
+  function tvKey(slot, part)  { return "tv"  + slot + part }
+  function appKey(slot, part) { return "app" + slot + part }
 
   function setting(key, fallback) {
     if (settings && settings[key] !== undefined && settings[key] !== null && settings[key] !== "")
@@ -100,7 +131,10 @@ Item {
   // this one after it worked only because nothing here declares states or
   // transitions, and would collide confusingly the moment something did.
   readonly property string tvState: svc.state
-  readonly property bool online: tvState === "up"
+  // Re-exposed so the component files can compare against names rather than
+  // spell the shim's strings themselves.
+  readonly property var stateName: svc.stateName
+  readonly property bool online: tvState === stateName.up
 
   // Per-slot states, parallel to `tvs`. Only refreshed when the picker is open:
   // the poll timer probes the active set alone, so three configured TVs do not
@@ -194,7 +228,7 @@ Item {
   function labelFor(id) { var e = entryFor(id); return e ? e.label : "" }
   function runAction(id) { var e = entryFor(id); if (e) e.act() }
 
-  function launchApp(n) { sh("app " + Util.shellQuote(setting("app" + n + "Package", ""))) }
+  function launchApp(n) { sh("app " + Util.shellQuote(setting(appKey(n, "Package"), ""))) }
 
   // The shortcut list, written once by the same table.
   readonly property var keyHelp: keyMap.map(function (e) { return e.hint + "  " + e.label })
@@ -247,7 +281,7 @@ Item {
   // `tvs` is built, legacy tvAddress included, so the two cannot disagree.
   function freeSlot() {
     for (var i = 1; i <= maxSets; i++)
-      if (root.setting("tv" + i + "Address", i === 1 ? root.setting("tvAddress", "") : "") === "")
+      if (root.setting(tvKey(i, "Address"), i === 1 ? root.setting("tvAddress", "") : "") === "")
         return i
     return 0
   }
@@ -262,8 +296,8 @@ Item {
     if (a.indexOf(":") === -1) a += ":5555"
     var name = String(label || "").trim()
     var patch = ({})
-    patch["tv" + slot + "Address"] = a
-    patch["tv" + slot + "Label"] = name === "" ? ("TV " + slot) : name
+    patch[tvKey(slot, "Address")] = a
+    patch[tvKey(slot, "Label")] = name === "" ? ("TV " + slot) : name
     // Slot 1 can be fed by the deprecated tvAddress key. Once the tv1 pair is
     // written it is dead weight, and leaving it means two sources of truth.
     if (slot === 1) patch["tvAddress"] = ""
@@ -278,8 +312,8 @@ Item {
   function removeTv(slot) {
     if (slot < 1 || slot > maxSets) return false
     var patch = ({})
-    patch["tv" + slot + "Label"] = ""
-    patch["tv" + slot + "Address"] = ""
+    patch[tvKey(slot, "Label")] = ""
+    patch[tvKey(slot, "Address")] = ""
     // Clearing only the tv1 pair would let the deprecated key resurrect the set
     // on the next reload, which reads as the removal silently not working.
     if (slot === 1) patch["tvAddress"] = ""
@@ -332,8 +366,8 @@ Item {
     if (slot < 1 || slot > maxSets || String(pkg).trim() === "") return false
     var name = String(label || "").trim()
     var patch = ({})
-    patch["app" + slot + "Package"] = String(pkg).trim()
-    patch["app" + slot + "Label"] = name === ""
+    patch[appKey(slot, "Package")] = String(pkg).trim()
+    patch[appKey(slot, "Label")] = name === ""
       ? appName(pkg).substring(0, 4).toUpperCase() : name
     return root.persist(patch)
   }
@@ -369,9 +403,9 @@ Item {
     anchors.fill: parent
     acceptedButtons: Qt.LeftButton
     hoverEnabled: true
-    onEntered: if (root.bar && root.bar.showTooltip) root.bar.showTooltip(root, root.tvState === "up" ? "TV remote"
-      : root.tvState === "noadb" ? "adb not installed"
-      : root.tvState === "unauth" ? "TV needs authorising — open the pad and hit AUTH" : "TV unreachable")
+    onEntered: if (root.bar && root.bar.showTooltip) root.bar.showTooltip(root, root.tvState === root.stateName.up ? "TV remote"
+      : root.tvState === root.stateName.noadb ? "adb not installed"
+      : root.tvState === root.stateName.unauth ? "TV needs authorising — open the pad and hit AUTH" : "TV unreachable")
     onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(root)
     onClicked: root.toggle()
   }
@@ -418,8 +452,8 @@ Item {
     readonly property string hintText: tip === "" ? ""
       : (keyHint === "" ? tip : tip + "  [" + keyHint + "]")
 
-    implicitWidth: Style.space(38)
-    implicitHeight: Style.space(34)
+    implicitWidth: root.keyWidth
+    implicitHeight: root.keyHeight
     radius: Style.cornerRadius
     border.width: k.marked ? 1 : 0
     border.color: root.bar ? root.bar.foreground : "white"
@@ -483,61 +517,61 @@ Item {
 
     Column {
       id: pane
-      spacing: Style.space(6)
+      spacing: root.gap
 
       Row {
-        spacing: Style.space(6)
+        spacing: root.gap
         Key { glyph: "󰐥"; action: "power" }
         Key { label: "INPT"; action: "inputs" }
         Key { glyph: "󰋜"; action: "home" }
       }
 
       Row {
-        spacing: Style.space(6)
-        Item { width: Style.space(38); height: Style.space(34) }
+        spacing: root.gap
+        Item { width: root.keyWidth; height: root.keyHeight }
         Key { glyph: "󰁝"; action: "dpadUp" }
-        Item { width: Style.space(38); height: Style.space(34) }
+        Item { width: root.keyWidth; height: root.keyHeight }
       }
       Row {
-        spacing: Style.space(6)
+        spacing: root.gap
         Key { glyph: "󰁍"; action: "dpadLeft" }
         Key { label: "OK"; action: "ok" }
         Key { glyph: "󰁔"; action: "dpadRight" }
       }
       Row {
-        spacing: Style.space(6)
-        Item { width: Style.space(38); height: Style.space(34) }
+        spacing: root.gap
+        Item { width: root.keyWidth; height: root.keyHeight }
         Key { glyph: "󰁅"; action: "dpadDown" }
-        Item { width: Style.space(38); height: Style.space(34) }
+        Item { width: root.keyWidth; height: root.keyHeight }
       }
 
       Row {
-        spacing: Style.space(6)
+        spacing: root.gap
         Key { glyph: "󰁮"; action: "back" }
         Key { glyph: "󰕿"; action: "volDown" }
         Key { glyph: "󰕾"; action: "volUp" }
       }
       Row {
-        spacing: Style.space(6)
+        spacing: root.gap
         Key { glyph: "󰝟"; action: "mute" }
         Key { glyph: "󰐊"; action: "playPause" }
         Key { glyph: "󰒫"; action: "rewind" }
       }
 
       Row {
-        spacing: Style.space(6)
+        spacing: root.gap
         Key {
           // The fallback label matches the manifest default rather than naming
           // an app nobody configured: a fresh install used to show NFLX on a
           // button with no package behind it.
-          label: root.setting("app1Label", "APP1")
+          label: root.setting(root.appKey(1, "Label"), "APP1")
           action: "app1"
           marked: picker.editing
-          unset: !picker.editing && root.setting("app1Package", "") === ""
+          unset: !picker.editing && root.setting(root.appKey(1, "Package"), "") === ""
           tip: picker.editing ? "Choose the app for this button"
-             : root.setting("app1Package", "") === ""
+             : root.setting(root.appKey(1, "Package"), "") === ""
                ? "Nothing set yet. Use Edit / remove to pick an app"
-               : root.appNiceName(root.setting("app1Package", ""))
+               : root.appNiceName(root.setting(root.appKey(1, "Package"), ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(1); return }
             root.launchApp(1)
@@ -547,14 +581,14 @@ Item {
           // The fallback label matches the manifest default rather than naming
           // an app nobody configured: a fresh install used to show NFLX on a
           // button with no package behind it.
-          label: root.setting("app2Label", "APP2")
+          label: root.setting(root.appKey(2, "Label"), "APP2")
           action: "app2"
           marked: picker.editing
-          unset: !picker.editing && root.setting("app2Package", "") === ""
+          unset: !picker.editing && root.setting(root.appKey(2, "Package"), "") === ""
           tip: picker.editing ? "Choose the app for this button"
-             : root.setting("app2Package", "") === ""
+             : root.setting(root.appKey(2, "Package"), "") === ""
                ? "Nothing set yet. Use Edit / remove to pick an app"
-               : root.appNiceName(root.setting("app2Package", ""))
+               : root.appNiceName(root.setting(root.appKey(2, "Package"), ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(2); return }
             root.launchApp(2)
@@ -564,14 +598,14 @@ Item {
           // The fallback label matches the manifest default rather than naming
           // an app nobody configured: a fresh install used to show NFLX on a
           // button with no package behind it.
-          label: root.setting("app3Label", "APP3")
+          label: root.setting(root.appKey(3, "Label"), "APP3")
           action: "app3"
           marked: picker.editing
-          unset: !picker.editing && root.setting("app3Package", "") === ""
+          unset: !picker.editing && root.setting(root.appKey(3, "Package"), "") === ""
           tip: picker.editing ? "Choose the app for this button"
-             : root.setting("app3Package", "") === ""
+             : root.setting(root.appKey(3, "Package"), "") === ""
                ? "Nothing set yet. Use Edit / remove to pick an app"
-               : root.appNiceName(root.setting("app3Package", ""))
+               : root.appNiceName(root.setting(root.appKey(3, "Package"), ""))
           onPress: function() {
             if (picker.editing) { picker.startAppEdit(3); return }
             root.launchApp(3)
@@ -581,11 +615,11 @@ Item {
 
       // ---- type into whatever field has focus on the TV -----------------
       Row {
-        spacing: Style.space(6)
+        spacing: root.gap
 
         Rectangle {
-          width: Style.space(38) * 2 + Style.space(6)
-          height: Style.space(34)
+          width: root.keyWidth * 2 + root.gap
+          height: root.keyHeight
           radius: Style.cornerRadius
           color: root.surfaceRaised
           border.width: entry.activeFocus ? 1 : 0
@@ -594,8 +628,8 @@ Item {
           TextInput {
             id: entry
             anchors.fill: parent
-            anchors.leftMargin: Style.space(6)
-            anchors.rightMargin: Style.space(6)
+            anchors.leftMargin: root.gap
+            anchors.rightMargin: root.gap
             verticalAlignment: TextInput.AlignVCenter
             clip: true
             color: root.bar ? root.bar.foreground : "white"
@@ -660,7 +694,7 @@ Item {
       // Fixed height, so hovering never makes the pad jump about.
       Text {
         width: root.padWidth
-        height: Style.space(14)
+        height: root.hintHeight
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         text: root.hoverHint

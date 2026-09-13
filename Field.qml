@@ -22,7 +22,7 @@ FocusScope {
   function focusMe() { fi.forceActiveFocus() }
 
   implicitWidth: panel.padWidth
-  implicitHeight: Style.space(26)
+  implicitHeight: panel.fieldHeight
   width: implicitWidth
   height: implicitHeight
 
@@ -38,8 +38,8 @@ FocusScope {
       // Within the scope, so focus handed to the Field arrives here.
       focus: true
       anchors.fill: parent
-      anchors.leftMargin: Style.space(6)
-      anchors.rightMargin: Style.space(6)
+      anchors.leftMargin: panel.inset
+      anchors.rightMargin: panel.inset
       verticalAlignment: TextInput.AlignVCenter
       clip: true
       color: panel.bar ? panel.bar.foreground : "white"

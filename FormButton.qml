@@ -12,7 +12,7 @@ Rectangle {
   property bool active: true
   property var onPress: null
 
-  height: Style.space(24)
+  height: panel.rowHeight
   radius: Style.cornerRadius
   opacity: fb.active ? 1.0 : 0.4
   color: fbMa.containsMouse && fb.active ? panel.surfaceButtonHover : panel.surfaceButton
