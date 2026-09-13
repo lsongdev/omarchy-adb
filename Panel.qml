@@ -45,8 +45,8 @@ Item {
     return out
   }
 
-  // Which set the pad is driving. Runtime-only: a bar widget has no way to write
-  // settings back, so this returns to the first set when the shell restarts.
+  // Which set the pad is driving. Runtime-only by choice: switching TV is a
+  // "for now" action, not a preference worth rewriting shell.json for.
   property int activeTv: 0
   readonly property string tvAddress: (tvs.length > activeTv) ? tvs[activeTv].addr : ""
 
@@ -148,6 +148,41 @@ Item {
   }
 
   function reprobeAll() { if (!probeAll.running) probeAll.running = true }
+
+  // updateEntryInline REPLACES the entry with { id } plus whatever it is handed,
+  // so any key omitted here is silently dropped from shell.json -- including the
+  // app shortcuts. Always send the current settings merged with the change.
+  function persist(patch) {
+    if (!bar || !bar.shell || typeof bar.shell.updateEntryInline !== "function") return false
+    var merged = ({})
+    if (settings) for (var k in settings) if (k !== "id") merged[k] = settings[k]
+    for (var q in patch) merged[q] = patch[q]
+    return bar.shell.updateEntryInline(moduleName, merged)
+  }
+
+  // Lowest slot with no address, or 0 when all three are taken. Mirrors how
+  // `tvs` is built, legacy tvAddress included, so the two cannot disagree.
+  function freeSlot() {
+    for (var i = 1; i <= 3; i++)
+      if (root.setting("tv" + i + "Address", i === 1 ? root.setting("tvAddress", "") : "") === "")
+        return i
+    return 0
+  }
+
+  function addTv(label, addr) {
+    var slot = root.freeSlot()
+    if (slot === 0) return false
+    var a = String(addr || "").trim()
+    if (a === "") return false
+    // A bare IP is what people read off the TV's own network screen; adb needs
+    // the port, so fill in the standard one rather than failing the add.
+    if (a.indexOf(":") === -1) a += ":5555"
+    var name = String(label || "").trim()
+    var patch = ({})
+    patch["tv" + slot + "Address"] = a
+    patch["tv" + slot + "Label"] = name === "" ? ("TV " + slot) : name
+    return root.persist(patch)
+  }
 
   function selectTv(i) {
     if (i < 0 || i >= tvs.length || i === activeTv) return
@@ -281,6 +316,44 @@ Item {
       onEntered: if (k.tip !== "" && root.bar && root.bar.showTooltip) root.bar.showTooltip(k, k.tip)
       onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(k)
       onClicked: if (k.onPress) k.onPress()
+    }
+  }
+
+  // Same treatment as the type-at-the-TV field, minus the history handling.
+  component Field: Rectangle {
+    id: f
+    property string placeholder: ""
+    property alias text: fi.text
+    function focusMe() { fi.forceActiveFocus() }
+
+    width: root.padWidth
+    height: Style.space(26)
+    radius: Style.cornerRadius
+    color: Qt.rgba(1, 1, 1, 0.06)
+    border.width: fi.activeFocus ? 1 : 0
+    border.color: root.bar ? root.bar.foreground : "white"
+
+    TextInput {
+      id: fi
+      anchors.fill: parent
+      anchors.leftMargin: Style.space(6)
+      anchors.rightMargin: Style.space(6)
+      verticalAlignment: TextInput.AlignVCenter
+      clip: true
+      color: root.bar ? root.bar.foreground : "white"
+      font.family: root.bar ? root.bar.fontFamily : "monospace"
+      font.pixelSize: 10
+      selectByMouse: true
+
+      Text {
+        anchors.verticalCenter: parent.verticalCenter
+        visible: fi.text.length === 0 && !fi.activeFocus
+        text: f.placeholder
+        color: root.bar ? root.bar.foreground : "white"
+        opacity: 0.35
+        font.family: fi.font.family
+        font.pixelSize: fi.font.pixelSize
+      }
     }
   }
 
@@ -497,7 +570,7 @@ Item {
             font.family: root.bar ? root.bar.fontFamily : "monospace"
             font.pixelSize: 11
             selectByMouse: true
-            focus: root.opened
+            focus: root.opened && !picker.adding
 
             Keys.onReturnPressed: entry.send()
             Keys.onEnterPressed: entry.send()
@@ -564,18 +637,38 @@ Item {
       Column {
         id: picker
         property bool expanded: false
+        property bool adding: false
+        // Expandable when there is something to expand to: another set, or a
+        // free slot to add one into.
+        readonly property bool hasMore: root.tvs.length > 1 || root.freeSlot() !== 0
         spacing: Style.space(4)
-        visible: root.tvs.length > 0
 
         // Probing three TVs costs three adb round-trips, so it happens when the
         // list is actually being looked at rather than on every poll tick.
         onExpandedChanged: if (expanded) root.reprobeAll()
 
+        function startAdd() {
+          nameField.text = ""
+          addrField.text = ""
+          adding = true
+          nameField.focusMe()
+        }
+        function cancelAdd() {
+          adding = false
+          entry.forceActiveFocus()
+        }
+        function commitAdd() {
+          if (!root.addTv(nameField.text, addrField.text)) return
+          adding = false
+          entry.forceActiveFocus()
+          Qt.callLater(root.reprobeAll)
+        }
+
         TvRow {
-          visible: !picker.expanded
+          visible: !picker.expanded && root.tvs.length > 0
           slot: root.activeTv
-          trailing: root.tvs.length > 1 ? "▸" : ""
-          onActivate: function() { if (root.tvs.length > 1) picker.expanded = true }
+          trailing: picker.hasMore ? "▸" : ""
+          onActivate: function() { if (picker.hasMore) picker.expanded = true }
         }
 
         Repeater {
@@ -584,6 +677,101 @@ Item {
             slot: index
             trailing: index === root.activeTv ? "▾" : ""
             onActivate: function() { root.selectTv(index); picker.expanded = false }
+          }
+        }
+
+        // With no sets configured at all there is nothing to expand, so the add
+        // row stands in for the picker entirely -- otherwise the only way to
+        // get a first TV in would be to hand-edit shell.json.
+        Rectangle {
+          visible: !picker.adding && root.freeSlot() !== 0
+                   && (picker.expanded || root.tvs.length === 0)
+          width: root.padWidth
+          height: Style.space(24)
+          radius: Style.cornerRadius
+          color: addMa.pressed ? Color.popups.border
+               : addMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
+          Behavior on color { ColorAnimation { duration: 90 } }
+
+          Text {
+            anchors.left: parent.left
+            anchors.leftMargin: Style.space(6)
+            anchors.verticalCenter: parent.verticalCenter
+            text: "+ Add TV"
+            color: root.bar ? root.bar.foreground : "white"
+            opacity: 0.72
+            font.family: root.bar ? root.bar.fontFamily : "monospace"
+            font.pixelSize: 10
+          }
+
+          MouseArea {
+            id: addMa
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: picker.startAdd()
+          }
+        }
+
+        Field {
+          id: nameField
+          visible: picker.adding
+          placeholder: "name (e.g. Bedroom)"
+          Keys.onReturnPressed: addrField.focusMe()
+          Keys.onEnterPressed: addrField.focusMe()
+          Keys.onEscapePressed: picker.cancelAdd()
+        }
+        Field {
+          id: addrField
+          visible: picker.adding
+          placeholder: "192.168.1.50  (:5555 assumed)"
+          Keys.onReturnPressed: picker.commitAdd()
+          Keys.onEnterPressed: picker.commitAdd()
+          Keys.onEscapePressed: picker.cancelAdd()
+        }
+        Row {
+          visible: picker.adding
+          spacing: Style.space(6)
+
+          Rectangle {
+            width: (root.padWidth - Style.space(6)) / 2
+            height: Style.space(24)
+            radius: Style.cornerRadius
+            // Nothing to save without an address, and saying so by going flat
+            // beats writing a half-configured set into shell.json.
+            opacity: addrField.text.trim() === "" ? 0.4 : 1.0
+            color: saveMa.containsMouse ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.08)
+            Text {
+              anchors.centerIn: parent
+              text: "SAVE"
+              color: root.bar ? root.bar.foreground : "white"
+              font.family: root.bar ? root.bar.fontFamily : "monospace"
+              font.pixelSize: 9
+            }
+            MouseArea {
+              id: saveMa
+              anchors.fill: parent
+              hoverEnabled: true
+              onClicked: picker.commitAdd()
+            }
+          }
+          Rectangle {
+            width: (root.padWidth - Style.space(6)) / 2
+            height: Style.space(24)
+            radius: Style.cornerRadius
+            color: cancelMa.containsMouse ? Qt.rgba(1, 1, 1, 0.16) : Qt.rgba(1, 1, 1, 0.08)
+            Text {
+              anchors.centerIn: parent
+              text: "CANCEL"
+              color: root.bar ? root.bar.foreground : "white"
+              font.family: root.bar ? root.bar.fontFamily : "monospace"
+              font.pixelSize: 9
+            }
+            MouseArea {
+              id: cancelMa
+              anchors.fill: parent
+              hoverEnabled: true
+              onClicked: picker.cancelAdd()
+            }
           }
         }
       }

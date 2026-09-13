@@ -62,6 +62,14 @@ every user and `omarchy plugin update` overwrites it. Addresses belong in the us
 `shell.json`. Note that `entrySettings` does **not** merge manifest defaults at runtime, so
 the widget must carry its own fallbacks — see `setting()` in `Panel.qml`.
 
+**`updateEntryInline` REPLACES the entry, it does not merge.** The widget can
+persist its own settings via `bar.shell.updateEntryInline(moduleName, settings)` --
+the capability-scoped facade in `services/PluginShellApi.qml` allows it for the
+plugin's own id. But the shell rebuilds the entry as `{ id }` plus exactly what it
+is handed, so any key left out is dropped from `shell.json`. Adding a TV this way
+would silently wipe the app shortcuts. Always send current settings merged with the
+change -- see `persist()` in `Panel.qml`.
+
 **Never assume settings exist at `Component.onCompleted`.** The bar injects them afterwards,
 so the first reachability probe runs with an empty address and falls back to "first
 connected device". `onTvAddressChanged` re-probes; without it the widget reports `up` for a

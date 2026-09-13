@@ -31,7 +31,8 @@ Then set your TV's address (Settings → Network → Status on the TV):
 ```
 
 Up to three sets can be configured; the pad drives one at a time and the picker
-at its foot switches between them. One TV is the normal case — configure `tv1`
+at its foot switches between them. You do not have to write that by hand — open
+the picker and use **+ Add TV**, which writes the set into `shell.json` for you. One TV is the normal case — configure `tv1`
 alone and the picker stays a single status line.
 
 The first connection prompts **"Allow USB debugging?"** on the TV. Tick
@@ -59,7 +60,9 @@ focused field), and the set picker along the bottom.
 
 The picker is one line showing the TV being driven and whether it is reachable.
 Click it to list every configured set with its own status, and click a set to
-switch to it. Reachability for the other sets is only refreshed while that list
+switch to it. **+ Add TV** at the foot of that list takes a name and an address
+and saves them; a bare IP gets `:5555` appended. The row disappears once all
+three slots are used. Removing or renaming a set is still a `shell.json` edit. Reachability for the other sets is only refreshed while that list
 is open, so three configured TVs do not mean three times the adb traffic on
 every poll.
 
