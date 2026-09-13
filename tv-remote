@@ -6,7 +6,8 @@
 #   tv-remote clear [n]            send n backspaces (default 24) to wipe a field
 #   tv-remote app <package>        launch an app by package name
 #   tv-remote inputs               open the input / source picker
-#   tv-remote status               "up" / "down" / "noadb"
+#   tv-remote status               "up" / "down" / "unauth" / "noadb"
+#   tv-remote reauth               re-trigger the device's USB-debugging prompt
 #
 # The TV address comes from $TV_ADB_ADDR (the widget passes its configured
 # value). Falls back to the first already-connected device so the script is
@@ -30,6 +31,12 @@ if [ -z "$TV" ]; then
 fi
 
 connected() { adb devices 2>/dev/null | grep -q "^${TV}[[:space:]]*device$"; }
+
+# A device that answered but whose debugging prompt was dismissed (or was never
+# accepted) sits in "unauthorized" indefinitely. That needs a human to tap Allow,
+# not another reconnect, so it gets its own state instead of being flattened
+# into "down" where the widget cannot tell the two apart.
+unauthorized() { adb devices 2>/dev/null | grep -q "^${TV}[[:space:]]*unauthorized$"; }
 
 ensure() {
   connected && return 0
@@ -89,9 +96,34 @@ case "${1:-}" in
     ;;
 
   status)
-    ensure && echo up || echo down ;;
+    if ensure; then echo up
+    elif unauthorized; then echo unauth
+    else echo down
+    fi ;;
+
+  reauth)
+    # Re-show the "Allow USB debugging?" dialog on the device.
+    #
+    # Only a full server restart does this. `adb disconnect` + `connect` is not
+    # enough -- adbd remembers that this host's key was refused and fails the
+    # handshake again with nothing on screen. Bouncing the local server forces a
+    # fresh key exchange, which is what puts the dialog back up.
+    #
+    # Cost: kill-server drops EVERY connected device, not just this one. That is
+    # survivable because every action above reconnects on demand, but a reauth on
+    # one TV does briefly disconnect the others.
+    adb kill-server >/dev/null 2>&1
+    adb start-server >/dev/null 2>&1
+    adb connect "$TV" >/dev/null 2>&1
+    sleep 1
+    # Someone still has to tap Allow, so report what we ended up with rather
+    # than claiming success.
+    if connected; then echo up
+    elif unauthorized; then echo unauth
+    else echo down
+    fi ;;
 
   *)
-    echo "usage: tv-remote {key <KEYCODE>|text <string> [enter]|clear [n]|app <package>|inputs|status}" >&2
+    echo "usage: tv-remote {key <KEYCODE>|text <string> [enter]|clear [n]|app <package>|inputs|status|reauth}" >&2
     exit 2 ;;
 esac

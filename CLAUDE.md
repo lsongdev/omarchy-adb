@@ -4,7 +4,8 @@ An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, 
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
 - `Panel.qml` — the bar widget and its pad. Plugin id `atv.remote`, `kinds: ["bar-widget"]`.
-- `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` / `status`.
+- `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` / `status` /
+  `reauth`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
 
@@ -15,7 +16,7 @@ usable from a terminal without the shell running, and makes the ADB half testabl
 
 ```sh
 # The shim is directly runnable — test ADB behaviour without the shell.
-TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status          # up | down | noadb
+TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status          # up | down | unauth | noadb
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote text "hi" enter
 
 omarchy plugin validate .          # manifest against the plugin schema
