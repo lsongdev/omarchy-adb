@@ -212,7 +212,8 @@ omarchy restart shell
 
 Files under `~/.config/omarchy/plugins/` hot-reload on save, but the bar widget
 is mounted at startup, so a restart is the reliable way to see a change. The
-`tv-remote` script needs no restart at all.
+`tv-remote` script needs no restart at all, and `./test/tv-remote.sh` checks it
+against a fake `adb` without a TV in the room.
 
 If you installed with `omarchy plugin add`, the directory is a git checkout, so
 `omarchy plugin update atv.remote` pulls new commits.

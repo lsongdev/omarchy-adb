@@ -12,14 +12,14 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   the components use, the same way it fronts Service.
 - `SetPicker.qml` — the strip along the foot of the pad: the sets, the add/rename form,
   the app chooser and the shortcut list.
-- `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml`, `HintArea.qml`, `PadText.qml`
-  — the pieces those are built from. Each takes `panel`, since a component in its own file
+- `PadKey.qml`, `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml`, `HintArea.qml`,
+  `PadText.qml` — the pieces those are built from. Each takes `panel`, since a component in its own file
   cannot reach the Panel lexically the way an inline one can. Theme values (`textColour`,
   `fontFamily`, the `surface*` colours, `surfaceFor()`) and metrics all come from the
   Panel, never as literals in a component; anything readable on the pad is a `PadText`,
   and any small filled button is a `FormButton`.
 - `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
-  `apps` / `status` / `reauth`.
+  `apps` / `status` / `reauth`. `test/tv-remote.sh` runs it against a fake `adb`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
 
@@ -70,15 +70,21 @@ update. Otherwise the two drift and it is not obvious which one the bar is runni
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status          # up | down | unauth | noadb
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote text "hi" enter
 
+./test/tv-remote.sh                # the shim against a fake adb, ~12 s
 omarchy plugin validate .          # manifest against the plugin schema
 omarchy restart shell              # apply a Panel.qml change
 omarchy plugin update atv.remote   # pull commits into an installed checkout
 ```
 
-## There are no unit tests — verify by looking
+## Only the shim has tests — verify the rest by looking
 
-This is QML in a live compositor driving real hardware. Nothing here is unit-testable, so
-**verify visually and never infer success from the absence of errors**:
+`./test/tv-remote.sh` runs the shim against a fake `adb` (`test/fake-adb/adb`) and checks
+what it prints and exactly what it asks the device shell to do: every reachability state,
+reauth, and the quoting and sequencing of `text`, `clear` and `inputs`. Change the shim,
+run it; add a verb, add a case.
+
+Everything else is QML in a live compositor driving real hardware and is not
+unit-testable, so **verify visually and never infer success from the absence of errors**:
 
 ```sh
 grim -g "1150,0 450x30" /tmp/bar.png        # the bar icon (logical coords)

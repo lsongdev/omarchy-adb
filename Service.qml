@@ -48,8 +48,7 @@ Item {
   // Anything the shim reports that is not one of these is ignored rather than
   // stored, so a state added to the shim before the widget knows how to draw it
   // cannot leave the pad showing something it has no UI for.
-  readonly property var validStates: [stateName.up, stateName.down,
-                                      stateName.unauth, stateName.noadb]
+  readonly property var validStates: Object.keys(stateName)
 
   // One of validStates, for the active set.
   property string state: stateName.up

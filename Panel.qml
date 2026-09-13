@@ -328,50 +328,9 @@ Item {
     onTapped: root.key("KEYCODE_HOME")
   }
 
-  component Key: Rectangle {
-    id: k
-    property string glyph: ""
-    property string label: ""
-    // Naming the action is enough: the description, the shortcut shown on hover
-    // and what pressing it does all come from the one table.
-    property string action: ""
-    property string tip: action !== "" ? root.labelFor(action) : ""
-    property string keyHint: action !== "" ? root.hintFor(action) : ""
-    property var onPress: null
-    // Outlined while the key does something other than what its face says --
-    // the shortcut buttons configure rather than launch in edit mode, and
-    // nothing else on them would show that.
-    property bool marked: false
-    // Nothing configured behind it. Still pressable, so the hint can say why.
-    property bool unset: false
-    readonly property string hintText: tip === "" ? ""
-      : (keyHint === "" ? tip : tip + "  [" + keyHint + "]")
-
-    implicitWidth: root.keyWidth
-    implicitHeight: root.keyHeight
-    radius: Style.cornerRadius
-    border.width: k.marked ? 1 : 0
-    border.color: root.textColour
-    opacity: k.unset ? 0.45 : 1.0
-    color: root.surfaceFor(ma.pressed, ma.containsMouse,
-                           k.marked ? root.surfaceHover : root.surfaceIdle)
-    Behavior on color { ColorAnimation { duration: 90 } }
-
-    PadText {
-      panel: root
-      anchors.centerIn: parent
-      text: k.glyph !== "" ? k.glyph : k.label
-      font.pixelSize: k.glyph !== "" ? 15 : 10
-    }
-
-    HintArea {
-      id: ma
-      panel: root
-      anchors.fill: parent
-      hint: k.hintText
-      onClicked: { if (k.onPress) k.onPress(); else if (k.action !== "") root.runAction(k.action) }
-    }
-  }
+  // Every key in the grid is a PadKey that already knows its Panel, so the
+  // rows below can name a glyph and an action and nothing else.
+  component Key: PadKey { panel: root }
 
   // KeyboardPanel, not PopupCard: PopupCard is an xdg-popup and only receives
   // keys after a click routes focus through its parent surface, so a text

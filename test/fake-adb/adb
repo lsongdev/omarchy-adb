@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# A stand-in for adb, for test/tv-remote.sh. Every call is appended to $FAKE_LOG
+# so the test can see exactly what the shim asked the device to do.
+#
+#   FAKE_TV      the serial `devices` lists
+#   FAKE_STATE   its column: device | unauthorized | offline | (empty = not listed)
+#   FAKE_CONNECT what `adb connect` changes FAKE_STATE to, if anything
+printf '%s\n' "$*" >> "${FAKE_LOG:?}"
+state_file="${FAKE_LOG}.state"
+[ -f "$state_file" ] || printf '%s' "${FAKE_STATE-}" > "$state_file"
+case "$1" in
+  devices)
+    printf 'List of devices attached\n'
+    st=$(cat "$state_file")
+    [ -n "$st" ] && printf '%s\t%s\n' "${FAKE_TV-}" "$st"
+    ;;
+  connect)
+    [ -n "${FAKE_CONNECT-}" ] && printf '%s' "$FAKE_CONNECT" > "$state_file"
+    ;;
+  *) ;;
+esac
+exit 0
