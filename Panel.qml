@@ -129,25 +129,26 @@ Item {
       if (ev.key === Qt.Key_3) { selectTv(2); return true }
       return false
     }
-    // Power is the one irreversible key here: a TV that is off does not answer
-    // ADB, so it cannot be undone from this side. It takes Shift so a stray
-    // press by someone who forgot to hit T cannot switch the set off.
-    if (ev.key === Qt.Key_S && (ev.modifiers & Qt.ShiftModifier)) {
-      key("KEYCODE_POWER"); return true
+    // Both power-state keys sit behind Shift, because W and S are D-pad
+    // directions now. Power especially: it is the one key here that cannot be
+    // undone from this side, since a TV that is off does not answer ADB, and a
+    // stray press from someone who forgot to hit T would end the session.
+    if (ev.modifiers & Qt.ShiftModifier) {
+      if (ev.key === Qt.Key_S) { key("KEYCODE_POWER");  return true }
+      if (ev.key === Qt.Key_W) { key("KEYCODE_WAKEUP"); return true }
     }
     if (ev.modifiers & (Qt.ShiftModifier | Qt.ControlModifier | Qt.MetaModifier)) return false
 
     switch (ev.key) {
-      case Qt.Key_Up:    case Qt.Key_K: key("KEYCODE_DPAD_UP");     return true
-      case Qt.Key_Down:  case Qt.Key_J: key("KEYCODE_DPAD_DOWN");   return true
-      case Qt.Key_Left:  case Qt.Key_H: key("KEYCODE_DPAD_LEFT");   return true
-      case Qt.Key_Right: case Qt.Key_L: key("KEYCODE_DPAD_RIGHT");  return true
+      case Qt.Key_Up:    case Qt.Key_W: key("KEYCODE_DPAD_UP");     return true
+      case Qt.Key_Down:  case Qt.Key_S: key("KEYCODE_DPAD_DOWN");   return true
+      case Qt.Key_Left:  case Qt.Key_A: key("KEYCODE_DPAD_LEFT");   return true
+      case Qt.Key_Right: case Qt.Key_D: key("KEYCODE_DPAD_RIGHT");  return true
       case Qt.Key_Return: case Qt.Key_Enter: key("KEYCODE_DPAD_CENTER"); return true
 
       case Qt.Key_B: key("KEYCODE_BACK");  return true
       case Qt.Key_G: key("KEYCODE_HOME");  return true
       case Qt.Key_M: key("KEYCODE_MENU");  return true
-      case Qt.Key_W: key("KEYCODE_WAKEUP"); return true
 
       case Qt.Key_P: key("KEYCODE_MEDIA_PLAY_PAUSE"); return true
       case Qt.Key_R: key("KEYCODE_MEDIA_REWIND");     return true

@@ -59,7 +59,7 @@ could be a control.
 
 | Key | Does |
 |---|---|
-| Arrows or `H` `J` `K` `L` | D-pad |
+| Arrows or `W` `A` `S` `D` | D-pad |
 | `Enter` | Select / OK |
 | `B` | Back |
 | `G` | Home |
@@ -70,17 +70,17 @@ could be a control.
 | `[` / `]` | Previous / next |
 | `-` / `=` | Volume down / up |
 | `X` | Mute |
-| `W` | Wake |
-| `Shift+S` | Power |
+| `Shift+W` / `Shift+S` | Wake / power |
 | `1` `2` `3` | The three app shortcuts |
 | `T` or `/` | Type at the TV. `Esc` hands the keyboard back |
 | `Tab` | Switch to the next configured TV |
 | `Alt+1` / `Alt+2` / `Alt+3` | Jump straight to that TV |
 | `Esc` or `Q` | Close the pad |
 
-Power takes `Shift` rather than a bare key because it cannot be undone from this
-side: a TV that is off does not answer ADB, so a stray press by someone who
-forgot to hit `T` first would end the session.
+Both power-state keys sit behind `Shift`, since `W` and `S` are D-pad directions.
+Power especially: it cannot be undone from this side, because a TV that is off
+does not answer ADB, so a stray press by someone who forgot to hit `T` first
+would end the session.
 
 Clicking the text field enters typing mode too, and the placeholder reads
 **T to type…** as a reminder that the pad is modal.
