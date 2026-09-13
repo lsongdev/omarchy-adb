@@ -95,8 +95,10 @@ case "${1:-}" in
     n=${2:-24}
     case "$n" in (''|*[!0-9]*) n=24 ;; esac
     [ "$n" -gt 200 ] && n=200
-    # One adb round-trip rather than n of them.
-    seq=""; i=0
+    # Backspace only eats what is behind the cursor, and a field opened for
+    # editing can leave it anywhere, so jump to the end first. One adb
+    # round-trip rather than n of them.
+    seq=" KEYCODE_MOVE_END"; i=0
     while [ "$i" -lt "$n" ]; do seq="$seq KEYCODE_DEL"; i=$((i+1)); done
     sh_ "input keyevent$seq"
     ;;
