@@ -27,6 +27,10 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   `apps` / `status` / `reauth`. `test/tv-remote.sh` runs it against a fake `adb`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
+- `docs/architecture.json` — the component map, as an [Archify](https://github.com/tt-a1i/archify)
+  spec. `docs/architecture.html` and `docs/architecture.png` are generated from it: change
+  the spec, never the outputs. The PNG is a 1920-wide headless-chromium screenshot of the
+  HTML, cropped to the diagram panel.
 
 The widget shells out to the script; the script owns all ADB. That split keeps the remote
 usable from a terminal without the shell running, and makes the ADB half testable alone.
@@ -76,6 +80,12 @@ TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status          # up | down | unauth |
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote text "hi" enter
 
 ./test/tv-remote.sh                # the shim against a fake adb, ~12 s
+
+# Regenerate the architecture diagram after moving or renaming a file. Archify
+# is not installed here; a clone runs in place with no npm install.
+git clone --depth 1 https://github.com/tt-a1i/archify /tmp/archify
+node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/architecture.json \
+  docs/architecture.html --quality showcase --repo-root .   # want: ok, 0 errors
 omarchy plugin validate .          # manifest against the plugin schema
 omarchy restart shell              # apply a Panel.qml change
 omarchy plugin update atv.remote   # pull commits into an installed checkout

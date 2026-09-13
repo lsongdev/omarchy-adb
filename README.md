@@ -203,6 +203,13 @@ MIT. See [LICENSE](LICENSE).
 
 ## Development
 
+![architecture](docs/architecture.png)
+
+[`docs/architecture.html`](docs/architecture.html) is the same diagram as an
+interactive page: open it in a browser for guided views, search and export. It
+is generated from `docs/architecture.json` with
+[Archify](https://github.com/tt-a1i/archify); see `CLAUDE.md` for the command.
+
 The plugin is plain QML plus a shell script, so edits apply without a rebuild:
 
 ```bash

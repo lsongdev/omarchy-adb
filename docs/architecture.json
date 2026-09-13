@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Android TV Remote: from bar to TV",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      580
+    ],
+    "repository": {
+      "url": "https://github.com/swey-l1/omarchy-android-tv-remote",
+      "provider": "github",
+      "link_mode": "local-only",
+      "revision": "2878f8d88f5d795a07acb55d694cf55cdbc75feb"
+    },
+    "views": [
+      {
+        "id": "keypress",
+        "label": "A key press",
+        "focus": [
+          "pad",
+          "panel",
+          "service",
+          "shim",
+          "adb",
+          "tv"
+        ],
+        "note": "The pad hands a key to the Panel, whose action becomes one shim call, one adb command, one TV keyevent."
+      },
+      {
+        "id": "settings",
+        "label": "Settings round trip",
+        "focus": [
+          "picker",
+          "pad",
+          "panel",
+          "config",
+          "shelljson",
+          "bar"
+        ],
+        "note": "Forms in the picker write through Config, which merges and hands the whole entry back to the shell."
+      },
+      {
+        "id": "probes",
+        "label": "Reachability",
+        "focus": [
+          "service",
+          "shim",
+          "adb",
+          "tv"
+        ],
+        "note": "Service polls the active set and probes all of them while the picker is open; the shim reconnects on demand."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "shelljson",
+      "type": "database",
+      "label": "shell.json",
+      "sublabel": "~/.config/omarchy",
+      "pos": [
+        38,
+        80
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "manifest.json"
+        }
+      ]
+    },
+    {
+      "id": "bar",
+      "type": "external",
+      "label": "omarchy-shell bar",
+      "sublabel": "injects bar, settings",
+      "pos": [
+        38,
+        260
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Panel.qml"
+        }
+      ]
+    },
+    {
+      "id": "config",
+      "type": "backend",
+      "label": "Config.qml",
+      "sublabel": "sets, slots, persist()",
+      "pos": [
+        220,
+        80
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Config.qml"
+        }
+      ]
+    },
+    {
+      "id": "bindings",
+      "type": "backend",
+      "label": "Bindings.qml",
+      "sublabel": "keyMap, dispatcher",
+      "pos": [
+        402,
+        80
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Bindings.qml"
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "type": "frontend",
+      "label": "Panel.qml",
+      "sublabel": "icon, mode, the model",
+      "pos": [
+        220,
+        260
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Panel.qml"
+        },
+        {
+          "path": "Theme.qml",
+          "label": "inherits Theme"
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "Service.qml",
+      "sublabel": "probe, apps, reauth",
+      "pos": [
+        402,
+        260
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Service.qml"
+        }
+      ]
+    },
+    {
+      "id": "shim",
+      "type": "backend",
+      "label": "tv-remote",
+      "sublabel": "bash: key, text, clear, app",
+      "pos": [
+        584,
+        260
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "tv-remote"
+        }
+      ]
+    },
+    {
+      "id": "adb",
+      "type": "external",
+      "label": "adb",
+      "sublabel": "local server",
+      "pos": [
+        766,
+        260
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "tv-remote"
+        }
+      ]
+    },
+    {
+      "id": "tv",
+      "type": "external",
+      "label": "Android TV",
+      "sublabel": "up to three sets",
+      "pos": [
+        948,
+        260
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "tv-remote"
+        }
+      ]
+    },
+    {
+      "id": "pad",
+      "type": "frontend",
+      "label": "Pad.qml",
+      "sublabel": "grid, TypeField, focus",
+      "pos": [
+        220,
+        440
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Pad.qml"
+        }
+      ]
+    },
+    {
+      "id": "picker",
+      "type": "frontend",
+      "label": "SetPicker.qml",
+      "sublabel": "TvForm, AppChooser",
+      "pos": [
+        402,
+        440
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "SetPicker.qml"
+        }
+      ]
+    },
+    {
+      "id": "test",
+      "type": "external",
+      "label": "test/tv-remote.sh",
+      "sublabel": "fake adb, 26 cases",
+      "pos": [
+        584,
+        440
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "test/tv-remote.sh"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "omarchy-shell",
+      "wraps": [
+        "shelljson",
+        "bar"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "atv.remote widget (QML)",
+      "wraps": [
+        "config",
+        "bindings",
+        "panel",
+        "service",
+        "pad",
+        "picker"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "ADB half (bash)",
+      "wraps": [
+        "shim",
+        "test"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "bar-panel",
+      "from": "bar",
+      "to": "panel",
+      "label": "bar, settings",
+      "variant": "emphasis",
+      "labelDy": -30
+    },
+    {
+      "id": "config-shelljson",
+      "from": "config",
+      "to": "shelljson",
+      "label": "updateEntryInline",
+      "labelAt": [
+        198,
+        162
+      ]
+    },
+    {
+      "id": "panel-config",
+      "from": "panel",
+      "to": "config",
+      "label": "read, persist",
+      "labelDy": -60
+    },
+    {
+      "id": "bindings-panel",
+      "from": "bindings",
+      "to": "panel",
+      "label": "actions",
+      "fromSide": "left",
+      "toSide": "top"
+    },
+    {
+      "id": "panel-service",
+      "from": "panel",
+      "to": "service",
+      "label": "address, actions",
+      "labelDy": -30
+    },
+    {
+      "id": "service-shim",
+      "from": "service",
+      "to": "shim",
+      "label": "bash -c"
+    },
+    {
+      "id": "shim-adb",
+      "from": "shim",
+      "to": "adb",
+      "label": "adb -s host:5555",
+      "labelDy": -30
+    },
+    {
+      "id": "adb-tv",
+      "from": "adb",
+      "to": "tv",
+      "label": "wifi, reconnects",
+      "variant": "emphasis",
+      "labelDy": -30
+    },
+    {
+      "id": "pad-panel",
+      "from": "pad",
+      "to": "panel",
+      "label": "keys, hover"
+    },
+    {
+      "id": "pad-picker",
+      "from": "pad",
+      "to": "picker",
+      "label": "sets, forms",
+      "labelDy": -30
+    },
+    {
+      "id": "test-shim",
+      "from": "test",
+      "to": "shim",
+      "label": "fake adb",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "One split that matters",
+      "items": [
+        "The widget shells out; the script owns all ADB",
+        "So the shim works from a terminal, and is the one half with a test"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Everything reads through panel",
+      "items": [
+        "Components take a panel; Panel is a Theme and fronts Config, Service, Bindings",
+        "Actions go out as one bar.run() each: fire-and-forget, never chained"
+      ]
+    }
+  ]
+}
