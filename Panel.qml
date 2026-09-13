@@ -28,7 +28,6 @@ Item {
   property var settings
 
   // Resolved relative to this file so the plugin works wherever it is installed.
-  readonly property string shim: String(Qt.resolvedUrl("tv-remote")).replace(/^file:\/\//, "")
   readonly property int pollSec: setting("pollSec", 60)
 
   // Up to three sets. `tvAddress` -- the pre-1.1 single-TV key -- is honoured as
@@ -71,13 +70,20 @@ Item {
   // "up" | "down" | "unauth" | "noadb" — noadb means adb isn't installed and
   // unauth means the set answered but nobody accepted its debugging prompt.
   // Both are distinct from a sleeping TV and each deserves its own message.
-  property string state: "up"
+  property string state: svc.state
   readonly property bool online: state === "up"
 
   // Per-slot states, parallel to `tvs`. Only refreshed when the picker is open:
   // the poll timer probes the active set alone, so three configured TVs do not
   // mean three times the adb traffic on every tick.
-  property var tvStates: []
+  readonly property var tvStates: svc.states
+
+  Service {
+    id: svc
+    address: root.tvAddress
+    addresses: root.tvs.map(function (t) { return t.addr })
+    pollSec: root.pollSec
+  }
 
   // Last few typed strings, newest first. Up/Down in the field walks them.
   property var history: []
@@ -96,18 +102,9 @@ Item {
   implicitWidth: bar ? (bar.vertical ? bar.barSize : 24) : 24
   implicitHeight: bar ? bar.barSize : 26
 
-  // The one place that knows how to invoke the shim. An empty address is
-  // deliberately left off rather than exported blank: the shim falls back to the
-  // first connected device only when TV_ADB_ADDR is unset, which is what makes
-  // the startup probe work before the bar has injected settings.
-  function shimCmd(addr, args) {
-    return (addr !== "" ? "TV_ADB_ADDR=" + Util.shellQuote(addr) + " " : "")
-         + Util.shellQuote(shim) + " " + args
-  }
-
   function sh(args) {
     if (!bar || typeof bar.run !== "function") return
-    bar.run(shimCmd(tvAddress, args))
+    bar.run(svc.shimCmd(tvAddress, args))
   }
   function key(code) { sh("key " + code) }
 
@@ -182,53 +179,8 @@ Item {
   function close() { opened = false }
   function toggle() { opened = !opened }
 
-  Process {
-    id: probe
-    command: ["bash", "-c", root.shimCmd(root.tvAddress, "status")]
-    stdout: SplitParser {
-      onRead: function(line) {
-        var v = String(line).trim()
-        if (v === "up" || v === "down" || v === "unauth" || v === "noadb") root.state = v
-      }
-    }
-  }
-  Timer {
-    id: pollTimer
-    interval: root.pollSec * 1000
-    running: true; repeat: true; triggeredOnStart: true
-    onTriggered: root.reprobe()
-  }
-
-  function reprobe() { if (!probe.running) probe.running = true }
-
-  // One process for all slots rather than one each: the shim takes a single
-  // address, so the loop lives in the shell command and each set reports back as
-  // "<slot> <state>".
-  function probeAllScript() {
-    var cmd = ""
-    for (var i = 0; i < tvs.length; i++)
-      cmd += "echo " + i + " $(" + shimCmd(tvs[i].addr, "status") + "); "
-    return cmd === "" ? "true" : cmd
-  }
-
-  Process {
-    id: probeAll
-    command: ["bash", "-c", root.probeAllScript()]
-    stdout: SplitParser {
-      onRead: function(line) {
-        var parts = String(line).trim().split(" ")
-        if (parts.length !== 2) return
-        var i = parseInt(parts[0], 10)
-        if (isNaN(i) || i < 0 || i >= root.tvs.length) return
-        var next = root.tvStates.slice()
-        while (next.length < root.tvs.length) next.push("")
-        next[i] = parts[1]
-        root.tvStates = next
-      }
-    }
-  }
-
-  function reprobeAll() { if (!probeAll.running) probeAll.running = true }
+  function reprobe()    { svc.reprobe() }
+  function reprobeAll() { svc.reprobeAll() }
 
   // updateEntryInline REPLACES the entry with { id } plus whatever it is handed,
   // so any key omitted here is silently dropped from shell.json -- including the
@@ -291,31 +243,10 @@ Item {
   }
 
   // Launchable packages on the active set, filled in on demand.
-  property var appList: []
-  property bool appsLoading: false
+  readonly property var appList: svc.appList
+  readonly property bool appsLoading: svc.appsLoading
 
-  Process {
-    id: appsProc
-    command: ["bash", "-c", "true"]
-    stdout: SplitParser {
-      onRead: function(line) {
-        var v = String(line).trim()
-        if (v === "" || v.indexOf(".") === -1) return
-        var next = root.appList.slice()
-        if (next.indexOf(v) === -1) next.push(v)
-        root.appList = next
-      }
-    }
-    onExited: root.appsLoading = false
-  }
-
-  function loadApps() {
-    if (appsLoading) return
-    appList = []
-    appsLoading = true
-    appsProc.command = ["bash", "-c", shimCmd(tvAddress, "apps")]
-    appsProc.running = true
-  }
+  function loadApps() { svc.loadApps() }
 
   // The device has no display names to give -- PackageManager hands labels to
   // apps, not to `cmd package` -- so derive something readable: drop the
@@ -391,48 +322,7 @@ Item {
   }
   function cycleTv() { if (tvs.length > 1) selectTv((activeIndex + 1) % tvs.length) }
 
-  // Re-showing the prompt bounces the whole adb server, which drops the other
-  // sets too -- so every state on screen is stale the moment it returns, and all
-  // of them get re-probed rather than just the one we acted on.
-  Process {
-    id: reauthProc
-    command: ["bash", "-c", "true"]
-    onExited: authWatch.ticksLeft = 20
-  }
-
-  // Accepting the prompt happens on the TV, seconds after reauth has already
-  // exited -- so probing once on exit just re-reads "unauth", and the poll timer
-  // is a minute wide. Without this the row sits on a stale state until something
-  // else forces a probe (reopening the pad, which is how this got noticed).
-  // Watch briefly and often instead, and stop the moment it takes.
-  Timer {
-    id: authWatch
-    property int ticksLeft: 0
-    interval: 2000
-    repeat: true
-    running: ticksLeft > 0
-    onTriggered: {
-      ticksLeft -= 1
-      root.reprobe()
-      // Only the active set is worth probing this often; the others are stale
-      // from the server bounce too, so they get one sweep once this settles.
-      if (root.state === "up" || ticksLeft === 0) {
-        ticksLeft = 0
-        root.reprobeAll()
-      }
-    }
-  }
-  function reauth(i) {
-    if (reauthProc.running || i < 0 || i >= tvs.length) return
-    reauthProc.command = ["bash", "-c", shimCmd(tvs[i].addr, "reauth")]
-    reauthProc.running = true
-  }
-
-  // The bar injects settings after the first probe has already run, so the
-  // startup probe uses an empty address and falls back to "first connected
-  // device". Without this the widget would show that stale verdict until the
-  // next poll -- up to pollSec seconds of lying about which TV it is talking to.
-  onTvAddressChanged: Qt.callLater(root.reprobe)
+  function reauth(i) { if (i >= 0 && i < tvs.length) svc.reauth(tvs[i].addr) }
 
   Text {
     anchors.centerIn: parent
