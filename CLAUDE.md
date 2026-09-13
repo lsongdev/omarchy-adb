@@ -3,7 +3,15 @@
 An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, volume,
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
-- `Panel.qml` — the bar widget and its pad. Plugin id `atv.remote`, `kinds: ["bar-widget"]`.
+- `Panel.qml` — the bar widget, its pad, and the key map. Plugin id `atv.remote`,
+  `kinds: ["bar-widget"]`.
+- `Service.qml` — everything that shells out to `tv-remote`: reachability, the app list,
+  re-authorising. Takes the active address and the full list, hands back state.
+- `SetPicker.qml` — the strip along the foot of the pad: the sets, the add/rename form,
+  the app chooser and the shortcut list.
+- `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml` — the pieces those are built
+  from. Each takes `panel`, since a component in its own file cannot reach the Panel
+  lexically the way an inline one can.
 - `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
   `apps` / `status` / `reauth`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
