@@ -1,10 +1,18 @@
 import QtQuick
 import qs.Commons
 
-// ---- which set the pad is driving ---------------------------------
-// Bottom of the pad, so it reads as context for everything above it
-// rather than as another control. Collapsed it is a single line; expanded
-// it lists every configured set with its own reachability.
+// The strip along the foot of the pad. Four things share it, one at a time:
+// the configured sets and their reachability, the add/rename form, the app
+// chooser for the three shortcut buttons, and the list of keyboard shortcuts.
+//
+// It sits at the bottom so it reads as context for the remote above it rather
+// than as more controls. Collapsed it is a single line naming the set being
+// driven; expanded it lists every set, and edit mode turns a click on a row
+// into a rename rather than a switch.
+//
+// Keys arrive from the Panel rather than through focus: the pad is a
+// layer-shell surface that takes keyboard focus on demand, so `activeInput`
+// says where they should go.
 Column {
   // The Panel this belongs to: the sets, the settings writer, the shim and the
   // hint line all live there.

@@ -4,22 +4,25 @@ import Quickshell.Io
 import qs.Commons
 import qs.Ui
 
-// Bar remote for the Hisense Android TV, driven over ADB by
-// ~/.config/omarchy/bar/scripts/tv-remote.
+// The bar icon and the remote pad. Up to three Android TVs, one driven at a
+// time; ADB itself lives in Service.qml and the strip along the foot of the pad
+// in SetPicker.qml.
 //
 //   left   = open the remote pad
 //   right  = Inputs / source picker
 //   middle = Home
+//   scroll = volume
 //
-// Inputs uses SETUP_INPUTS rather than KEYCODE_TV_INPUT: that keycode is a
-// no-op on this set, and the Hisense mixbar/kpad source panel is only
-// reachable through protected broadcasts that adb cannot send.
+// With the pad open the keyboard drives the TV, modally: `keyMap` below is the
+// single definition of every binding, and typing at the TV is entered
+// deliberately so that single letters are free to be controls.
 //
-// Glyphs are literal UTF-8, not \u escapes — these are 5-hex-digit
-// codepoints and QML's \u takes exactly four.
+// The icon takes the theme's urgent colour when the set is unreachable.
+// adb-over-wifi drops whenever a TV sleeps, and the shim reconnects on demand,
+// so "unreachable" usually means asleep rather than broken.
 //
-// The icon dims when the TV is unreachable; adb-over-wifi drops when the set
-// sleeps and the shim reconnects on demand.
+// Glyphs are literal UTF-8, not \u escapes — these are 5-hex-digit codepoints
+// and QML's \u takes exactly four.
 Item {
   id: root
 
@@ -27,8 +30,13 @@ Item {
   property string moduleName: "atv.remote"
   property var settings
 
-  // Resolved relative to this file so the plugin works wherever it is installed.
+  // ---- the configured sets -------------------------------------------------
+
   readonly property int pollSec: setting("pollSec", 60)
+
+  // Three is the schema: tv1..tv3 in shell.json, Alt+1..3 to reach them, and
+  // three slots is already more TVs than most rooms have.
+  readonly property int maxSets: 3
 
   // Up to three sets. `tvAddress` -- the pre-1.1 single-TV key -- is honoured as
   // slot 1, so an existing shell.json keeps working untouched after an update.
@@ -36,7 +44,7 @@ Item {
   readonly property var tvs: {
     var out = []
     var legacy = root.setting("tvAddress", "")
-    for (var i = 1; i <= 3; i++) {
+    for (var i = 1; i <= maxSets; i++) {
       var addr = root.setting("tv" + i + "Address", i === 1 ? legacy : "")
       if (addr === "") continue
       out.push({ slot: i, addr: addr, label: root.setting("tv" + i + "Label", "TV " + i) })
@@ -58,6 +66,8 @@ Item {
   }
   readonly property string tvAddress: (tvs.length > activeIndex) ? tvs[activeIndex].addr : ""
 
+  // ---- palette -------------------------------------------------------------
+
   // The pad's surfaces and status colours, named once. Every component file
   // draws with these, and a literal repeated across five files is one that
   // drifts the first time somebody adjusts it -- the AUTH button had already
@@ -70,7 +80,8 @@ Item {
 
   readonly property color okColour:   "#98c379"
   readonly property color warnColour: "#e5c07b"
-  // Urgent is themed; the literal is only the fallback when the bar has no bar.
+  // Urgent comes from the theme; the literal is only a fallback for when the
+  // bar has not handed one over yet.
   readonly property color badColour:  bar && bar.urgent ? bar.urgent : "#e06c75"
 
   readonly property int padWidth: Style.space(38) * 3 + Style.space(6) * 2
@@ -119,6 +130,8 @@ Item {
 
   implicitWidth: bar ? (bar.vertical ? bar.barSize : 24) : 24
   implicitHeight: bar ? bar.barSize : 26
+
+  // ---- talking to the TV ---------------------------------------------------
 
   function sh(args) {
     if (!bar || typeof bar.run !== "function") return
@@ -217,6 +230,8 @@ Item {
   function reprobe()    { svc.reprobe() }
   function reprobeAll() { svc.reprobeAll() }
 
+  // ---- writing settings back -----------------------------------------------
+
   // updateEntryInline REPLACES the entry with { id } plus whatever it is handed,
   // so any key omitted here is silently dropped from shell.json -- including the
   // app shortcuts. Always send the current settings merged with the change.
@@ -231,7 +246,7 @@ Item {
   // Lowest slot with no address, or 0 when all three are taken. Mirrors how
   // `tvs` is built, legacy tvAddress included, so the two cannot disagree.
   function freeSlot() {
-    for (var i = 1; i <= 3; i++)
+    for (var i = 1; i <= maxSets; i++)
       if (root.setting("tv" + i + "Address", i === 1 ? root.setting("tvAddress", "") : "") === "")
         return i
     return 0
@@ -239,7 +254,7 @@ Item {
 
   // Writing one slot, used by both the add and the rename paths.
   function writeTv(slot, label, addr) {
-    if (slot < 1 || slot > 3) return false
+    if (slot < 1 || slot > maxSets) return false
     var a = String(addr || "").trim()
     if (a === "") return false
     // A bare IP is what people read off the TV's own network screen; adb needs
@@ -261,7 +276,7 @@ Item {
   }
 
   function removeTv(slot) {
-    if (slot < 1 || slot > 3) return false
+    if (slot < 1 || slot > maxSets) return false
     var patch = ({})
     patch["tv" + slot + "Label"] = ""
     patch["tv" + slot + "Address"] = ""
@@ -277,12 +292,13 @@ Item {
     return root.persist(patch)
   }
 
+  // ---- apps ----------------------------------------------------------------
+
   // Launchable packages on the active set, filled in on demand.
   readonly property var appList: svc.appList
   readonly property bool appsLoading: svc.appsLoading
 
   function loadApps() { svc.loadApps() }
-
 
   // The bar's tooltip PopupWindow only draws when the hovered target belongs to
   // the bar window (targetBelongsToWindow in Bar.qml), and the pad is its own
@@ -313,7 +329,7 @@ Item {
   }
 
   function writeApp(slot, label, pkg) {
-    if (slot < 1 || slot > 3 || String(pkg).trim() === "") return false
+    if (slot < 1 || slot > maxSets || String(pkg).trim() === "") return false
     var name = String(label || "").trim()
     var patch = ({})
     patch["app" + slot + "Package"] = String(pkg).trim()

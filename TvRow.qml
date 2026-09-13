@@ -1,8 +1,11 @@
 import QtQuick
 import qs.Commons
 
-// One line of the set picker. Its own state falls back to the active set's
-// live `state` so the row a user looks at most is never showing a stale
+// One line of the set picker: a reachability dot, the set's name, its state and
+// whatever marker the picker wants on the right.
+//
+// A row with no state of its own falls back to the panel's live `tvState` when
+// it is the active set, so the row most people look at is never showing a stale
 // verdict from the last time the picker happened to be open.
 Rectangle {
   // The Panel this belongs to: everything it draws is themed from

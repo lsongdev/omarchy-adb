@@ -1,6 +1,8 @@
 import QtQuick
 import qs.Commons
 
+// A button inside one of the picker's forms: SAVE, DELETE, CANCEL. Sized by the
+// caller, because how many share the row changes with the form.
 
 Rectangle {
   // The Panel this belongs to, for theming off panel.bar.
