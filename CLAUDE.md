@@ -3,8 +3,12 @@
 An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, volume,
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
-- `Panel.qml` — the bar widget, its pad, and the key map. Plugin id `atv.remote`,
-  `kinds: ["bar-widget"]`.
+- `Panel.qml` — the bar widget: the icon, the typing mode, and the model the rest reads
+  through `panel`. Plugin id `atv.remote`, `kinds: ["bar-widget"]`. It *is* a `Theme.qml`,
+  which holds the palette and metrics, so `panel.gap` and `panel.textColour` are inherited.
+- `Pad.qml` — the popup: the key grid, the type-at-the-TV field, the picker and the hint
+  line, and the focus plumbing (`keyCatcher`).
+- `Bindings.qml` — `keyMap`, the single definition of every key binding, and its dispatcher.
 - `Service.qml` — everything that shells out to `tv-remote`: reachability, the app list,
   re-authorising. Takes the active address and the full list, hands back state.
 - `Config.qml` — everything read from or written back to the widget's `shell.json` entry:
@@ -12,8 +16,8 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   the components use, the same way it fronts Service.
 - `SetPicker.qml` — the strip along the foot of the pad: the sets, the add/rename form,
   the app chooser and the shortcut list.
-- `PadKey.qml`, `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml`, `HintArea.qml`,
-  `PadText.qml` — the pieces those are built from. Each takes `panel`, since a component in its own file
+- `PadKey.qml`, `TvRow.qml`, `Field.qml`, `TypeField.qml`, `Action.qml`, `FormButton.qml`,
+  `HintArea.qml`, `PadText.qml` — the pieces those are built from. Each takes `panel`, since a component in its own file
   cannot reach the Panel lexically the way an inline one can. Theme values (`textColour`,
   `fontFamily`, the `surface*` colours, `surfaceFor()`) and metrics all come from the
   Panel, never as literals in a component; anything readable on the pad is a `PadText`,
@@ -128,7 +132,7 @@ its own hint line instead: use a `HintArea` rather than a bare `MouseArea`, whic
 through `panel.setHint()` / `clearHint()` for you. Only the bar icon itself, which really
 is in the bar window, can use `bar.showTooltip`.
 
-**Every key binding lives in `keyMap` in `Panel.qml`, and only there.** What a key does,
+**Every key binding lives in `keyMap` in `Bindings.qml`, and only there.** What a key does,
 the shortcut shown when hovering a button, and the line in the shortcut list are all read
 from it. Adding a binding anywhere else puts the pad's behaviour and its own documentation
 out of step, which is how `+` ended up working as volume up while appearing in no list.
@@ -138,9 +142,9 @@ The README's shortcut table is the one copy that cannot read from `keyMap`, so i
 one that drifts: it was still missing `+` after the code stopped being wrong. Change a
 binding, change that table.
 
-**The text field must not hold focus by default.** The pad is modal: `keyCatcher`
-owns the keyboard in control mode so single letters can be remote keys, and `entry` only
-takes it while `root.typing`. Binding `focus:` on the field instead means every control
+**The text field must not hold focus by default.** The pad is modal: `keyCatcher` in
+`Pad.qml` owns the keyboard in control mode so single letters can be remote keys, and the
+`TypeField` only takes it while the Panel's `typing` is on. Binding `focus:` on the field instead means every control
 key is swallowed as text bound for the TV's search box. A layer-shell panel still has to
 route keys somewhere, which is why `keyCatcher` exists as a zero-sized item rather than
 nothing at all.
