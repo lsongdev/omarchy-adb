@@ -4,8 +4,8 @@ An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, 
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
 - `Panel.qml` — the bar widget and its pad. Plugin id `atv.remote`, `kinds: ["bar-widget"]`.
-- `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` / `status` /
-  `reauth`.
+- `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
+  `apps` / `status` / `reauth`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
 
@@ -137,6 +137,10 @@ TV it is not addressing.
   the MediaTek picker instead. The shim tries the keycode first, then falls back, because
   other brands may behave the opposite way. **This is the least portable part of the plugin
   and has only been tested on one TV.**
+- **There are no app display names over ADB.** `PackageManager` hands labels to apps,
+  not to `cmd package`, so `dumpsys package <pkg>` gives the package name back and nothing
+  friendlier. `apps` returns packages and `appName()` in `Panel.qml` guesses a readable
+  name from one; treat it as a suggestion, never as the app's real name.
 - **`input text` treats `%s` as a space** with no escape for a literal `%`.
 - **Power is one-way** — a TV that is off does not answer ADB.
 - **ADB over wifi drops when the TV sleeps.** Every shim action reconnects on demand.

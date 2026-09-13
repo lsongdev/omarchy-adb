@@ -97,7 +97,10 @@ and saves them; a bare IP gets `:5555` appended. The row disappears once all
 three slots are used.
 
 **Edit / remove** below it flips the list into edit mode: a click then opens that
-set for rename or deletion rather than switching to it. Deleting the set you are
+set for rename or deletion rather than switching to it. While edit mode is on,
+clicking one of the three shortcut buttons configures it instead of launching:
+the pad reads the launchable apps off the TV and lists them to pick from, so you
+never have to look a package name up by hand. Deleting the set you are
 currently driving moves you to the first one left.
 
 Which TV you are on is remembered across restarts. Reachability for the other sets is only refreshed while that list
@@ -142,11 +145,14 @@ Every key goes in the widget's entry in `shell.json`.
 | `activeSlot` | `0` | Which slot the pad is driving. Written by the picker; you should not need to set it |
 | `tvAddress` | *(empty)* | Deprecated single-TV key, still read as `tv1Address` when that is unset. Empty everywhere = use the first connected adb device |
 | `pollSec` | `60` | How often to check reachability |
-| `app1Label` / `app1Package` | `APP1` | First shortcut button (e.g. `NFLX` / `com.netflix.ninja`) |
+| `app1Label` / `app1Package` | `APP1` | First shortcut button (e.g. `NFLX` / `com.netflix.ninja`). Settable from the pad, see **Edit / remove** |
 | `app2Label` / `app2Package` | `APP2` | Second shortcut |
 | `app3Label` / `app3Package` | `APP3` | Third shortcut |
 
-Find package names with `adb shell pm list packages -3`.
+The pad can list them for you, and `tv-remote apps` prints the same list from a
+terminal. Android exposes app labels to other apps but not to `adb`, so the
+picker shows a name derived from the package and leaves the button label yours
+to set.
 
 ## Known quirks
 

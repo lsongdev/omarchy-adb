@@ -6,6 +6,7 @@
 #   tv-remote clear [n]            send n backspaces (default 24) to wipe a field
 #   tv-remote app <package>        launch an app by package name
 #   tv-remote inputs               open the input / source picker
+#   tv-remote apps                 list launchable package names, one per line
 #   tv-remote status               "up" / "down" / "unauth" / "noadb"
 #   tv-remote reauth               re-trigger the device's USB-debugging prompt
 #
@@ -93,6 +94,23 @@ case "${1:-}" in
     sh_ "input keyevent KEYCODE_TV_INPUT"
     sleep 0.4
     sh_ "am start -a android.media.tv.action.SETUP_INPUTS"
+    ;;
+
+  apps)
+    # Launchable packages, for choosing the shortcut buttons. LEANBACK_LAUNCHER
+    # rather than the phone LAUNCHER category: on a TV the latter also lists
+    # things with no ten-foot UI that cannot actually be opened from the couch.
+    #
+    # The device has no display names to offer -- PackageManager exposes labels
+    # to apps, not to `cmd package` -- so this returns package names only and the
+    # widget derives something readable from them.
+    ensure || { echo "tv unreachable" >&2; exit 1; }
+    adb -s "$TV" shell "cmd package query-activities --brief \
+      -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER" 2>/dev/null \
+      | tr -d '\r' \
+      | grep -oE "^[[:space:]]+[A-Za-z0-9_.]+/" \
+      | tr -d ' /' \
+      | sort -u
     ;;
 
   status)

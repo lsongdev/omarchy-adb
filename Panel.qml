@@ -290,6 +290,59 @@ Item {
     return root.persist(patch)
   }
 
+  // Launchable packages on the active set, filled in on demand.
+  property var appList: []
+  property bool appsLoading: false
+
+  Process {
+    id: appsProc
+    command: ["bash", "-c", "true"]
+    stdout: SplitParser {
+      onRead: function(line) {
+        var v = String(line).trim()
+        if (v === "" || v.indexOf(".") === -1) return
+        var next = root.appList.slice()
+        if (next.indexOf(v) === -1) next.push(v)
+        root.appList = next
+      }
+    }
+    onExited: root.appsLoading = false
+  }
+
+  function loadApps() {
+    if (appsLoading) return
+    appList = []
+    appsLoading = true
+    appsProc.command = ["bash", "-c", shimCmd(tvAddress, "apps")]
+    appsProc.running = true
+  }
+
+  // The device has no display names to give -- PackageManager hands labels to
+  // apps, not to `cmd package` -- so derive something readable: drop the
+  // segments nearly every package carries and keep the longest of the rest,
+  // which is usually the brand. Only ever a suggestion; the label is editable.
+  function appName(pkg) {
+    var noise = ["com", "org", "net", "tv", "android", "google", "app", "apps",
+                 "stable", "livingroom", "one", "main", "mobile"]
+    var parts = String(pkg).split(".")
+    var best = ""
+    for (var i = 0; i < parts.length; i++) {
+      if (noise.indexOf(parts[i].toLowerCase()) !== -1) continue
+      if (parts[i].length > best.length) best = parts[i]
+    }
+    return best === "" ? parts[parts.length - 1] : best
+  }
+
+  function writeApp(slot, label, pkg) {
+    if (slot < 1 || slot > 3 || String(pkg).trim() === "") return false
+    var name = String(label || "").trim()
+    var patch = ({})
+    patch["app" + slot + "Package"] = String(pkg).trim()
+    patch["app" + slot + "Label"] = name === ""
+      ? appName(pkg).substring(0, 4).toUpperCase() : name
+    return root.persist(patch)
+  }
+
   function selectTv(i) {
     if (i < 0 || i >= tvs.length || tvs[i].slot === activeSlot) return
     activeSlot = tvs[i].slot
@@ -713,16 +766,31 @@ Item {
       Row {
         spacing: Style.space(6)
         Key {
-          label: root.setting("app1Label", "NFLX"); tip: root.setting("app1Package", "")
-          onPress: function() { root.sh("app " + Util.shellQuote(root.setting("app1Package", ""))) }
+          label: root.setting("app1Label", "NFLX")
+          tip: picker.editing ? "Choose the app for this button"
+                              : root.setting("app1Package", "")
+          onPress: function() {
+            if (picker.editing) { picker.startAppEdit(1); return }
+            root.sh("app " + Util.shellQuote(root.setting("app1Package", "")))
+          }
         }
         Key {
-          label: root.setting("app2Label", "TUBE"); tip: root.setting("app2Package", "")
-          onPress: function() { root.sh("app " + Util.shellQuote(root.setting("app2Package", ""))) }
+          label: root.setting("app2Label", "TUBE")
+          tip: picker.editing ? "Choose the app for this button"
+                              : root.setting("app2Package", "")
+          onPress: function() {
+            if (picker.editing) { picker.startAppEdit(2); return }
+            root.sh("app " + Util.shellQuote(root.setting("app2Package", "")))
+          }
         }
         Key {
-          label: root.setting("app3Label", "SPFY"); tip: root.setting("app3Package", "")
-          onPress: function() { root.sh("app " + Util.shellQuote(root.setting("app3Package", ""))) }
+          label: root.setting("app3Label", "SPFY")
+          tip: picker.editing ? "Choose the app for this button"
+                              : root.setting("app3Package", "")
+          onPress: function() {
+            if (picker.editing) { picker.startAppEdit(3); return }
+            root.sh("app " + Util.shellQuote(root.setting("app3Package", "")))
+          }
         }
       }
 
@@ -822,7 +890,14 @@ Item {
         // 0 while adding, otherwise the slot being renamed. The form is the
         // same either way; only where it writes differs.
         property int editSlot: 0
-        readonly property bool formOpen: adding || editSlot !== 0
+        // 0 while closed, else which shortcut button is being pointed at an app.
+        property int appSlot: 0
+        property string appPkg: ""
+        readonly property bool appFormOpen: appSlot !== 0
+        readonly property bool tvFormOpen: adding || editSlot !== 0
+        // Union: used for releasing the type-at-the-TV field's focus, not for
+        // deciding which form to draw.
+        readonly property bool formOpen: tvFormOpen || appFormOpen
         // DELETE only exists when editing, and the row has to divide evenly.
         readonly property int buttonCount: editSlot !== 0 ? 3 : 2
         readonly property real buttonWidth:
@@ -835,6 +910,26 @@ Item {
           adding = true
           nameField.focusMe()
         }
+        function startAppEdit(slot) {
+          adding = false
+          editSlot = 0
+          appSlot = slot
+          appPkg = root.setting("app" + slot + "Package", "")
+          appLabelField.text = root.setting("app" + slot + "Label", "")
+          root.loadApps()
+          appLabelField.focusMe()
+        }
+        function closeAppForm() {
+          appSlot = 0
+          appPkg = ""
+          entry.forceActiveFocus()
+        }
+        function commitAppForm() {
+          if (appPkg === "") return
+          root.writeApp(appSlot, appLabelField.text, appPkg)
+          closeAppForm()
+        }
+
         function startEdit(i) {
           if (i < 0 || i >= root.tvs.length) return
           adding = false
@@ -846,6 +941,7 @@ Item {
         function closeForm() {
           adding = false
           editSlot = 0
+          appSlot = 0
           entry.forceActiveFocus()
         }
         function commitForm() {
@@ -903,7 +999,7 @@ Item {
 
         Field {
           id: nameField
-          visible: picker.formOpen
+          visible: picker.tvFormOpen
           placeholder: "name (e.g. Bedroom)"
           Keys.onReturnPressed: addrField.focusMe()
           Keys.onEnterPressed: addrField.focusMe()
@@ -911,14 +1007,14 @@ Item {
         }
         Field {
           id: addrField
-          visible: picker.formOpen
+          visible: picker.tvFormOpen
           placeholder: "192.168.1.50  (:5555 assumed)"
           Keys.onReturnPressed: picker.commitForm()
           Keys.onEnterPressed: picker.commitForm()
           Keys.onEscapePressed: picker.closeForm()
         }
         Row {
-          visible: picker.formOpen
+          visible: picker.tvFormOpen
           spacing: Style.space(6)
 
           FormButton {
@@ -939,6 +1035,95 @@ Item {
             width: picker.buttonWidth
             label: "CANCEL"
             onPress: function() { picker.closeForm() }
+          }
+        }
+
+        // ---- point a shortcut button at an app ---------------------------
+        Field {
+          id: appLabelField
+          visible: picker.appFormOpen
+          placeholder: "button label (e.g. NFLX)"
+          Keys.onEscapePressed: picker.closeAppForm()
+          Keys.onReturnPressed: picker.commitAppForm()
+          Keys.onEnterPressed: picker.commitAppForm()
+        }
+
+        Text {
+          visible: picker.appFormOpen
+          width: root.padWidth
+          elide: Text.ElideMiddle
+          text: picker.appPkg === ""
+                ? (root.appsLoading ? "reading apps from the TV\u2026" : "pick an app below")
+                : picker.appPkg
+          color: root.bar ? root.bar.foreground : "white"
+          opacity: 0.45
+          font.family: root.bar ? root.bar.fontFamily : "monospace"
+          font.pixelSize: 9
+        }
+
+        // Bounded and scrolling rather than a plain Column: a TV can carry
+        // dozens of launchable packages, and the pad would run off the screen.
+        ListView {
+          visible: picker.appFormOpen
+          width: root.padWidth
+          height: Style.space(150)
+          clip: true
+          model: root.appList
+          boundsBehavior: Flickable.StopAtBounds
+
+          delegate: Rectangle {
+            width: root.padWidth
+            height: Style.space(22)
+            radius: Style.cornerRadius
+            color: appMa.pressed ? Color.popups.border
+                 : appMa.containsMouse ? Qt.rgba(1, 1, 1, 0.10)
+                 : modelData === picker.appPkg ? Qt.rgba(1, 1, 1, 0.06)
+                 : "transparent"
+
+            Text {
+              anchors.left: parent.left
+              anchors.leftMargin: Style.space(6)
+              anchors.verticalCenter: parent.verticalCenter
+              width: parent.width - Style.space(12)
+              elide: Text.ElideRight
+              text: root.appName(modelData)
+              color: root.bar ? root.bar.foreground : "white"
+              opacity: modelData === picker.appPkg ? 1.0 : 0.72
+              font.family: root.bar ? root.bar.fontFamily : "monospace"
+              font.pixelSize: 10
+            }
+
+            MouseArea {
+              id: appMa
+              anchors.fill: parent
+              hoverEnabled: true
+              // The derived name is a guess, so the real package is one hover away.
+              onEntered: if (root.bar && root.bar.showTooltip)
+                root.bar.showTooltip(parent, modelData)
+              onExited: if (root.bar && root.bar.hideTooltip) root.bar.hideTooltip(parent)
+              onClicked: {
+                picker.appPkg = modelData
+                if (appLabelField.text.trim() === "")
+                  appLabelField.text = root.appName(modelData).substring(0, 4).toUpperCase()
+              }
+            }
+          }
+        }
+
+        Row {
+          visible: picker.appFormOpen
+          spacing: Style.space(6)
+
+          FormButton {
+            width: (root.padWidth - Style.space(6)) / 2
+            label: "SAVE"
+            active: picker.appPkg !== ""
+            onPress: function() { picker.commitAppForm() }
+          }
+          FormButton {
+            width: (root.padWidth - Style.space(6)) / 2
+            label: "CANCEL"
+            onPress: function() { picker.closeAppForm() }
           }
         }
       }
