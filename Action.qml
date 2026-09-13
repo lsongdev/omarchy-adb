@@ -15,8 +15,7 @@ Rectangle {
   width: panel.padWidth
   height: panel.rowHeight
   radius: Style.cornerRadius
-  color: acMa.pressed ? Color.popups.border
-       : acMa.containsMouse ? panel.surfaceHover : "transparent"
+  color: panel.surfaceFor(acMa.pressed, acMa.containsMouse, "transparent")
   Behavior on color { ColorAnimation { duration: 90 } }
 
   Text {
@@ -26,18 +25,17 @@ Rectangle {
     width: parent.width - panel.inset * 2
     elide: Text.ElideRight
     text: ac.label
-    color: panel.bar ? panel.bar.foreground : "white"
+    color: panel.textColour
     opacity: 0.72
-    font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+    font.family: panel.fontFamily
     font.pixelSize: 10
   }
 
-  MouseArea {
+  HintArea {
     id: acMa
+    panel: ac.panel
     anchors.fill: parent
-    hoverEnabled: true
-    onEntered: panel.setHint(ac.tip)
-    onExited: panel.clearHint(ac.tip)
+    hint: ac.tip
     onClicked: if (ac.onPress) ac.onPress()
   }
 }

@@ -24,10 +24,8 @@ Rectangle {
   width: panel.padWidth
   height: panel.rowHeight
   radius: Style.cornerRadius
-  color: trMa.pressed ? Color.popups.border
-       : trMa.containsMouse ? panel.surfaceHover
-       : tr.isActive ? panel.surfaceRaised
-       : "transparent"
+  color: panel.surfaceFor(trMa.pressed, trMa.containsMouse,
+                          tr.isActive ? panel.surfaceRaised : "transparent")
   Behavior on color { ColorAnimation { duration: 90 } }
 
   // Declared before the content so the AUTH button, a later sibling, stacks
@@ -52,9 +50,9 @@ Rectangle {
       color: tr.st === panel.stateName.up ? panel.okColour
            : tr.st === panel.stateName.unauth ? panel.warnColour
            : tr.st === panel.stateName.noadb ? panel.badColour
-           : (panel.bar ? panel.bar.foreground : "white")
+           : panel.textColour
       opacity: tr.st === panel.stateName.up ? 1.0 : 0.55
-      font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+      font.family: panel.fontFamily
       font.pixelSize: 10
     }
     // Both groups are anchored to their own edge, so nothing stops a long
@@ -65,9 +63,9 @@ Rectangle {
       width: Math.max(0, tr.width - panel.inset * 3 - dot.width - rightGroup.width)
       elide: Text.ElideRight
       text: panel.tvs.length > tr.idx ? panel.tvs[tr.idx].label : ""
-      color: panel.bar ? panel.bar.foreground : "white"
+      color: panel.textColour
       opacity: tr.isActive ? 1.0 : 0.72
-      font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+      font.family: panel.fontFamily
       font.pixelSize: 10
     }
   }
@@ -90,16 +88,15 @@ Rectangle {
       Text {
         anchors.centerIn: parent
         text: "AUTH"
-        color: panel.bar ? panel.bar.foreground : "white"
-        font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+        color: panel.textColour
+        font.family: panel.fontFamily
         font.pixelSize: 8
       }
-      MouseArea {
+      HintArea {
         id: authMa
+        panel: tr.panel
         anchors.fill: parent
-        hoverEnabled: true
-        onEntered: panel.setHint("Re-show the USB-debugging prompt on this TV")
-        onExited: panel.clearHint("Re-show the USB-debugging prompt on this TV")
+        hint: "Re-show the USB-debugging prompt on this TV"
         onClicked: panel.reauth(tr.idx)
       }
     }
@@ -109,18 +106,18 @@ Rectangle {
     Text {
       visible: tr.st !== panel.stateName.unauth && !tr.editMode
       text: tr.st === "" ? "…" : tr.st
-      color: panel.bar ? panel.bar.foreground : "white"
+      color: panel.textColour
       opacity: 0.45
-      font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+      font.family: panel.fontFamily
       font.pixelSize: 9
     }
     Text {
       text: tr.trailing
-      color: panel.bar ? panel.bar.foreground : "white"
+      color: panel.textColour
       // "edit" is an affordance, not decoration, so it carries the same weight
       // as the row's own name. The expand chevrons stay quiet.
       opacity: tr.editMode ? (tr.isActive ? 1.0 : 0.72) : 0.45
-      font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+      font.family: panel.fontFamily
       font.pixelSize: 9
     }
   }

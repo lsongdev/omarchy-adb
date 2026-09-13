@@ -113,9 +113,10 @@ Item {
 
   function reprobeAll() { if (!probeAll.running) probeAll.running = true }
 
+  // The active set's launchable packages; there is no reason to ask any other.
   Process {
     id: appsProc
-    command: ["bash", "-c", "true"]
+    command: ["bash", "-c", svc.shimCmd(svc.address, "apps")]
     stdout: SplitParser {
       onRead: function(line) {
         var v = String(line).trim()
@@ -132,16 +133,20 @@ Item {
     if (appsLoading) return
     appList = []
     appsLoading = true
-    appsProc.command = ["bash", "-c", shimCmd(address, "apps")]
     appsProc.running = true
   }
 
   // Re-showing the prompt bounces the whole adb server, which drops the other
   // sets too, so every state is stale the moment it returns and all of them get
   // re-probed rather than just the one acted on.
+  //
+  // Any set, not just the active one: the AUTH button sits on the row that
+  // needs it. The address is a property rather than an argument so the command
+  // binds the same way the probes do.
+  property string reauthAddress: ""
   Process {
     id: reauthProc
-    command: ["bash", "-c", "true"]
+    command: ["bash", "-c", svc.shimCmd(svc.reauthAddress, "reauth")]
     onExited: authWatch.ticksLeft = 20
   }
 
@@ -170,7 +175,7 @@ Item {
 
   function reauth(addr) {
     if (reauthProc.running || String(addr || "") === "") return
-    reauthProc.command = ["bash", "-c", shimCmd(addr, "reauth")]
+    reauthAddress = addr
     reauthProc.running = true
   }
 }

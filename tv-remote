@@ -31,18 +31,29 @@ if [ -z "$TV" ]; then
   [ -n "$TV" ] || { [ "${1-}" = "status" ] && { echo down; exit 0; }; echo "no TV address set (TV_ADB_ADDR)" >&2; exit 1; }
 fi
 
-# awk with a string compare rather than grep with an interpolated pattern: an
-# address is full of dots, and in a regex each one matches any character.
-connected() {
-  adb devices 2>/dev/null | awk -v t="$TV" '$1 == t && $2 == "device" { hit = 1 } END { exit !hit }'
+# What `adb devices` says about this TV ("device", "unauthorized", "offline"),
+# or nothing when it is not listed. awk with a string compare rather than grep
+# with an interpolated pattern: an address is full of dots, and in a regex each
+# one matches any character.
+devstate() {
+  adb devices 2>/dev/null | awk -v t="$TV" '$1 == t { print $2; exit }'
 }
+
+connected() { [ "$(devstate)" = "device" ]; }
 
 # A device that answered but whose debugging prompt was dismissed (or was never
 # accepted) sits in "unauthorized" indefinitely. That needs a human to tap Allow,
 # not another reconnect, so it gets its own state instead of being flattened
 # into "down" where the widget cannot tell the two apart.
-unauthorized() {
-  adb devices 2>/dev/null | awk -v t="$TV" '$1 == t && $2 == "unauthorized" { hit = 1 } END { exit !hit }'
+unauthorized() { [ "$(devstate)" = "unauthorized" ]; }
+
+# The word the widget reads. Takes the check that means "up", because status
+# may reconnect first and reauth must not: it reports what the bounce left.
+report() {
+  if "$@"; then echo up
+  elif unauthorized; then echo unauth
+  else echo down
+  fi
 }
 
 ensure() {
@@ -122,10 +133,7 @@ case "${1:-}" in
     ;;
 
   status)
-    if ensure; then echo up
-    elif unauthorized; then echo unauth
-    else echo down
-    fi ;;
+    report ensure ;;
 
   reauth)
     # Re-show the "Allow USB debugging?" dialog on the device.
@@ -144,10 +152,7 @@ case "${1:-}" in
     sleep 1
     # Someone still has to tap Allow, so report what we ended up with rather
     # than claiming success.
-    if connected; then echo up
-    elif unauthorized; then echo unauth
-    else echo down
-    fi ;;
+    report connected ;;
 
   *)
     echo "usage: tv-remote {key <KEYCODE>|text <string> [enter]|clear [n]|app <package>|inputs|status|reauth}" >&2

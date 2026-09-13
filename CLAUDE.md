@@ -9,9 +9,11 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   re-authorising. Takes the active address and the full list, hands back state.
 - `SetPicker.qml` — the strip along the foot of the pad: the sets, the add/rename form,
   the app chooser and the shortcut list.
-- `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml` — the pieces those are built
-  from. Each takes `panel`, since a component in its own file cannot reach the Panel
-  lexically the way an inline one can.
+- `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml`, `HintArea.qml` — the pieces
+  those are built from. Each takes `panel`, since a component in its own file cannot reach
+  the Panel lexically the way an inline one can. Theme values (`textColour`, `fontFamily`,
+  the `surface*` colours, `surfaceFor()`) and metrics all come from the Panel, never as
+  literals in a component.
 - `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
   `apps` / `status` / `reauth`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the

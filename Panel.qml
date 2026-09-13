@@ -35,17 +35,25 @@ Item {
   readonly property int pollSec: setting("pollSec", 60)
 
   // Three is the schema: tv1..tv3 in shell.json, Alt+1..3 to reach them, and
-  // three slots is already more TVs than most rooms have.
+  // three slots is already more TVs than most rooms have. The app shortcut
+  // buttons share the count: app1..app3, on keys 1..3.
   readonly property int maxSets: 3
 
-  // Up to three sets. `tvAddress` -- the pre-1.1 single-TV key -- is honoured as
-  // slot 1, so an existing shell.json keeps working untouched after an update.
-  // Slots with no address are dropped rather than listed as dead entries.
+  // The address configured for a slot, or "". `tvAddress` -- the pre-1.1
+  // single-TV key -- is honoured as slot 1, so an existing shell.json keeps
+  // working untouched after an update. Everything that asks whether a slot is
+  // taken goes through here, so the read side cannot disagree with itself.
+  function slotAddress(slot) {
+    return root.setting(tvKey(slot, "Address"),
+                        slot === 1 ? root.setting("tvAddress", "") : "")
+  }
+
+  // Up to three sets. Slots with no address are dropped rather than listed as
+  // dead entries.
   readonly property var tvs: {
     var out = []
-    var legacy = root.setting("tvAddress", "")
     for (var i = 1; i <= maxSets; i++) {
-      var addr = root.setting(tvKey(i, "Address"), i === 1 ? legacy : "")
+      var addr = slotAddress(i)
       if (addr === "") continue
       out.push({ slot: i, addr: addr, label: root.setting(tvKey(i, "Label"), "TV " + i) })
     }
@@ -83,6 +91,20 @@ Item {
   // Urgent comes from the theme; the literal is only a fallback for when the
   // bar has not handed one over yet.
   readonly property color badColour:  bar && bar.urgent ? bar.urgent : "#e06c75"
+
+  // Text and its face come from the bar's theme; the literals are only for the
+  // moment before the bar has handed itself over.
+  readonly property color  textColour: bar ? bar.foreground : "white"
+  readonly property string fontFamily: bar ? bar.fontFamily : "monospace"
+
+  // The colour of anything clickable, so a row, a key and a list entry all
+  // answer the pointer the same way. `rest` is what it shows when left alone;
+  // the caller decides whether that is transparent, raised or marked.
+  function surfaceFor(pressed, hovered, rest) {
+    return pressed ? Color.popups.border
+         : hovered ? surfaceHover
+         : rest
+  }
 
   // ---- metrics -------------------------------------------------------------
   //
@@ -178,7 +200,7 @@ Item {
   // bound for the TV's search box and none of them could be a control.
   property bool typing: false
 
-  function startTyping() { typing = true; entry.forceActiveFocus() }
+  function startTyping() { typing = true; entry.focusMe() }
   function stopTyping()  { typing = false; keyCatcher.forceActiveFocus() }
 
   // Every binding, once. Behaviour, the hover hint on a button and the line in
@@ -277,12 +299,9 @@ Item {
     return bar.shell.updateEntryInline(moduleName, merged)
   }
 
-  // Lowest slot with no address, or 0 when all three are taken. Mirrors how
-  // `tvs` is built, legacy tvAddress included, so the two cannot disagree.
+  // Lowest slot with no address, or 0 when all three are taken.
   function freeSlot() {
-    for (var i = 1; i <= maxSets; i++)
-      if (root.setting(tvKey(i, "Address"), i === 1 ? root.setting("tvAddress", "") : "") === "")
-        return i
+    for (var i = 1; i <= maxSets; i++) if (slotAddress(i) === "") return i
     return 0
   }
 
@@ -347,8 +366,12 @@ Item {
   // anyway, so the casing only matters where the name is shown as prose.
   function appNiceName(pkg) {
     var n = appName(pkg)
-    return n === "" ? "" : n.charAt(0).toUpperCase() + n.slice(1)
+    return n.charAt(0).toUpperCase() + n.slice(1)
   }
+
+  // What a shortcut button says when nobody has named it: the guessed name,
+  // cut to fit a key.
+  function defaultAppLabel(pkg) { return appName(pkg).substring(0, 4).toUpperCase() }
 
   function appName(pkg) {
     var noise = ["com", "org", "net", "tv", "android", "google", "app", "apps",
@@ -367,8 +390,7 @@ Item {
     var name = String(label || "").trim()
     var patch = ({})
     patch[appKey(slot, "Package")] = String(pkg).trim()
-    patch[appKey(slot, "Label")] = name === ""
-      ? appName(pkg).substring(0, 4).toUpperCase() : name
+    patch[appKey(slot, "Label")] = name === "" ? defaultAppLabel(pkg) : name
     return root.persist(patch)
   }
 
@@ -386,10 +408,10 @@ Item {
     anchors.centerIn: parent
     text: "󰠹"
     // Colour, not just opacity: a dimmed icon on a dark bar is easy to miss.
-    color: root.online ? (root.bar ? root.bar.foreground : "white")
+    color: root.online ? root.textColour
                        : root.badColour
     opacity: root.online ? (root.opened ? 1.0 : 0.85) : 0.9
-    font.family: root.bar ? root.bar.fontFamily : "monospace"
+    font.family: root.fontFamily
     font.pixelSize: 14
     Behavior on opacity { NumberAnimation { duration: 120 } }
   }
@@ -456,28 +478,25 @@ Item {
     implicitHeight: root.keyHeight
     radius: Style.cornerRadius
     border.width: k.marked ? 1 : 0
-    border.color: root.bar ? root.bar.foreground : "white"
+    border.color: root.textColour
     opacity: k.unset ? 0.45 : 1.0
-    color: ma.pressed ? Color.popups.border
-         : ma.containsMouse ? root.surfaceHover
-         : k.marked ? root.surfaceHover
-         : root.surfaceIdle
+    color: root.surfaceFor(ma.pressed, ma.containsMouse,
+                           k.marked ? root.surfaceHover : root.surfaceIdle)
     Behavior on color { ColorAnimation { duration: 90 } }
 
     Text {
       anchors.centerIn: parent
       text: k.glyph !== "" ? k.glyph : k.label
-      color: root.bar ? root.bar.foreground : "white"
-      font.family: root.bar ? root.bar.fontFamily : "monospace"
+      color: root.textColour
+      font.family: root.fontFamily
       font.pixelSize: k.glyph !== "" ? 15 : 10
     }
 
-    MouseArea {
+    HintArea {
       id: ma
+      panel: root
       anchors.fill: parent
-      hoverEnabled: true
-      onEntered: root.setHint(k.hintText)
-      onExited: root.clearHint(k.hintText)
+      hint: k.hintText
       onClicked: { if (k.onPress) k.onPress(); else if (k.action !== "") root.runAction(k.action) }
     }
   }
@@ -560,55 +579,25 @@ Item {
 
       Row {
         spacing: root.gap
-        Key {
-          // The fallback label matches the manifest default rather than naming
-          // an app nobody configured: a fresh install used to show NFLX on a
-          // button with no package behind it.
-          label: root.setting(root.appKey(1, "Label"), "APP1")
-          action: "app1"
-          marked: picker.editing
-          unset: !picker.editing && root.setting(root.appKey(1, "Package"), "") === ""
-          tip: picker.editing ? "Choose the app for this button"
-             : root.setting(root.appKey(1, "Package"), "") === ""
-               ? "Nothing set yet. Use Edit / remove to pick an app"
-               : root.appNiceName(root.setting(root.appKey(1, "Package"), ""))
-          onPress: function() {
-            if (picker.editing) { picker.startAppEdit(1); return }
-            root.launchApp(1)
-          }
-        }
-        Key {
-          // The fallback label matches the manifest default rather than naming
-          // an app nobody configured: a fresh install used to show NFLX on a
-          // button with no package behind it.
-          label: root.setting(root.appKey(2, "Label"), "APP2")
-          action: "app2"
-          marked: picker.editing
-          unset: !picker.editing && root.setting(root.appKey(2, "Package"), "") === ""
-          tip: picker.editing ? "Choose the app for this button"
-             : root.setting(root.appKey(2, "Package"), "") === ""
-               ? "Nothing set yet. Use Edit / remove to pick an app"
-               : root.appNiceName(root.setting(root.appKey(2, "Package"), ""))
-          onPress: function() {
-            if (picker.editing) { picker.startAppEdit(2); return }
-            root.launchApp(2)
-          }
-        }
-        Key {
-          // The fallback label matches the manifest default rather than naming
-          // an app nobody configured: a fresh install used to show NFLX on a
-          // button with no package behind it.
-          label: root.setting(root.appKey(3, "Label"), "APP3")
-          action: "app3"
-          marked: picker.editing
-          unset: !picker.editing && root.setting(root.appKey(3, "Package"), "") === ""
-          tip: picker.editing ? "Choose the app for this button"
-             : root.setting(root.appKey(3, "Package"), "") === ""
-               ? "Nothing set yet. Use Edit / remove to pick an app"
-               : root.appNiceName(root.setting(root.appKey(3, "Package"), ""))
-          onPress: function() {
-            if (picker.editing) { picker.startAppEdit(3); return }
-            root.launchApp(3)
+        // One key per shortcut slot. The fallback label matches the manifest
+        // default rather than naming an app nobody configured: a fresh install
+        // used to show NFLX on a button with no package behind it.
+        Repeater {
+          model: root.maxSets
+          Key {
+            readonly property int slot: index + 1
+            readonly property string pkg: root.setting(root.appKey(slot, "Package"), "")
+            label: root.setting(root.appKey(slot, "Label"), "APP" + slot)
+            action: "app" + slot
+            marked: picker.editing
+            unset: !picker.editing && pkg === ""
+            tip: picker.editing ? "Choose the app for this button"
+               : pkg === "" ? "Nothing set yet. Use Edit / remove to pick an app"
+               : root.appNiceName(pkg)
+            onPress: function() {
+              if (picker.editing) { picker.startAppEdit(slot); return }
+              root.launchApp(slot)
+            }
           }
         }
       }
@@ -617,68 +606,52 @@ Item {
       Row {
         spacing: root.gap
 
-        Rectangle {
+        Field {
+          id: entry
+          panel: root
           width: root.keyWidth * 2 + root.gap
           height: root.keyHeight
-          radius: Style.cornerRadius
-          color: root.surfaceRaised
-          border.width: entry.activeFocus ? 1 : 0
-          border.color: root.bar ? root.bar.foreground : "white"
+          fontSize: 11
+          // Doubles as the only on-screen hint that the pad is modal.
+          placeholder: "T to type\u2026"
+          // Clicking into the field is the other way in to typing mode.
+          onFocusedChanged: if (focused) root.typing = true
 
-          TextInput {
-            id: entry
-            anchors.fill: parent
-            anchors.leftMargin: root.gap
-            anchors.rightMargin: root.gap
-            verticalAlignment: TextInput.AlignVCenter
-            clip: true
-            color: root.bar ? root.bar.foreground : "white"
-            font.family: root.bar ? root.bar.fontFamily : "monospace"
-            font.pixelSize: 11
-            selectByMouse: true
-            onActiveFocusChanged: if (activeFocus) root.typing = true
-            Keys.onReturnPressed: entry.send()
-            Keys.onEnterPressed: entry.send()
-            Keys.onUpPressed: entry.recall(1)
-            Keys.onDownPressed: entry.recall(-1)
+          onKey: function(ev) {
+            switch (ev.key) {
+            case Qt.Key_Return:
+            case Qt.Key_Enter:  entry.send();      return true
+            case Qt.Key_Up:     entry.recall(1);   return true
+            case Qt.Key_Down:   entry.recall(-1);  return true
             // Escape hands the keyboard back to control mode rather than
             // closing the pad, so a mistyped search does not cost the session.
-            Keys.onEscapePressed: root.stopTyping()
-
-            // Walk the history: Up goes further back, Down returns toward the
-            // empty field. -1 means "not browsing".
-            function recall(step) {
-              if (root.history.length === 0) return
-              var i = root.historyIndex + step
-              if (i < -1) i = -1
-              if (i > root.history.length - 1) i = root.history.length - 1
-              root.historyIndex = i
-              text = i === -1 ? "" : root.history[i]
-              cursorPosition = text.length
+            case Qt.Key_Escape: root.stopTyping(); return true
             }
+            return false
+          }
 
-            // One shim call, not two. bar.run() is fire-and-forget, so sending
-            // the text and the ENTER as separate calls races them — the ENTER
-            // landed mid-string and submitted after the first character. The
-            // trailing "enter" arg makes the shim sequence them in-process.
-            function send() {
-              var t = text
-              if (t.length === 0) return
-              root.sh("text " + Util.shellQuote(t) + " enter")
-              root.remember(t)
-              text = ""
-            }
+          // Walk the history: Up goes further back, Down returns toward the
+          // empty field. -1 means "not browsing".
+          function recall(step) {
+            if (root.history.length === 0) return
+            var i = root.historyIndex + step
+            if (i < -1) i = -1
+            if (i > root.history.length - 1) i = root.history.length - 1
+            root.historyIndex = i
+            text = i === -1 ? "" : root.history[i]
+            input.cursorPosition = text.length
+          }
 
-            Text {
-              anchors.verticalCenter: parent.verticalCenter
-              visible: entry.text.length === 0 && !entry.activeFocus
-              // Doubles as the only on-screen hint that the pad is modal.
-              text: "T to type\u2026"
-              color: root.bar ? root.bar.foreground : "white"
-              opacity: 0.35
-              font.family: entry.font.family
-              font.pixelSize: entry.font.pixelSize
-            }
+          // One shim call, not two. bar.run() is fire-and-forget, so sending
+          // the text and the ENTER as separate calls races them — the ENTER
+          // landed mid-string and submitted after the first character. The
+          // trailing "enter" arg makes the shim sequence them in-process.
+          function send() {
+            var t = text
+            if (t.length === 0) return
+            root.sh("text " + Util.shellQuote(t) + " enter")
+            root.remember(t)
+            text = ""
           }
         }
 
@@ -698,9 +671,9 @@ Item {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         text: root.hoverHint
-        color: root.bar ? root.bar.foreground : "white"
+        color: root.textColour
         opacity: 0.55
-        font.family: root.bar ? root.bar.fontFamily : "monospace"
+        font.family: root.fontFamily
         font.pixelSize: 9
       }
     }

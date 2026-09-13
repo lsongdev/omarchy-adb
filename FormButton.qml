@@ -20,8 +20,8 @@ Rectangle {
   Text {
     anchors.centerIn: parent
     text: fb.label
-    color: panel.bar ? panel.bar.foreground : "white"
-    font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+    color: panel.textColour
+    font.family: panel.fontFamily
     font.pixelSize: 9
   }
 

@@ -65,28 +65,41 @@ Column {
   // form navigates from the key catcher instead of from the fields.
   property int formField: 0
 
+  // Every key a form sees comes through here, whether the field holds focus or
+  // keyCatcher forwards it. Returns true when the key was the form's.
   function handleFormKey(ev) {
-    if (ev.key === Qt.Key_Escape) {
-      if (appFormOpen) closeAppForm()
-      else closeForm()
-      return true
-    }
+    if (ev.key === Qt.Key_Escape) { closeForm(); return true }
     if (ev.key === Qt.Key_Return || ev.key === Qt.Key_Enter) {
-      if (appFormOpen) { commitAppForm(); return true }
-      if (formField === 0) { formField = 1; return true }
-      commitForm()
+      if (appFormOpen) commitAppForm()
+      else if (formField === 0) focusField(1)
+      else commitForm()
       return true
     }
     return false
   }
 
-  function startAdd() {
-    editSlot = 0
-    nameField.text = ""
-    addrField.text = ""
-    adding = true
-    formField = 0
-    nameField.focusMe()
+  // Both the forwarding target and the visible focus move together, so it
+  // does not matter which route the next key takes.
+  function focusField(n) {
+    formField = n
+    var f = n === 0 ? nameField : addrField
+    f.focusMe()
+  }
+
+  // The add and rename forms are the same form; slot 0 means adding.
+  function openTvForm(slot, label, addr) {
+    appSlot = 0
+    appPkg = ""
+    editSlot = slot
+    adding = slot === 0
+    nameField.text = label
+    addrField.text = addr
+    focusField(0)
+  }
+  function startAdd() { openTvForm(0, "", "") }
+  function startEdit(i) {
+    if (i < 0 || i >= panel.tvs.length) return
+    openTvForm(panel.tvs[i].slot, panel.tvs[i].label, panel.tvs[i].addr)
   }
   function startAppEdit(slot) {
     adding = false
@@ -97,46 +110,38 @@ Column {
     panel.loadApps()
     appLabelField.focusMe()
   }
-  function closeAppForm() {
-    appSlot = 0
-    appPkg = ""
-    panel.stopTyping()
-  }
-  function commitAppForm() {
-    if (appPkg === "") return
-    panel.writeApp(appSlot, appLabelField.text, appPkg)
-    closeAppForm()
-  }
 
-  function startEdit(i) {
-    if (i < 0 || i >= panel.tvs.length) return
-    adding = false
-    nameField.text = panel.tvs[i].label
-    addrField.text = panel.tvs[i].addr
-    editSlot = panel.tvs[i].slot
-    formField = 0
-    nameField.focusMe()
-  }
+  // Closes whichever form is open. Only one ever is, so there is nothing to
+  // gain from knowing which.
   function closeForm() {
     adding = false
     editSlot = 0
     appSlot = 0
+    appPkg = ""
     panel.stopTyping()
+  }
+  // After a write that changed the sets: the states are stale until re-probed.
+  function closeAndReprobe() {
+    closeForm()
+    Qt.callLater(panel.reprobeAll)
+  }
+
+  function commitAppForm() {
+    if (appPkg === "") return
+    panel.writeApp(appSlot, appLabelField.text, appPkg)
+    closeForm()
   }
   function commitForm() {
     var ok = editSlot !== 0
       ? panel.writeTv(editSlot, nameField.text, addrField.text)
       : panel.addTv(nameField.text, addrField.text)
-    if (!ok) return
-    closeForm()
-    Qt.callLater(panel.reprobeAll)
+    if (ok) closeAndReprobe()
   }
   function deleteForm() {
     if (editSlot === 0) return
     panel.removeTv(editSlot)
-    closeForm()
     editing = false
-    Qt.callLater(panel.reprobeAll)
+    closeAndReprobe()
   }
 
   TvRow {
@@ -208,9 +213,9 @@ Column {
       leftPadding: panel.inset
       elide: Text.ElideRight
       text: modelData
-      color: panel.bar ? panel.bar.foreground : "white"
+      color: panel.textColour
       opacity: 0.72
-      font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+      font.family: panel.fontFamily
       font.pixelSize: 9
     }
   }
@@ -220,18 +225,14 @@ Column {
     id: nameField
     visible: picker.tvFormOpen
     placeholder: "name (e.g. Bedroom)"
-    Keys.onReturnPressed: addrField.focusMe()
-    Keys.onEnterPressed: addrField.focusMe()
-    Keys.onEscapePressed: picker.closeForm()
+    onKey: function(ev) { return picker.handleFormKey(ev) }
   }
   Field {
     panel: picker.panel
     id: addrField
     visible: picker.tvFormOpen
     placeholder: "192.168.1.50  (:5555 assumed)"
-    Keys.onReturnPressed: picker.commitForm()
-    Keys.onEnterPressed: picker.commitForm()
-    Keys.onEscapePressed: picker.closeForm()
+    onKey: function(ev) { return picker.handleFormKey(ev) }
   }
   Row {
     visible: picker.tvFormOpen
@@ -267,9 +268,7 @@ Column {
     id: appLabelField
     visible: picker.appFormOpen
     placeholder: "button label (e.g. NFLX)"
-    Keys.onEscapePressed: picker.closeAppForm()
-    Keys.onReturnPressed: picker.commitAppForm()
-    Keys.onEnterPressed: picker.commitAppForm()
+    onKey: function(ev) { return picker.handleFormKey(ev) }
   }
 
   Text {
@@ -279,9 +278,9 @@ Column {
     text: picker.appPkg === ""
           ? (panel.appsLoading ? "reading apps from the TV\u2026" : "pick an app below")
           : picker.appPkg
-    color: panel.bar ? panel.bar.foreground : "white"
+    color: panel.textColour
     opacity: 0.45
-    font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+    font.family: panel.fontFamily
     font.pixelSize: 9
   }
 
@@ -299,10 +298,8 @@ Column {
       width: panel.padWidth
       height: panel.listRowHeight
       radius: Style.cornerRadius
-      color: appMa.pressed ? Color.popups.border
-           : appMa.containsMouse ? panel.surfaceHover
-           : modelData === picker.appPkg ? panel.surfaceRaised
-           : "transparent"
+      color: panel.surfaceFor(appMa.pressed, appMa.containsMouse,
+                              modelData === picker.appPkg ? panel.surfaceRaised : "transparent")
 
       Text {
         anchors.left: parent.left
@@ -311,23 +308,22 @@ Column {
         width: parent.width - panel.inset * 2
         elide: Text.ElideRight
         text: panel.appName(modelData)
-        color: panel.bar ? panel.bar.foreground : "white"
+        color: panel.textColour
         opacity: modelData === picker.appPkg ? 1.0 : 0.72
-        font.family: panel.bar ? panel.bar.fontFamily : "monospace"
+        font.family: panel.fontFamily
         font.pixelSize: 10
       }
 
-      MouseArea {
+      HintArea {
         id: appMa
+        panel: picker.panel
         anchors.fill: parent
-        hoverEnabled: true
         // The derived name is a guess, so the real package is one hover away.
-        onEntered: panel.setHint(modelData)
-        onExited: panel.clearHint(modelData)
+        hint: modelData
         onClicked: {
           picker.appPkg = modelData
           if (appLabelField.text.trim() === "")
-            appLabelField.text = panel.appName(modelData).substring(0, 4).toUpperCase()
+            appLabelField.text = panel.defaultAppLabel(modelData)
         }
       }
     }
@@ -348,7 +344,7 @@ Column {
       panel: picker.panel
       width: picker.buttonWidth
       label: "CANCEL"
-      onPress: function() { picker.closeAppForm() }
+      onPress: function() { picker.closeForm() }
     }
   }
 }
