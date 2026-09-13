@@ -696,7 +696,9 @@ Item {
       Text {
         text: tr.trailing
         color: root.bar ? root.bar.foreground : "white"
-        opacity: 0.45
+        // "edit" is an affordance, not decoration, so it carries the same weight
+        // as the row's own name. The expand chevrons stay quiet.
+        opacity: tr.editMode ? (tr.isActive ? 1.0 : 0.72) : 0.45
         font.family: root.bar ? root.bar.fontFamily : "monospace"
         font.pixelSize: 9
       }
