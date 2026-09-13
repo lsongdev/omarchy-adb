@@ -76,7 +76,7 @@ could be a control.
 | `P` | Play / pause |
 | `R` / `F` | Rewind / fast-forward |
 | `[` / `]` | Previous / next |
-| `-` / `=` | Volume down / up |
+| `-` / `=` or `+` | Volume down / up |
 | `X` | Mute |
 | `Shift+W` / `Shift+S` | Wake / power |
 | `1` `2` `3` | The three app shortcuts |

@@ -121,6 +121,10 @@ from it. Adding a binding anywhere else puts the pad's behaviour and its own doc
 out of step, which is how `+` ended up working as volume up while appearing in no list.
 Buttons name an action (`action: "volUp"`) rather than repeating the keycode.
 
+The README's shortcut table is the one copy that cannot read from `keyMap`, so it is the
+one that drifts: it was still missing `+` after the code stopped being wrong. Change a
+binding, change that table.
+
 **The text field must not hold focus by default.** The pad is modal: `keyCatcher`
 owns the keyboard in control mode so single letters can be remote keys, and `entry` only
 takes it while `root.typing`. Binding `focus:` on the field instead means every control
