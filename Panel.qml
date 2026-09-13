@@ -96,10 +96,18 @@ Item {
   implicitWidth: bar ? (bar.vertical ? bar.barSize : 24) : 24
   implicitHeight: bar ? bar.barSize : 26
 
+  // The one place that knows how to invoke the shim. An empty address is
+  // deliberately left off rather than exported blank: the shim falls back to the
+  // first connected device only when TV_ADB_ADDR is unset, which is what makes
+  // the startup probe work before the bar has injected settings.
+  function shimCmd(addr, args) {
+    return (addr !== "" ? "TV_ADB_ADDR=" + Util.shellQuote(addr) + " " : "")
+         + Util.shellQuote(shim) + " " + args
+  }
+
   function sh(args) {
     if (!bar || typeof bar.run !== "function") return
-    var env = tvAddress !== "" ? "TV_ADB_ADDR=" + Util.shellQuote(tvAddress) + " " : ""
-    bar.run(env + Util.shellQuote(shim) + " " + args)
+    bar.run(shimCmd(tvAddress, args))
   }
   function key(code) { sh("key " + code) }
 
@@ -109,9 +117,7 @@ Item {
 
   Process {
     id: probe
-    command: ["bash", "-c",
-      (root.tvAddress !== "" ? "TV_ADB_ADDR=" + Util.shellQuote(root.tvAddress) + " " : "")
-      + Util.shellQuote(root.shim) + " status"]
+    command: ["bash", "-c", root.shimCmd(root.tvAddress, "status")]
     stdout: SplitParser {
       onRead: function(line) {
         var v = String(line).trim()
@@ -134,8 +140,7 @@ Item {
   function probeAllScript() {
     var cmd = ""
     for (var i = 0; i < tvs.length; i++)
-      cmd += "echo " + i + " $(TV_ADB_ADDR=" + Util.shellQuote(tvs[i].addr) + " "
-           + Util.shellQuote(shim) + " status); "
+      cmd += "echo " + i + " $(" + shimCmd(tvs[i].addr, "status") + "); "
     return cmd === "" ? "true" : cmd
   }
 
@@ -259,8 +264,7 @@ Item {
   }
   function reauth(i) {
     if (reauthProc.running || i < 0 || i >= tvs.length) return
-    reauthProc.command = ["bash", "-c",
-      "TV_ADB_ADDR=" + Util.shellQuote(tvs[i].addr) + " " + Util.shellQuote(shim) + " reauth"]
+    reauthProc.command = ["bash", "-c", shimCmd(tvs[i].addr, "reauth")]
     reauthProc.running = true
   }
 
