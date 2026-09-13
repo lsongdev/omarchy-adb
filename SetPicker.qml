@@ -206,16 +206,15 @@ Column {
     // the list starting halfway down its own contents.
     onVisibleChanged: if (visible) positionViewAtBeginning()
 
-    delegate: Text {
+    delegate: PadText {
+      panel: picker.panel
       width: panel.padWidth
       height: panel.helpRowHeight
       verticalAlignment: Text.AlignVCenter
       leftPadding: panel.inset
       elide: Text.ElideRight
       text: modelData
-      color: panel.textColour
       opacity: 0.72
-      font.family: panel.fontFamily
       font.pixelSize: 9
     }
   }
@@ -271,16 +270,15 @@ Column {
     onKey: function(ev) { return picker.handleFormKey(ev) }
   }
 
-  Text {
+  PadText {
+    panel: picker.panel
     visible: picker.appFormOpen
     width: panel.padWidth
     elide: Text.ElideMiddle
     text: picker.appPkg === ""
           ? (panel.appsLoading ? "reading apps from the TV\u2026" : "pick an app below")
           : picker.appPkg
-    color: panel.textColour
     opacity: 0.45
-    font.family: panel.fontFamily
     font.pixelSize: 9
   }
 
@@ -300,17 +298,17 @@ Column {
       radius: Style.cornerRadius
       color: panel.surfaceFor(appMa.pressed, appMa.containsMouse,
                               modelData === picker.appPkg ? panel.surfaceRaised : "transparent")
+      Behavior on color { ColorAnimation { duration: 90 } }
 
-      Text {
+      PadText {
+        panel: picker.panel
         anchors.left: parent.left
         anchors.leftMargin: panel.inset
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width - panel.inset * 2
         elide: Text.ElideRight
         text: panel.appName(modelData)
-        color: panel.textColour
         opacity: modelData === picker.appPkg ? 1.0 : 0.72
-        font.family: panel.fontFamily
         font.pixelSize: 10
       }
 

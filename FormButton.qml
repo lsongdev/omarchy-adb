@@ -1,14 +1,17 @@
 import QtQuick
 import qs.Commons
 
-// A button inside one of the picker's forms: SAVE, DELETE, CANCEL. Sized by the
-// caller, because how many share the row changes with the form.
-
+// A small filled button: SAVE, DELETE and CANCEL in the picker's forms, AUTH
+// on a set's row. Sized by the caller, because how many share a form's row
+// changes with the form and the row badge is smaller again.
 Rectangle {
-  // The Panel this belongs to, for theming off panel.bar.
+  // The Panel this belongs to: themed from panel.bar, hover reported through
+  // panel.setHint.
   property var panel: null
   id: fb
   property string label: ""
+  property string tip: ""
+  property int fontSize: 9
   property bool active: true
   property var onPress: null
 
@@ -17,18 +20,18 @@ Rectangle {
   opacity: fb.active ? 1.0 : 0.4
   color: fbMa.containsMouse && fb.active ? panel.surfaceButtonHover : panel.surfaceButton
 
-  Text {
+  PadText {
+    panel: fb.panel
     anchors.centerIn: parent
     text: fb.label
-    color: panel.textColour
-    font.family: panel.fontFamily
-    font.pixelSize: 9
+    font.pixelSize: fb.fontSize
   }
 
-  MouseArea {
+  HintArea {
     id: fbMa
+    panel: fb.panel
     anchors.fill: parent
-    hoverEnabled: true
+    hint: fb.tip
     onClicked: if (fb.active && fb.onPress) fb.onPress()
   }
 }

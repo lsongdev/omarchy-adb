@@ -36,6 +36,15 @@ Item {
     noadb:  "noadb"    // adb is not installed on this machine
   })
 
+  // What the bar icon says for each, kept beside the names so a state cannot
+  // be added without deciding its wording.
+  readonly property var stateMessage: ({
+    up:     "TV remote",
+    down:   "TV unreachable",
+    unauth: "TV needs authorising — open the pad and hit AUTH",
+    noadb:  "adb not installed"
+  })
+
   // Anything the shim reports that is not one of these is ignored rather than
   // stored, so a state added to the shim before the widget knows how to draw it
   // cannot leave the pad showing something it has no UI for.

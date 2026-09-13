@@ -7,13 +7,17 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   `kinds: ["bar-widget"]`.
 - `Service.qml` — everything that shells out to `tv-remote`: reachability, the app list,
   re-authorising. Takes the active address and the full list, hands back state.
+- `Config.qml` — everything read from or written back to the widget's `shell.json` entry:
+  the sets, the active slot, the shortcut buttons, and `persist()`. Panel re-exports what
+  the components use, the same way it fronts Service.
 - `SetPicker.qml` — the strip along the foot of the pad: the sets, the add/rename form,
   the app chooser and the shortcut list.
-- `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml`, `HintArea.qml` — the pieces
-  those are built from. Each takes `panel`, since a component in its own file cannot reach
-  the Panel lexically the way an inline one can. Theme values (`textColour`, `fontFamily`,
-  the `surface*` colours, `surfaceFor()`) and metrics all come from the Panel, never as
-  literals in a component.
+- `TvRow.qml`, `Field.qml`, `Action.qml`, `FormButton.qml`, `HintArea.qml`, `PadText.qml`
+  — the pieces those are built from. Each takes `panel`, since a component in its own file
+  cannot reach the Panel lexically the way an inline one can. Theme values (`textColour`,
+  `fontFamily`, the `surface*` colours, `surfaceFor()`) and metrics all come from the
+  Panel, never as literals in a component; anything readable on the pad is a `PadText`,
+  and any small filled button is a `FormButton`.
 - `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
   `apps` / `status` / `reauth`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
@@ -150,7 +154,7 @@ receives keys after a click routes focus through its parent surface. `KeyboardPa
 **Never put a real TV address, hostname or IP in `manifest.json`.** The manifest ships to
 every user and `omarchy plugin update` overwrites it. Addresses belong in the user's
 `shell.json`. Note that `entrySettings` does **not** merge manifest defaults at runtime, so
-the widget must carry its own fallbacks — see `setting()` in `Panel.qml`.
+the widget must carry its own fallbacks — see `setting()` in `Config.qml`.
 
 **`updateEntryInline` REPLACES the entry, it does not merge.** The widget can
 persist its own settings via `bar.shell.updateEntryInline(moduleName, settings)` --
@@ -158,7 +162,7 @@ the capability-scoped facade in `services/PluginShellApi.qml` allows it for the
 plugin's own id. But the shell rebuilds the entry as `{ id }` plus exactly what it
 is handed, so any key left out is dropped from `shell.json`. Adding a TV this way
 would silently wipe the app shortcuts. Always send current settings merged with the
-change -- see `persist()` in `Panel.qml`.
+change -- see `persist()` in `Config.qml`.
 
 **Never assume settings exist at `Component.onCompleted`.** The bar injects them afterwards,
 so the first reachability probe runs with an empty address and falls back to "first
@@ -175,7 +179,7 @@ TV it is not addressing.
   and has only been tested on one TV.**
 - **There are no app display names over ADB.** `PackageManager` hands labels to apps,
   not to `cmd package`, so `dumpsys package <pkg>` gives the package name back and nothing
-  friendlier. `apps` returns packages and `appName()` in `Panel.qml` guesses a readable
+  friendlier. `apps` returns packages and `appName()` in `Config.qml` guesses a readable
   name from one; treat it as a suggestion, never as the app's real name.
 - **`input text` treats `%s` as a space** with no escape for a literal `%`.
 - **Power is one-way** — a TV that is off does not answer ADB.

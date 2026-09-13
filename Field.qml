@@ -53,13 +53,12 @@ FocusScope {
       font.pixelSize: f.fontSize
       selectByMouse: true
 
-      Text {
+      PadText {
+        panel: f.panel
         anchors.verticalCenter: parent.verticalCenter
         visible: fi.text.length === 0 && !fi.activeFocus
         text: f.placeholder
-        color: panel.textColour
         opacity: 0.35
-        font.family: fi.font.family
         font.pixelSize: fi.font.pixelSize
       }
     }

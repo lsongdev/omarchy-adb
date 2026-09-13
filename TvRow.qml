@@ -44,28 +44,27 @@ Rectangle {
     anchors.verticalCenter: parent.verticalCenter
     spacing: panel.inset
 
-    Text {
+    PadText {
       id: dot
+      panel: tr.panel
       text: tr.st === panel.stateName.up ? "●" : "○"
       color: tr.st === panel.stateName.up ? panel.okColour
            : tr.st === panel.stateName.unauth ? panel.warnColour
            : tr.st === panel.stateName.noadb ? panel.badColour
            : panel.textColour
       opacity: tr.st === panel.stateName.up ? 1.0 : 0.55
-      font.family: panel.fontFamily
       font.pixelSize: 10
     }
     // Both groups are anchored to their own edge, so nothing stops a long
     // name running under the right-hand one -- and the right-hand one grows
     // when AUTH appears. Hand the name whatever is left over and let it
     // elide, rather than letting the two collide in the unauth state.
-    Text {
+    PadText {
+      panel: tr.panel
       width: Math.max(0, tr.width - panel.inset * 3 - dot.width - rightGroup.width)
       elide: Text.ElideRight
       text: panel.tvs.length > tr.idx ? panel.tvs[tr.idx].label : ""
-      color: panel.textColour
       opacity: tr.isActive ? 1.0 : 0.72
-      font.family: panel.fontFamily
       font.pixelSize: 10
     }
   }
@@ -79,45 +78,32 @@ Rectangle {
 
     // Offered only when it is actually the problem: an unauthorised set needs
     // someone to tap Allow on the TV, which no amount of reconnecting fixes.
-    Rectangle {
+    FormButton {
+      panel: tr.panel
       visible: tr.st === panel.stateName.unauth
       width: panel.badgeWidth
       height: panel.badgeHeight
-      radius: Style.cornerRadius
-      color: authMa.containsMouse ? panel.surfaceButtonHover : panel.surfaceButton
-      Text {
-        anchors.centerIn: parent
-        text: "AUTH"
-        color: panel.textColour
-        font.family: panel.fontFamily
-        font.pixelSize: 8
-      }
-      HintArea {
-        id: authMa
-        panel: tr.panel
-        anchors.fill: parent
-        hint: "Re-show the USB-debugging prompt on this TV"
-        onClicked: panel.reauth(tr.idx)
-      }
+      fontSize: 8
+      label: "AUTH"
+      tip: "Re-show the USB-debugging prompt on this TV"
+      onPress: function() { panel.reauth(tr.idx) }
     }
 
     // The AUTH button already says what the state is, and the row is only as
     // wide as the pad -- showing both squeezes the name down to "Hi…".
-    Text {
+    PadText {
+      panel: tr.panel
       visible: tr.st !== panel.stateName.unauth && !tr.editMode
       text: tr.st === "" ? "…" : tr.st
-      color: panel.textColour
       opacity: 0.45
-      font.family: panel.fontFamily
       font.pixelSize: 9
     }
-    Text {
+    PadText {
+      panel: tr.panel
       text: tr.trailing
-      color: panel.textColour
       // "edit" is an affordance, not decoration, so it carries the same weight
       // as the row's own name. The expand chevrons stay quiet.
       opacity: tr.editMode ? (tr.isActive ? 1.0 : 0.72) : 0.45
-      font.family: panel.fontFamily
       font.pixelSize: 9
     }
   }

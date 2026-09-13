@@ -18,16 +18,15 @@ Rectangle {
   color: panel.surfaceFor(acMa.pressed, acMa.containsMouse, "transparent")
   Behavior on color { ColorAnimation { duration: 90 } }
 
-  Text {
+  PadText {
+    panel: ac.panel
     anchors.left: parent.left
     anchors.leftMargin: panel.inset
     anchors.verticalCenter: parent.verticalCenter
     width: parent.width - panel.inset * 2
     elide: Text.ElideRight
     text: ac.label
-    color: panel.textColour
     opacity: 0.72
-    font.family: panel.fontFamily
     font.pixelSize: 10
   }
 
