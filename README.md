@@ -321,7 +321,7 @@ The third merges the two: every file and the whole path to the TV on one page.
 [`docs/plugin.html`](docs/plugin.html) are the same three as interactive
 pages: open them in a browser for guided views, search and export. All are
 generated from the `.json` beside each with
-[Archify](https://github.com/tt-a1i/archify); see `CLAUDE.md` for the command.
+[Archify](https://github.com/tt-a1i/archify); see `DEVELOPING.md` for the command.
 
 The plugin is plain QML plus a shell script, so edits apply without a rebuild:
 

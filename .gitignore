@@ -3,3 +3,6 @@
 
 # Archify visual-check writes its evidence beside the HTML; not deliverables.
 docs/*.visual-check.*
+
+# Agent instructions stay local: the marketplace refuses a tracked CLAUDE.md.
+CLAUDE.md
