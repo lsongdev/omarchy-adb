@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="104" viewBox="0 0 1200 104" role="img" aria-labelledby="title">
+  <title id="title">on Arch: sudo pacman -S android-tools</title>
+  <rect width="1200" height="104" rx="18" fill="#111C18"/>
+  <rect x="0" y="0" width="1200" height="46" rx="18" fill="#182420"/><rect x="0" y="28" width="1200" height="18" fill="#182420"/>
+  <text x="40" y="30" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#788463">bash · adb, on Arch</text>
+  <text x="40" y="74" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#98C379">$</text>
+  <text x="62" y="74" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#E6EBD4" xml:space="preserve">sudo pacman -S android-tools</text>
+</svg>

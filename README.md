@@ -32,9 +32,17 @@ ADB, so the same script works from a terminal without the shell running.
 </p>
 
 - Omarchy with the Quickshell-based shell (`omarchy-shell`)
-- `adb` (on Arch: `sudo pacman -S android-tools`)
+- `adb`
 - An Android TV with **Developer options → USB/Wireless debugging** enabled,
   reachable on your network
+
+<p align="center">
+  <img src="./assets/readme/code-adb.svg" width="100%" alt="On Arch, adb comes from: sudo pacman -S android-tools">
+</p>
+
+```bash
+sudo pacman -S android-tools
+```
 
 <a name="one-command"></a>
 <p align="center">
@@ -343,5 +351,9 @@ If you installed with `omarchy plugin add`, the directory is a git checkout, so
 `omarchy plugin update atv.remote` pulls new commits.
 
 ---
+
+<p align="center">
+  <a href="https://github.com/oil-oil/beautify-github-readme"><img src="./assets/readme/made-with-beautify.svg" width="300" alt="README made with beautify-github-readme"></a>
+</p>
 
 <p align="center"><sub>MIT. See <a href="LICENSE">LICENSE</a>.</sub></p>
