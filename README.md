@@ -347,7 +347,15 @@ is mounted at startup, so a restart is the reliable way to see a change. The
 against a fake `adb` without a TV in the room.
 
 If you installed with `omarchy plugin add`, the directory is a git checkout, so
-`omarchy plugin update atv.remote` pulls new commits.
+`omarchy plugin update atv.remote` pulls new commits. To remove it:
+
+```bash
+omarchy plugin remove atv.remote
+```
+
+That deletes the checkout and the widget's entry in the bar layout. The plugin
+writes only its own entry in `shell.json`, and only when you act in the pad, so
+nothing else of yours is touched on the way in or out.
 
 ---
 
