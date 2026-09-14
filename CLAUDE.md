@@ -4,7 +4,7 @@ An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, 
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
 - `Panel.qml`: the bar widget: the icon, the typing mode, and the model the rest reads
-  through `panel`. Plugin id `atv.remote`, `kinds: ["bar-widget"]`. It *is* a `Theme.qml`,
+  through `panel`. Plugin id `io.github.swey-l1.atv-remote`, `kinds: ["bar-widget"]`. It *is* a `Theme.qml`,
   which holds the palette and metrics, so `panel.gap` and `panel.textColour` are inherited.
 - `Pad.qml`: the popup: the key grid, the type-at-the-TV field, the picker and the hint
   line, and the focus plumbing (`keyCatcher`).
@@ -59,8 +59,8 @@ omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable
 
 `--enable` is what puts the widget into the bar layout in `shell.json`; without it the
 plugin is installed but nothing appears. The installed directory
-(`~/.config/omarchy/plugins/atv.remote`) is itself a git checkout, so
-`omarchy plugin update atv.remote` pulls new commits straight into the running plugin.
+(`~/.config/omarchy/plugins/io.github.swey-l1.atv-remote`) is itself a git checkout, so
+`omarchy plugin update io.github.swey-l1.atv-remote` pulls new commits straight into the running plugin.
 
 Add a TV from the pad rather than by hand: open it, click the picker along the foot, then
 **+ Add TV**. It writes the `tv1Label` / `tv1Address` pair into the widget's `shell.json`
@@ -72,13 +72,13 @@ Confirm the shim can reach it before touching anything else, since every other s
 looks the same when it cannot:
 
 ```sh
-TV_ADB_ADDR=<host:port> ~/.config/omarchy/plugins/atv.remote/tv-remote status   # want: up
+TV_ADB_ADDR=<host:port> ~/.config/omarchy/plugins/io.github.swey-l1.atv-remote/tv-remote status   # want: up
 ```
 
 ### Working from a clone instead
 
 Editing the installed checkout directly is the shortest loop. Working in a clone elsewhere
-is fine, but the files still have to reach `~/.config/omarchy/plugins/atv.remote` to run at
+is fine, but the files still have to reach `~/.config/omarchy/plugins/io.github.swey-l1.atv-remote` to run at
 all, and copying over that directory leaves it dirty, at which point
 `omarchy plugin update` refuses to fast-forward and reports "local changes" even though
 nothing was edited there. Push first, `git checkout -- .` in the installed copy, then
@@ -105,7 +105,7 @@ node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/plugin.json 
 for d in architecture components plugin; do docs/diagram-shot.sh $d; done   # the PNGs
 omarchy plugin validate .          # manifest against the plugin schema
 omarchy restart shell              # apply a Panel.qml change
-omarchy plugin update atv.remote   # pull commits into an installed checkout
+omarchy plugin update io.github.swey-l1.atv-remote   # pull commits into an installed checkout
 ```
 
 ## Only the shim has tests; verify the rest by looking
@@ -121,7 +121,7 @@ unit-testable, so **verify visually and never infer success from the absence of 
 ```sh
 grim -g "1150,0 450x30" /tmp/bar.png        # the bar icon (logical coords)
 adb exec-out screencap -p > /tmp/tv.png     # what the TV actually shows
-journalctl --user --since "30 seconds ago" | grep -i atv.remote
+journalctl --user --since "30 seconds ago" | grep -i io.github.swey-l1.atv-remote
 ```
 
 A clean log only proves nothing crashed. It does **not** prove an edit loaded: a silently
@@ -130,7 +130,7 @@ failed string replacement, or a file in the wrong directory, both log nothing.
 Two traps worth knowing:
 
 - **A QML syntax error makes the widget vanish from the bar**, and the only sign is
-  `WARN qml: Plugin widget atv.remote failed: … Unexpected token`, with no "Error:" and no
+  `WARN qml: Plugin widget io.github.swey-l1.atv-remote failed: … Unexpected token`, with no "Error:" and no
   stack. Grep for `WARN qml` or `Plugin widget .* failed`, not for `Error`.
 - **Saving into `~/.config/omarchy/plugins/` does not reliably re-render an open pad.**
   The log says `Local plugin changed, reloading`, and the pad keeps drawing the previous

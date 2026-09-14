@@ -4,5 +4,5 @@
   <rect x="0" y="0" width="1200" height="46" rx="18" fill="#182420"/><rect x="0" y="28" width="1200" height="18" fill="#182420"/>
   
   <text x="40" y="30" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#788463">lua · ~/.config/hypr/bindings.lua</text>
-  <text x="40" y="74" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#B8C497" xml:space="preserve">o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle atv.remote")</text>
+  <text x="40" y="74" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#B8C497" xml:space="preserve">o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle io.github.swey-l1.atv-remote")</text>
 </svg>

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "atv.remote",
+  "id": "io.github.swey-l1.atv-remote",
   "name": "Android TV Remote",
   "version": "1.3.0",
   "author": "swey-l1",

@@ -29,7 +29,7 @@ import qs.Commons
 Theme {
   id: root
 
-  property string moduleName: "atv.remote"
+  property string moduleName: "io.github.swey-l1.atv-remote"
   property var settings
 
   // ---- the configured sets -------------------------------------------------

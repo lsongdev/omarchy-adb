@@ -65,7 +65,7 @@ happen in the same place; see [The picker](#the-picker).
 If you would rather configure in a file:
 
 <p align="center">
-  <img src="./assets/readme/code-shell-json.svg" width="100%" alt="The widget's entry in ~/.config/omarchy/shell.json under bar.layout: id atv.remote, then tv1Label and tv1Address, tv2Label and tv2Address">
+  <img src="./assets/readme/code-shell-json.svg" width="100%" alt="The widget's entry in ~/.config/omarchy/shell.json under bar.layout: id io.github.swey-l1.atv-remote, then tv1Label and tv1Address, tv2Label and tv2Address">
 </p>
 
 <details markdown="1">
@@ -74,7 +74,7 @@ If you would rather configure in a file:
 ```jsonc
 // ~/.config/omarchy/shell.json  → bar.layout.<section>
 {
-  "id": "atv.remote",
+  "id": "io.github.swey-l1.atv-remote",
   "tv1Label": "Living room", "tv1Address": "192.168.1.50:5555",
   "tv2Label": "Bedroom",     "tv2Address": "192.168.1.51:5555"
 }
@@ -212,7 +212,7 @@ why AUTH only appears when it is the fix.
 </p>
 
 <p align="center">
-  <img src="./assets/readme/code-hotkey.svg" width="100%" alt="In ~/.config/hypr/bindings.lua: o.bind SUPER + SHIFT + T, TV remote, omarchy-shell shell toggle atv.remote">
+  <img src="./assets/readme/code-hotkey.svg" width="100%" alt="In ~/.config/hypr/bindings.lua: o.bind SUPER + SHIFT + T, TV remote, omarchy-shell shell toggle io.github.swey-l1.atv-remote">
 </p>
 
 <details markdown="1">
@@ -220,7 +220,7 @@ why AUTH only appears when it is the fix.
 
 ```lua
 -- ~/.config/hypr/bindings.lua
-o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle atv.remote")
+o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle io.github.swey-l1.atv-remote")
 ```
 
 </details>
@@ -230,7 +230,7 @@ o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle atv.remote"
 </p>
 
 <p align="center">
-  <img src="./assets/readme/settings.svg" width="100%" alt="An example entry in shell.json: id atv.remote, tv1Label and tv1Address, tv2Label and tv2Address, activeSlot, pollSec, app1Label and app1Package, with a note on what each is for">
+  <img src="./assets/readme/settings.svg" width="100%" alt="An example entry in shell.json: id io.github.swey-l1.atv-remote, tv1Label and tv1Address, tv2Label and tv2Address, activeSlot, pollSec, app1Label and app1Package, with a note on what each is for">
 </p>
 
 <details markdown="1">
@@ -326,17 +326,17 @@ generated from the `.json` beside each with
 The plugin is plain QML plus a shell script, so edits apply without a rebuild:
 
 <p align="center">
-  <img src="./assets/readme/code-dev.svg" width="100%" alt="Four terminal commands: edit Panel.qml in the installed plugin, omarchy restart shell, run test/tv-remote.sh, and omarchy plugin update atv.remote to pull new commits">
+  <img src="./assets/readme/code-dev.svg" width="100%" alt="Four terminal commands: edit Panel.qml in the installed plugin, omarchy restart shell, run test/tv-remote.sh, and omarchy plugin update io.github.swey-l1.atv-remote to pull new commits">
 </p>
 
 <details markdown="1">
 <summary>Copy the commands</summary>
 
 ```bash
-$EDITOR ~/.config/omarchy/plugins/atv.remote/Panel.qml
+$EDITOR ~/.config/omarchy/plugins/io.github.swey-l1.atv-remote/Panel.qml
 omarchy restart shell
 ./test/tv-remote.sh                 # the shim against a fake adb
-omarchy plugin update atv.remote    # pull new commits
+omarchy plugin update io.github.swey-l1.atv-remote    # pull new commits
 ```
 
 </details>
@@ -347,10 +347,10 @@ is mounted at startup, so a restart is the reliable way to see a change. The
 against a fake `adb` without a TV in the room.
 
 If you installed with `omarchy plugin add`, the directory is a git checkout, so
-`omarchy plugin update atv.remote` pulls new commits. To remove it:
+`omarchy plugin update io.github.swey-l1.atv-remote` pulls new commits. To remove it:
 
 ```bash
-omarchy plugin remove atv.remote
+omarchy plugin remove io.github.swey-l1.atv-remote
 ```
 
 That deletes the checkout and the widget's entry in the bar layout. The plugin

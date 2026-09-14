@@ -300,7 +300,7 @@
     },
     {
       "kind": "region",
-      "label": "atv.remote widget (QML)",
+      "label": "the widget (QML)",
       "wraps": [
         "config",
         "bindings",
