@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Android TV Remote, an Omarchy bar widget</title>
+  <desc id="desc">Drive an Android TV from the Omarchy bar over ADB: D-pad, volume, inputs, app shortcuts and a real keyboard for the TV's search box. The right side shows the remote pad's key grid.</desc>
+
+  <rect width="1200" height="360" rx="26" fill="#111C18"/>
+
+  <g id="title-block" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" fill="#B8C497">
+    <text x="64" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#98C379" letter-spacing="2">OMARCHY BAR WIDGET · ADB</text>
+    <text x="62" y="146" font-size="64" font-weight="700" fill="#E6EBD4">Android TV Remote</text>
+    <text x="64" y="196" font-size="24">Drive an Android TV from the bar. D-pad, volume,</text>
+    <text x="64" y="228" font-size="24">inputs and app shortcuts, and a real keyboard</text>
+    <text x="64" y="260" font-size="24">for the TV's search box instead of an on-screen grid.</text>
+    <text x="64" y="312" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#788463">QML + bash  ·  up to three TVs  ·  one plugin, no daemon  ·  MIT</text>
+  </g>
+
+  <!-- The pad's key grid, as the pad draws it: three keys wide, D-pad in the middle. -->
+  <g id="project-proof" transform="translate(864 30)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="#B8C497" text-anchor="middle">
+    <g id="row-top">
+      <rect x="0" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <path d="M40 15 v12 M31 18.5 a12 12 0 1 0 18 0" fill="none" stroke="#B8C497" stroke-width="2.4" stroke-linecap="round"/>
+      <rect x="88" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <text x="128" y="30">INPT</text>
+      <rect x="176" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <path d="M204 26 l12 -11 l12 11 v12 h-24 z" fill="none" stroke="#B8C497" stroke-width="2.4" stroke-linejoin="round"/>
+    </g>
+    <g id="row-up" transform="translate(0 56)">
+      <rect x="88" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <path d="M128 15 v18 M119 24 l9 -9 l9 9" fill="none" stroke="#B8C497" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="row-mid" transform="translate(0 112)">
+      <rect x="0" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <path d="M49 24 h-18 M40 15 l-9 9 l9 9" fill="none" stroke="#B8C497" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="88" y="0" width="80" height="48" rx="6" fill="#263A31" stroke="#98C379" stroke-width="1.5"/>
+      <text x="128" y="30" fill="#E6EBD4" font-weight="700">OK</text>
+      <rect x="176" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <path d="M207 24 h18 M216 15 l9 9 l-9 9" fill="none" stroke="#B8C497" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="row-down" transform="translate(0 168)">
+      <rect x="88" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <path d="M128 15 v18 M119 24 l9 9 l9 -9" fill="none" stroke="#B8C497" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="row-type" transform="translate(0 224)">
+      <rect x="0" y="0" width="168" height="48" rx="6" fill="#151F1B" stroke="#2A3A32" stroke-width="1.5"/>
+      <text x="14" y="30" text-anchor="start" fill="#788463">T to type…</text>
+      <rect x="176" y="0" width="80" height="48" rx="6" fill="#1F2926"/>
+      <text x="216" y="30">CLR</text>
+    </g>
+    <g id="row-picker" transform="translate(0 282)" text-anchor="start">
+      <circle cx="12" cy="9" r="5" fill="#98C379"/>
+      <text x="26" y="15" fill="#E6EBD4">Living room</text>
+      <text x="256" y="15" text-anchor="end" fill="#788463">up ▸</text>
+    </g>
+  </g>
+</svg>

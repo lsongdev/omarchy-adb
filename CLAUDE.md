@@ -30,9 +30,11 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
 - `docs/architecture.json`, `docs/components.json`, `docs/plugin.json` — the flow map
   (how a key press reaches the TV), the file map (every QML file, once) and the merged
   map, as [Archify](https://github.com/tt-a1i/archify) specs. The `.html` and `.png`
-  beside each are generated from it: change the spec, never the
-  outputs. The PNGs are 1920-wide headless-chromium screenshots of the HTML, cropped to
-  the diagram panel. A new QML file is a new node in `components.json` and `plugin.json`.
+  beside each are generated from it: change the spec, never the outputs. The PNGs come
+  from `docs/diagram-shot.sh <name>`: a headless-chromium screenshot of the HTML with
+  `docs/diagram-theme.css` injected, which hides the viewer chrome and maps Archify's
+  theme variables onto the README palette, trimmed to the diagram panel. A new QML file
+  is a new node in `components.json` and `plugin.json`.
   Regions are drawn as the bounding box of what they wrap plus `pad` on every side, so set
   `pad: 10` on each boundary, keep neighbouring columns at least 24 px apart, and keep a
   region's files in columns no other region uses on the same rows, or the boxes overlap.
@@ -95,6 +97,7 @@ node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/components.j
   docs/components.html --quality showcase --repo-root .
 node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/plugin.json \
   docs/plugin.html --quality showcase --repo-root .
+for d in architecture components plugin; do docs/diagram-shot.sh $d; done   # the PNGs
 omarchy plugin validate .          # manifest against the plugin schema
 omarchy restart shell              # apply a Panel.qml change
 omarchy plugin update atv.remote   # pull commits into an installed checkout

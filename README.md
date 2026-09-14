@@ -1,38 +1,67 @@
-# Android TV Remote: an Omarchy bar widget
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="Android TV Remote: an Omarchy bar widget that drives an Android TV over ADB, with a D-pad, volume, inputs, app shortcuts and a real keyboard for the TV's search box">
+</p>
 
-Drive an Android TV from the Omarchy bar over ADB. D-pad, volume, input
-picker, app shortcuts, and a text field so you can type into TV search boxes
-with a real keyboard instead of pecking at an on-screen grid.
+<p align="center">
+  <img src="./docs/pad.png" width="246" align="top" alt="The remote pad as it opens: D-pad, media keys, three app shortcuts, a text field, and one line naming the TV being driven and that it is up">
+  &nbsp;&nbsp;
+  <img src="./docs/screenshot.png" width="246" align="top" alt="The pad with the picker expanded: every configured TV with its own state, plus Add TV, Edit / remove and Keyboard shortcuts">
+  &nbsp;&nbsp;
+  <img src="./docs/edit-mode.png" width="246" align="top" alt="The pad in edit mode: the three app shortcut buttons outlined for choosing an app, and each TV row marked edit">
+</p>
 
-![bar widget](docs/screenshot.png)
+<p align="center"><sub>As it opens &nbsp;·&nbsp; with the picker expanded &nbsp;·&nbsp; in edit mode. Everything here is configured from the pad itself.</sub></p>
 
-## Requirements
+The bar icon opens a remote pad. With the pad open the keyboard drives the TV:
+arrows and letters are remote keys, and `T` switches to typing into whatever
+field the TV has focused. Up to three TVs, switched from the picker along the
+foot of the pad. The widget shells out to a small bash script that owns all of
+ADB, so the same script works from a terminal without the shell running.
+
+<p align="center">
+  <img src="./assets/readme/how-it-works.svg" width="100%" alt="How a key press reaches the TV: the bar icon opens the pad, a key on the pad becomes one tv-remote call, which runs one adb shell command that sends a keyevent to the TV">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/section-install.svg" width="100%" alt="01 Install: get it into the bar">
+</p>
+
+<a name="requirements"></a>
+<p align="center">
+  <img src="./assets/readme/sub-requirements.svg" width="100%" alt="01.1 Requirements">
+</p>
 
 - Omarchy with the Quickshell-based shell (`omarchy-shell`)
 - `adb` (on Arch: `sudo pacman -S android-tools`)
 - An Android TV with **Developer options → USB/Wireless debugging** enabled,
   reachable on your network
 
-## Install
+<a name="one-command"></a>
+<p align="center">
+  <img src="./assets/readme/sub-one-command.svg" width="100%" alt="01.2 One command">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/code-install.svg" width="100%" alt="In a terminal: omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable. The --enable flag is what puts the widget into the bar.">
+</p>
 
 ```bash
 omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable
 ```
 
-`--enable` is what puts the widget into the bar; without it the plugin installs
-and nothing appears.
+Then open the pad, click the picker along its foot, and use **+ Add TV**: a
+name and the TV's address (Settings → Network → Status on the TV). A bare IP
+gets `:5555` appended. Renaming, removing and choosing the shortcut apps all
+happen in the same place; see [The picker](#the-picker).
 
-Everything else is done from the pad. Open it, click the picker along its foot,
-and use **+ Add TV**: it takes a name and the TV's address (Settings → Network →
-Status on the TV), and a bare IP gets `:5555` appended for you. Up to three sets
-can be configured and the pad drives one at a time, though one TV is the normal
-case, and with a single set the picker stays one status line.
+If you would rather configure in a file:
 
-**Edit / remove** in the same list renames or deletes a set, and turns the three
-shortcut buttons into app choosers, so no part of setup needs a package name
-looked up by hand.
+<p align="center">
+  <img src="./assets/readme/code-shell-json.svg" width="100%" alt="The widget's entry in ~/.config/omarchy/shell.json under bar.layout: id atv.remote, then tv1Label and tv1Address, tv2Label and tv2Address">
+</p>
 
-Nothing stops you writing it out instead, if you prefer configuration in a file:
+<details markdown="1">
+<summary>Copy the snippet</summary>
 
 ```jsonc
 // ~/.config/omarchy/shell.json  → bar.layout.<section>
@@ -43,12 +72,23 @@ Nothing stops you writing it out instead, if you prefer configuration in a file:
 }
 ```
 
+</details>
+
 The first connection prompts **"Allow USB debugging?"** on the TV. Tick
 "Always allow from this computer". If that prompt is dismissed the set is stuck
 in `unauth`, which the picker shows with an **AUTH** button to put the prompt
 back on screen. See [Re-authorising a TV](#re-authorising-a-tv).
 
-## Use
+<p align="center">
+  <img src="./assets/readme/section-use.svg" width="100%" alt="02 Use: drive the TV from the pad">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/mouse.svg" width="100%" alt="The bar icon: left click or SUPER+SHIFT+T opens the pad, right click opens the input picker, middle click sends Home, and scrolling over the icon changes the TV volume">
+</p>
+
+<details markdown="1">
+<summary>As a table</summary>
 
 | Interaction | Does |
 |---|---|
@@ -57,12 +97,24 @@ back on screen. See [Re-authorising a TV](#re-authorising-a-tv).
 | Middle click | Home |
 | Scroll over the icon | TV volume |
 
-### Keyboard
+</details>
+
+<a name="keyboard"></a>
+<p align="center">
+  <img src="./assets/readme/sub-keyboard.svg" width="100%" alt="02.1 Keyboard">
+</p>
 
 With the pad open the keyboard drives the TV. It is modal, the way a real remote
 is: typing at the TV is something you enter deliberately with `T`, because
 otherwise every letter would be text bound for the search box and none of them
 could be a control.
+
+<p align="center">
+  <img src="./assets/readme/keyboard.svg" width="100%" alt="The keyboard while the pad is open, with the bound keys highlighted: W A S D and the arrows are the D-pad, Enter is OK, B or Backspace back, H home, M menu, I inputs, C clear, P play, R rewind, F forward, brackets previous and next, minus and equals volume, X mute, 1 2 3 the app shortcuts, T or slash to type, Tab next TV, Esc or Q close; Shift+W wake, Shift+S power, Alt+1 2 3 jump to a TV">
+</p>
+
+<details markdown="1">
+<summary>Every key, as a table</summary>
 
 | Key | Does |
 |---|---|
@@ -85,6 +137,8 @@ could be a control.
 | `Alt+1` / `Alt+2` / `Alt+3` | Jump straight to that TV |
 | `Esc` or `Q` | Close the pad |
 
+</details>
+
 Hovering anything in the pad names it, and its key, along the bottom of the
 pad. **Keyboard shortcuts** in the picker lists the lot, including the keys with
 no button of their own.
@@ -95,11 +149,13 @@ does not answer ADB, so a stray press by someone who forgot to hit `T` first
 would end the session.
 
 Clicking the text field enters typing mode too, and the placeholder reads
-**T to type…** as a reminder that the pad is modal.
+**T to type…** as a reminder that the pad is modal. **CLR** wipes whatever
+field the TV has focused.
 
-In the pad: a D-pad with OK, power, inputs, home, back, volume, mute,
-play/pause, rewind, three app shortcuts, a text field, **CLR** (wipes the TV's
-focused field), and the set picker along the bottom.
+<a name="the-picker"></a>
+<p align="center">
+  <img src="./assets/readme/sub-the-picker.svg" width="100%" alt="02.2 The picker">
+</p>
 
 The picker is one line showing the TV being driven and whether it is reachable.
 Click it to list every configured set with its own status, and click a set to
@@ -115,8 +171,6 @@ Edit mode also outlines the three shortcut buttons, and clicking one then sets
 what it launches rather than launching it: the pad reads the launchable apps off
 the TV and lists them to choose from.
 
-![edit mode](docs/edit-mode.png)
-
 Which TV you are on is remembered across restarts. The other sets only have
 their reachability refreshed while the list is open, so three configured TVs do
 not mean three times the adb traffic on every poll.
@@ -129,7 +183,10 @@ walks the last 10 things you typed.
 the tooltip distinguishes "TV unreachable", "adb not installed" and a TV that
 needs authorising.
 
-### Re-authorising a TV
+<a name="re-authorising-a-tv"></a>
+<p align="center">
+  <img src="./assets/readme/sub-re-authorising.svg" width="100%" alt="02.3 Re-authorising a TV">
+</p>
 
 A set whose debugging prompt was dismissed (or that was reset, or had this
 machine's key revoked) sits in `unauth` forever. Reconnecting does not help:
@@ -141,35 +198,63 @@ Bouncing the server drops *every* connected device for a moment, including your
 other TVs. They reconnect on their next action, so this is a blip rather than a
 problem, but it is why AUTH only appears when it is genuinely the fix.
 
-### Optional hotkey
+<a name="optional-hotkey"></a>
+<p align="center">
+  <img src="./assets/readme/sub-optional-hotkey.svg" width="100%" alt="02.4 Optional hotkey">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/code-hotkey.svg" width="100%" alt="In ~/.config/hypr/bindings.lua: o.bind SUPER + SHIFT + T, TV remote, omarchy-shell shell toggle atv.remote">
+</p>
+
+<details markdown="1">
+<summary>Copy the binding</summary>
 
 ```lua
 -- ~/.config/hypr/bindings.lua
 o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle atv.remote")
 ```
 
-## Settings
+</details>
 
-Every key goes in the widget's entry in `shell.json`.
+<p align="center">
+  <img src="./assets/readme/section-settings.svg" width="100%" alt="03 Settings: what shell.json holds">
+</p>
+
+<p align="center">
+  <img src="./assets/readme/settings.svg" width="100%" alt="An example entry in shell.json: id atv.remote, tv1Label and tv1Address, tv2Label and tv2Address, activeSlot, pollSec, app1Label and app1Package, with a note on what each is for">
+</p>
+
+<details markdown="1">
+<summary>Every key, with its default</summary>
 
 | Key | Default | What |
 |---|---|---|
-| `tv1Label` / `tv1Address` | *(empty)* | Name and `host:port` of the first TV |
-| `tv2Label` / `tv2Address` | *(empty)* | Second TV, if you have one |
-| `tv3Label` / `tv3Address` | *(empty)* | Third TV |
-| `activeSlot` | `0` | Which slot the pad is driving. Written by the picker; you should not need to set it |
-| `tvAddress` | *(empty)* | Deprecated single-TV key, still read as `tv1Address` when that is unset. Empty everywhere = use the first connected adb device |
-| `pollSec` | `60` | How often to check reachability |
-| `app1Label` / `app1Package` | `APP1` | First shortcut button (e.g. `NFLX` / `com.netflix.ninja`). Settable from the pad, see **Edit / remove** |
+| `tv1Label` / `tv1Address` | — | Name and `host:port` of the first TV |
+| `tv2Label` / `tv2Address` | — | Second TV |
+| `tv3Label` / `tv3Address` | — | Third TV |
+| `activeSlot` | `0` | The slot being driven; the picker writes it |
+| `tvAddress` | — | Deprecated single-TV key, read as `tv1Address` |
+| `pollSec` | `60` | Seconds between reachability checks |
+| `app1Label` / `app1Package` | `APP1` | First shortcut button, e.g. `NFLX` / `com.netflix.ninja` |
 | `app2Label` / `app2Package` | `APP2` | Second shortcut |
 | `app3Label` / `app3Package` | `APP3` | Third shortcut |
+
+</details>
+
+You should not need to set `activeSlot` by hand. With every address empty the
+shim falls back to the first connected adb device. The shortcut buttons are
+settable from the pad; see [The picker](#the-picker).
 
 The pad can list them for you, and `tv-remote apps` prints the same list from a
 terminal. Android exposes app labels to other apps but not to `adb`, so the
 picker shows a name derived from the package and leaves the button label yours
 to set.
 
-## Known quirks
+<a name="known-quirks"></a>
+<p align="center">
+  <img src="./assets/readme/sub-known-quirks.svg" width="100%" alt="03.1 Known quirks">
+</p>
 
 - **`%` in typed text is lossy.** Android's `input text` treats `%s` as a space
   with no escape for a literal `%`, so "100%sure" types as "100 ure". This is a
@@ -184,9 +269,19 @@ to set.
 - **ADB over wifi drops when the TV sleeps.** Every action reconnects on demand,
   so this is usually invisible.
 
-## Using the shim directly
+<a name="using-the-shim-directly"></a>
+<p align="center">
+  <img src="./assets/readme/sub-shim.svg" width="100%" alt="03.2 Using the shim directly">
+</p>
 
 `tv-remote` is a plain script and works on its own:
+
+<p align="center">
+  <img src="./assets/readme/code-shim.svg" width="100%" alt="Six terminal commands: with TV_ADB_ADDR set, tv-remote key, text with enter, clear, apps, status which prints up, down, unauth or noadb, and reauth">
+</p>
+
+<details markdown="1">
+<summary>Copy the commands</summary>
 
 ```bash
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote key KEYCODE_DPAD_DOWN
@@ -197,11 +292,11 @@ TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status     # up | down | unauth | noad
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote reauth     # re-show the debugging prompt
 ```
 
-## Licence
+</details>
 
-MIT. See [LICENSE](LICENSE).
-
-## Development
+<p align="center">
+  <img src="./assets/readme/section-development.svg" width="100%" alt="04 Development: how it is built">
+</p>
 
 ![architecture](docs/architecture.png)
 
@@ -223,10 +318,21 @@ generated from the `.json` beside each with
 
 The plugin is plain QML plus a shell script, so edits apply without a rebuild:
 
+<p align="center">
+  <img src="./assets/readme/code-dev.svg" width="100%" alt="Four terminal commands: edit Panel.qml in the installed plugin, omarchy restart shell, run test/tv-remote.sh, and omarchy plugin update atv.remote to pull new commits">
+</p>
+
+<details markdown="1">
+<summary>Copy the commands</summary>
+
 ```bash
 $EDITOR ~/.config/omarchy/plugins/atv.remote/Panel.qml
 omarchy restart shell
+./test/tv-remote.sh                 # the shim against a fake adb
+omarchy plugin update atv.remote    # pull new commits
 ```
+
+</details>
 
 Files under `~/.config/omarchy/plugins/` hot-reload on save, but the bar widget
 is mounted at startup, so a restart is the reliable way to see a change. The
@@ -235,3 +341,7 @@ against a fake `adb` without a TV in the room.
 
 If you installed with `omarchy plugin add`, the directory is a git checkout, so
 `omarchy plugin update atv.remote` pulls new commits.
+
+---
+
+<p align="center"><sub>MIT. See <a href="LICENSE">LICENSE</a>.</sub></p>

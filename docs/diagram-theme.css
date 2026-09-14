@@ -1,0 +1,18 @@
+.diagram-nav, .no-print, .overview-map-feedback { display: none !important; }
+:root, [data-theme="dark"], [data-theme="light"] {
+  --bg: #111C18; --grid: #16221D; --text: #E6EBD4; --text-muted: #B8C497; --text-dim: #788463; --text-faint: #8A9A78;
+  --panel: rgba(17, 28, 24, 0.6); --panel-border: #1F2926; --lane-fill: rgba(31, 41, 38, 0.25); --lane-stroke: #2A3A32;
+  --arrow: #788463; --arrow-emphasis: #98C379; --mask: #111C18;
+  --frontend-fill: rgba(31, 41, 38, 0.92); --frontend-stroke: #98C379;
+  --backend-fill: rgba(31, 41, 38, 0.92); --backend-stroke: #B8C497;
+  --database-fill: rgba(38, 46, 32, 0.92); --database-stroke: #E5C07B;
+  --external-fill: rgba(24, 36, 32, 0.92); --external-stroke: #788463;
+  --cloud-fill: rgba(31, 41, 38, 0.92); --cloud-stroke: #8A9A78;
+  --security-fill: rgba(31, 41, 38, 0.92); --security-stroke: #E06C75;
+  --messagebus-fill: rgba(31, 41, 38, 0.92); --messagebus-stroke: #B8C497;
+}
+.c-region { fill: rgba(152, 195, 121, 0.04) !important; }
+body { background: #111C18 !important; }
+.toolbar, .header { display: none !important; }
+.container > *:not(:has([data-graph-role])) { display: none !important; }
+body { background: #010203 !important; }
