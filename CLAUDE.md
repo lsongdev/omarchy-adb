@@ -3,32 +3,32 @@
 An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, volume,
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
-- `Panel.qml` — the bar widget: the icon, the typing mode, and the model the rest reads
+- `Panel.qml`: the bar widget: the icon, the typing mode, and the model the rest reads
   through `panel`. Plugin id `atv.remote`, `kinds: ["bar-widget"]`. It *is* a `Theme.qml`,
   which holds the palette and metrics, so `panel.gap` and `panel.textColour` are inherited.
-- `Pad.qml` — the popup: the key grid, the type-at-the-TV field, the picker and the hint
+- `Pad.qml`: the popup: the key grid, the type-at-the-TV field, the picker and the hint
   line, and the focus plumbing (`keyCatcher`).
-- `Bindings.qml` — `keyMap`, the single definition of every key binding, and its dispatcher.
-- `Service.qml` — everything that shells out to `tv-remote`: reachability, the app list,
+- `Bindings.qml`: `keyMap`, the single definition of every key binding, and its dispatcher.
+- `Service.qml`: everything that shells out to `tv-remote`: reachability, the app list,
   re-authorising. Takes the active address and the full list, hands back state.
-- `Config.qml` — everything read from or written back to the widget's `shell.json` entry:
+- `Config.qml`: everything read from or written back to the widget's `shell.json` entry:
   the sets, the active slot, the shortcut buttons, and `persist()`. Panel re-exports what
   the components use, the same way it fronts Service.
-- `SetPicker.qml` — the strip along the foot of the pad: the sets, the shortcut list, and
+- `SetPicker.qml`: the strip along the foot of the pad: the sets, the shortcut list, and
   whichever of its two forms is open. `TvForm.qml` adds or renames a set; `AppChooser.qml`
   points a shortcut button at an app. Each owns its own state and key handling.
 - `PadKey.qml`, `TvRow.qml`, `Field.qml`, `TypeField.qml`, `Action.qml`, `FormButton.qml`,
-  `HintArea.qml`, `PadText.qml` — the pieces those are built from. Each takes `panel`,
+  `HintArea.qml`, `PadText.qml`: the pieces those are built from. Each takes `panel`,
   since a component in its own file cannot reach the Panel lexically the way an inline one
   can. Theme values (`textColour`,
   `fontFamily`, the `surface*` colours, `surfaceFor()`) and metrics all come from the
   Panel, never as literals in a component; anything readable on the pad is a `PadText`,
   and any small filled button is a `FormButton`.
-- `tv-remote` — a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
+- `tv-remote`: a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
   `apps` / `status` / `reauth`. `test/tv-remote.sh` runs it against a fake `adb`.
-- `manifest.json` — declares the widget and its settings **schema**. Values live in the
+- `manifest.json`: declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
-- `docs/architecture.json`, `docs/components.json`, `docs/plugin.json` — the flow map
+- `docs/architecture.json`, `docs/components.json`, `docs/plugin.json`: the flow map
   (how a key press reaches the TV), the file map (every QML file, once) and the merged
   map, as [Archify](https://github.com/tt-a1i/archify) specs. The `.html` and `.png`
   beside each are generated from it: change the spec, never the outputs. The PNGs come
@@ -39,7 +39,7 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   Regions are drawn as the bounding box of what they wrap plus `pad` on every side, so set
   `pad: 10` on each boundary, keep neighbouring columns at least 24 px apart, and keep a
   region's files in columns no other region uses on the same rows, or the boxes overlap.
-- `assets/readme/` — the README's visual layer, all pure SVG in the pad's palette
+- `assets/readme/`: the README's visual layer, all pure SVG in the pad's palette
   (`#111C18` / `#B8C497` / `#98C379`, from `Theme.qml`): the hero, the how-it-works strip,
   the section and sub-section banners, the keyboard, bar-icon and settings boards, the
   code cards, and the made-with signature. See **The README is a designed page** below.
@@ -65,7 +65,7 @@ plugin is installed but nothing appears. The installed directory
 Add a TV from the pad rather than by hand: open it, click the picker along the foot, then
 **+ Add TV**. It writes the `tv1Label` / `tv1Address` pair into the widget's `shell.json`
 entry, appending `:5555` to a bare IP. The TV shows **"Allow USB debugging?"** on the first
-connection -- accept it and tick "Always allow from this computer", or the set sits in
+connection. Accept it and tick "Always allow from this computer", or the set sits in
 `unauth` and the picker offers an **AUTH** button to put the prompt back.
 
 Confirm the shim can reach it before touching anything else, since every other symptom
@@ -79,7 +79,7 @@ TV_ADB_ADDR=<host:port> ~/.config/omarchy/plugins/atv.remote/tv-remote status   
 
 Editing the installed checkout directly is the shortest loop. Working in a clone elsewhere
 is fine, but the files still have to reach `~/.config/omarchy/plugins/atv.remote` to run at
-all -- and copying over that directory leaves it dirty, at which point
+all, and copying over that directory leaves it dirty, at which point
 `omarchy plugin update` refuses to fast-forward and reports "local changes" even though
 nothing was edited there. Push first, `git checkout -- .` in the installed copy, then
 update. Otherwise the two drift and it is not obvious which one the bar is running.
@@ -87,7 +87,7 @@ update. Otherwise the two drift and it is not obvious which one the bar is runni
 ## Commands
 
 ```sh
-# The shim is directly runnable — test ADB behaviour without the shell.
+# The shim is directly runnable: test ADB behaviour without the shell.
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote status          # up | down | unauth | noadb
 TV_ADB_ADDR=192.168.1.50:5555 ./tv-remote text "hi" enter
 
@@ -108,7 +108,7 @@ omarchy restart shell              # apply a Panel.qml change
 omarchy plugin update atv.remote   # pull commits into an installed checkout
 ```
 
-## Only the shim has tests — verify the rest by looking
+## Only the shim has tests; verify the rest by looking
 
 `./test/tv-remote.sh` runs the shim against a fake `adb` (`test/fake-adb/adb`) and checks
 what it prints and exactly what it asks the device shell to do: every reachability state,
@@ -124,17 +124,17 @@ adb exec-out screencap -p > /tmp/tv.png     # what the TV actually shows
 journalctl --user --since "30 seconds ago" | grep -i atv.remote
 ```
 
-A clean log only proves nothing crashed. It does **not** prove an edit loaded — a silently
+A clean log only proves nothing crashed. It does **not** prove an edit loaded: a silently
 failed string replacement, or a file in the wrong directory, both log nothing.
 
 Two traps worth knowing:
 
 - **A QML syntax error makes the widget vanish from the bar**, and the only sign is
-  `WARN qml: Plugin widget atv.remote failed: … Unexpected token` — no "Error:" and no
+  `WARN qml: Plugin widget atv.remote failed: … Unexpected token`, with no "Error:" and no
   stack. Grep for `WARN qml` or `Plugin widget .* failed`, not for `Error`.
 - **Saving into `~/.config/omarchy/plugins/` does not reliably re-render an open pad.**
   The log says `Local plugin changed, reloading`, and the pad keeps drawing the previous
-  instance — so a change appears not to work when it simply has not loaded. `omarchy
+  instance, so a change appears not to work when it simply has not loaded. `omarchy
   restart shell`, then reopen the pad, is the only dependable way to see an edit.
 
 ## Hard rules
@@ -144,13 +144,13 @@ and Material icons are five (`U+F0839`), so `"9"` silently becomes `U+F083` f
 by a literal `9`. Put the literal UTF-8 character in the file. Confirm a codepoint exists
 before using it: `fc-list ":charset=F0839" family | grep -i "JetBrainsMono Nerd Font"`.
 
-**Never chain two `bar.run()` calls that depend on order.** It is fire-and-forget — each
+**Never chain two `bar.run()` calls that depend on order.** It is fire-and-forget: each
 call is an independent detached process. Sending text and then ENTER as two calls makes the
 TV submit after roughly the first character. Anything ordered must be one shim invocation.
 
 **Never call `bar.shellQuote()`.** The bar README documents it; it does not exist anywhere
 in the shell. Use `Util.shellQuote` from `qs.Commons`. Always quote anything reaching a
-shell — user-typed text reaches two of them (local bash, then the device shell).
+shell: user-typed text reaches two of them (local bash, then the device shell).
 
 **`bar.showTooltip` does nothing from inside the pad.** The bar's tooltip window is
 gated on `targetBelongsToWindow(target, barWindow)` (see `Bar.qml`), and the pad is its
@@ -182,7 +182,7 @@ nothing at all.
 a field by two routes: directly while it holds focus, and forwarded from `keyCatcher` when
 the panel has not granted focus yet. `onKey` sees both, and returning `true` claims the key.
 Handling Return or Escape with a `Keys.onReturnPressed` on the field instead only covers
-the focused route, and the forwarded one silently does something else -- which is how the
+the focused route, and the forwarded one silently does something else, which is how the
 add-TV form once advanced its forwarding target without moving focus. The forms hand every
 key to `handleFormKey` in `SetPicker.qml`; the type-at-the-TV entry has its own `onKey`.
 
@@ -193,7 +193,7 @@ receives keys after a click routes focus through its parent surface. `KeyboardPa
 **Never put a real TV address, hostname or IP in `manifest.json`.** The manifest ships to
 every user and `omarchy plugin update` overwrites it. Addresses belong in the user's
 `shell.json`. Note that `entrySettings` does **not** merge manifest defaults at runtime, so
-the widget must carry its own fallbacks — see `setting()` in `Config.qml`.
+the widget must carry its own fallbacks; see `setting()` in `Config.qml`.
 
 **`updateEntryInline` REPLACES the entry, it does not merge.** The widget can
 persist its own settings via `bar.shell.updateEntryInline(moduleName, settings)` --
@@ -201,7 +201,7 @@ the capability-scoped facade in `services/PluginShellApi.qml` allows it for the
 plugin's own id. But the shell rebuilds the entry as `{ id }` plus exactly what it
 is handed, so any key left out is dropped from `shell.json`. Adding a TV this way
 would silently wipe the app shortcuts. Always send current settings merged with the
-change -- see `persist()` in `Config.qml`.
+change; see `persist()` in `Config.qml`.
 
 **Never assume settings exist at `Component.onCompleted`.** The bar injects them afterwards,
 so the first reachability probe runs with an empty address and falls back to "first
@@ -236,7 +236,7 @@ skill (a clone under `/tmp` works; `npx skills add` is blocked here). Its rules,
 
 - **`KEYCODE_TV_INPUT` is a no-op on Hisense.** Its source panel (`com.hisense.mixbar`,
   `com.hisense.kpad`) exposes only broadcast receivers, and the relevant broadcasts are
-  protected — ADB cannot send them. `am start -a android.media.tv.action.SETUP_INPUTS` opens
+  protected, so ADB cannot send them. `am start -a android.media.tv.action.SETUP_INPUTS` opens
   the MediaTek picker instead. The shim tries the keycode first, then falls back, because
   other brands may behave the opposite way. **This is the least portable part of the plugin
   and has only been tested on one TV.**
@@ -245,5 +245,5 @@ skill (a clone under `/tmp` works; `npx skills add` is blocked here). Its rules,
   friendlier. `apps` returns packages and `appName()` in `Config.qml` guesses a readable
   name from one; treat it as a suggestion, never as the app's real name.
 - **`input text` treats `%s` as a space** with no escape for a literal `%`.
-- **Power is one-way** — a TV that is off does not answer ADB.
+- **Power is one-way.** A TV that is off does not answer ADB.
 - **ADB over wifi drops when the TV sleeps.** Every shim action reconnects on demand.

@@ -183,11 +183,11 @@ Which TV you are on is remembered across restarts. The other sets only have
 their reachability refreshed while the list is open, so three configured TVs do
 not mean three times the adb traffic on every poll.
 
-**Typing**: press `T` (or click the field), type, press Enter, and the string is
+To type, press `T` (or click the field), type, press Enter, and the string is
 sent and submitted. `Esc` hands the keyboard back to the controls. **Up/Down**
 walks the last 10 things you typed.
 
-**The icon turns your theme's urgent colour when the TV is unreachable**, and
+The icon turns your theme's urgent colour when the TV is unreachable, and
 the tooltip distinguishes "TV unreachable", "adb not installed" and a TV that
 needs authorising.
 
@@ -203,8 +203,8 @@ the TV's screen. The **AUTH** button beside an `unauth` entry bounces the local
 adb server, which forces a fresh key exchange and puts the prompt back up.
 
 Bouncing the server drops *every* connected device for a moment, including your
-other TVs. They reconnect on their next action, so this is a blip rather than a
-problem, but it is why AUTH only appears when it is genuinely the fix.
+other TVs. They reconnect on their next action, so the drop is brief. It is also
+why AUTH only appears when it is the fix.
 
 <a name="optional-hotkey"></a>
 <p align="center">
@@ -265,7 +265,7 @@ to set.
 
 - **`%` in typed text is lossy.** Android's `input text` treats `%s` as a space
   with no escape for a literal `%`, so "100%sure" types as "100 ure". This is a
-  framework limitation, not something the plugin can work around.
+  framework limitation; the plugin cannot work around it.
 - **Input picker varies by brand.** The plugin sends `KEYCODE_TV_INPUT` and then
   falls back to `android.media.tv.action.SETUP_INPUTS`. On Hisense the keycode is
   a no-op and the vendor source panel is only reachable through protected
