@@ -3,8 +3,8 @@
 Contributor notes: the layout, the loop, and the hard rules. Kept under a neutral name
 because the plugin marketplace refuses a tracked `CLAUDE.md` inside an installed plugin,
 treating it as an instruction channel to agents on users' machines. For Claude Code in a
-clone, an untracked `CLAUDE.md` symlink to this file is enough (`ln -s DEVELOPING.md
-CLAUDE.md`; it is gitignored).
+clone, an untracked one-line `CLAUDE.md` containing `@DEVELOPING.md` imports this file; it
+is gitignored. Not a symlink: `omarchy plugin validate` refuses symlinks in a plugin folder.
 
 An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, volume,
 input picker, app shortcuts, and a text field for typing into TV search boxes.
