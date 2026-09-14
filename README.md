@@ -242,7 +242,6 @@ o.bind("SUPER + SHIFT + T", "TV remote", "omarchy-shell shell toggle atv.remote"
 | `tv2Label` / `tv2Address` | — | Second TV |
 | `tv3Label` / `tv3Address` | — | Third TV |
 | `activeSlot` | `0` | The slot being driven; the picker writes it |
-| `tvAddress` | — | Deprecated single-TV key, read as `tv1Address` |
 | `pollSec` | `60` | Seconds between reachability checks |
 | `app1Label` / `app1Package` | `APP1` | First shortcut button, e.g. `NFLX` / `com.netflix.ninja` |
 | `app2Label` / `app2Package` | `APP2` | Second shortcut |

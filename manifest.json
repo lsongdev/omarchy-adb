@@ -19,7 +19,6 @@
     "allowMultiple": false,
     "defaultSection": "right",
     "defaults": {
-      "tvAddress": "",
       "tv1Label": "",
       "tv1Address": "",
       "tv2Label": "",

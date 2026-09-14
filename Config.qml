@@ -38,14 +38,10 @@ Item {
 
   // ---- the configured sets -------------------------------------------------
 
-  // The address configured for a slot, or "". `tvAddress` -- the pre-1.1
-  // single-TV key -- is honoured as slot 1, so an existing shell.json keeps
-  // working untouched after an update. Everything that asks whether a slot is
-  // taken goes through here, so the read side cannot disagree with itself.
-  function slotAddress(slot) {
-    return setting(tvKey(slot, "Address"),
-                   slot === 1 ? setting("tvAddress", "") : "")
-  }
+  // The address configured for a slot, or "". Everything that asks whether a
+  // slot is taken goes through here, so the read side cannot disagree with
+  // itself.
+  function slotAddress(slot) { return setting(tvKey(slot, "Address"), "") }
 
   // Up to three sets. Slots with no address are dropped rather than listed as
   // dead entries.
@@ -111,9 +107,6 @@ Item {
     var patch = ({})
     patch[tvKey(slot, "Address")] = a
     patch[tvKey(slot, "Label")] = name === "" ? ("TV " + slot) : name
-    // Slot 1 can be fed by the deprecated tvAddress key. Once the tv1 pair is
-    // written it is dead weight, and leaving it means two sources of truth.
-    if (slot === 1) patch["tvAddress"] = ""
     return persist(patch)
   }
 
@@ -127,9 +120,6 @@ Item {
     var patch = ({})
     patch[tvKey(slot, "Label")] = ""
     patch[tvKey(slot, "Address")] = ""
-    // Clearing only the tv1 pair would let the deprecated key resurrect the set
-    // on the next reload, which reads as the removal silently not working.
-    if (slot === 1) patch["tvAddress"] = ""
     if (slot === activeSlot) {
       var next = 0
       for (var i = 0; i < tvs.length; i++) if (tvs[i].slot !== slot) { next = tvs[i].slot; break }
