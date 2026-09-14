@@ -1,0 +1,763 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Android TV Remote: whole plugin",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1240,
+      750
+    ],
+    "repository": {
+      "url": "https://github.com/swey-l1/omarchy-android-tv-remote",
+      "provider": "github",
+      "link_mode": "local-only",
+      "revision": "21fa1917e554dd62edeeec99c6980cd236d8d12e"
+    },
+    "views": [
+      {
+        "id": "keypress",
+        "label": "A key press",
+        "focus": [
+          "pad",
+          "panel",
+          "service",
+          "shim",
+          "adb",
+          "tv"
+        ],
+        "note": "The pad hands a key to the Panel, whose action becomes one shim call, one adb command, one TV keyevent."
+      },
+      {
+        "id": "settings",
+        "label": "Settings round trip",
+        "focus": [
+          "tvform",
+          "setpicker",
+          "panel",
+          "config",
+          "shelljson"
+        ],
+        "note": "A form writes through Config, which merges and hands the whole entry back to the shell."
+      },
+      {
+        "id": "picker",
+        "label": "The picker",
+        "focus": [
+          "setpicker",
+          "tvrow",
+          "action",
+          "tvform",
+          "appchooser"
+        ],
+        "note": "One row per set, three action rows, and whichever of the two forms is open."
+      },
+      {
+        "id": "primitives",
+        "label": "The primitives",
+        "focus": [
+          "field",
+          "typefield",
+          "formbutton",
+          "hintarea",
+          "padtext"
+        ],
+        "note": "Every readable thing is a PadText and every hover a HintArea; they sit inside all of the components above."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "shelljson",
+      "type": "database",
+      "label": "shell.json",
+      "sublabel": "~/.config/omarchy",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "manifest.json"
+        }
+      ]
+    },
+    {
+      "id": "config",
+      "type": "backend",
+      "label": "Config.qml",
+      "sublabel": "shell.json I/O",
+      "pos": [
+        210,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Config.qml"
+        }
+      ]
+    },
+    {
+      "id": "theme",
+      "type": "frontend",
+      "label": "Theme.qml",
+      "sublabel": "palette, metrics",
+      "pos": [
+        380,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Theme.qml"
+        }
+      ]
+    },
+    {
+      "id": "bindings",
+      "type": "backend",
+      "label": "Bindings.qml",
+      "sublabel": "keyMap",
+      "pos": [
+        550,
+        40
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Bindings.qml"
+        }
+      ]
+    },
+    {
+      "id": "bar",
+      "type": "external",
+      "label": "omarchy-shell bar",
+      "sublabel": "injects bar, settings",
+      "pos": [
+        40,
+        160
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Panel.qml"
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "type": "frontend",
+      "label": "Panel.qml",
+      "sublabel": "icon, mode, the model",
+      "pos": [
+        210,
+        160
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Panel.qml"
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "Service.qml",
+      "sublabel": "probe, apps, reauth",
+      "pos": [
+        380,
+        160
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Service.qml"
+        }
+      ]
+    },
+    {
+      "id": "shim",
+      "type": "backend",
+      "label": "tv-remote",
+      "sublabel": "bash: key, text, app",
+      "pos": [
+        720,
+        160
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "tv-remote"
+        }
+      ]
+    },
+    {
+      "id": "adb",
+      "type": "external",
+      "label": "adb",
+      "sublabel": "local server",
+      "pos": [
+        890,
+        160
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "tv-remote"
+        }
+      ]
+    },
+    {
+      "id": "tv",
+      "type": "external",
+      "label": "Android TV",
+      "sublabel": "up to three sets",
+      "pos": [
+        1060,
+        160
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "tv-remote"
+        }
+      ]
+    },
+    {
+      "id": "pad",
+      "type": "frontend",
+      "label": "Pad.qml",
+      "sublabel": "the popup",
+      "pos": [
+        210,
+        280
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Pad.qml"
+        }
+      ]
+    },
+    {
+      "id": "padkey",
+      "type": "frontend",
+      "label": "PadKey.qml",
+      "sublabel": "one grid button",
+      "pos": [
+        380,
+        280
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "PadKey.qml"
+        }
+      ]
+    },
+    {
+      "id": "test",
+      "type": "external",
+      "label": "test/tv-remote.sh",
+      "sublabel": "fake adb, 26 cases",
+      "pos": [
+        720,
+        280
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "test/tv-remote.sh"
+        }
+      ]
+    },
+    {
+      "id": "typefield",
+      "type": "frontend",
+      "label": "TypeField.qml",
+      "sublabel": "entry, history",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "TypeField.qml"
+        }
+      ]
+    },
+    {
+      "id": "setpicker",
+      "type": "frontend",
+      "label": "SetPicker.qml",
+      "sublabel": "strip at the foot",
+      "pos": [
+        380,
+        400
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "SetPicker.qml"
+        }
+      ]
+    },
+    {
+      "id": "tvrow",
+      "type": "frontend",
+      "label": "TvRow.qml",
+      "sublabel": "a set's row",
+      "pos": [
+        550,
+        400
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "TvRow.qml"
+        }
+      ]
+    },
+    {
+      "id": "tvform",
+      "type": "frontend",
+      "label": "TvForm.qml",
+      "sublabel": "add or rename",
+      "pos": [
+        210,
+        520
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "TvForm.qml"
+        }
+      ]
+    },
+    {
+      "id": "appchooser",
+      "type": "frontend",
+      "label": "AppChooser.qml",
+      "sublabel": "pick an app",
+      "pos": [
+        380,
+        520
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "AppChooser.qml"
+        }
+      ]
+    },
+    {
+      "id": "action",
+      "type": "frontend",
+      "label": "Action.qml",
+      "sublabel": "menu-style row",
+      "pos": [
+        550,
+        520
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Action.qml"
+        }
+      ]
+    },
+    {
+      "id": "field",
+      "type": "frontend",
+      "label": "Field.qml",
+      "sublabel": "a text field",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "Field.qml"
+        }
+      ]
+    },
+    {
+      "id": "formbutton",
+      "type": "frontend",
+      "label": "FormButton.qml",
+      "sublabel": "SAVE, CANCEL, AUTH",
+      "pos": [
+        210,
+        640
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "FormButton.qml"
+        }
+      ]
+    },
+    {
+      "id": "hintarea",
+      "type": "frontend",
+      "label": "HintArea.qml",
+      "sublabel": "hover reporting",
+      "pos": [
+        380,
+        640
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "HintArea.qml"
+        }
+      ]
+    },
+    {
+      "id": "padtext",
+      "type": "frontend",
+      "label": "PadText.qml",
+      "sublabel": "themed Text",
+      "pos": [
+        550,
+        640
+      ],
+      "size": [
+        138,
+        68
+      ],
+      "sources": [
+        {
+          "path": "PadText.qml"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "omarchy-shell",
+      "wraps": [
+        "shelljson",
+        "bar"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "Panel and its model",
+      "wraps": [
+        "config",
+        "theme",
+        "bindings",
+        "panel",
+        "service"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "the pad",
+      "wraps": [
+        "pad",
+        "padkey",
+        "typefield",
+        "setpicker",
+        "tvrow",
+        "tvform",
+        "appchooser",
+        "action"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "primitives, used everywhere",
+      "wraps": [
+        "field",
+        "formbutton",
+        "hintarea",
+        "padtext"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "ADB half (bash)",
+      "wraps": [
+        "shim",
+        "test"
+      ],
+      "pad": 10
+    }
+  ],
+  "connections": [
+    {
+      "id": "bar-panel",
+      "from": "bar",
+      "to": "panel",
+      "label": "bar, settings",
+      "variant": "emphasis",
+      "labelAt": [
+        194,
+        242
+      ]
+    },
+    {
+      "id": "panel-service",
+      "from": "panel",
+      "to": "service",
+      "label": "address, actions",
+      "labelAt": [
+        364,
+        242
+      ]
+    },
+    {
+      "id": "service-shim",
+      "from": "service",
+      "to": "shim",
+      "label": "bash -c"
+    },
+    {
+      "id": "shim-adb",
+      "from": "shim",
+      "to": "adb",
+      "label": "adb -s host:5555",
+      "labelDy": -36
+    },
+    {
+      "id": "adb-tv",
+      "from": "adb",
+      "to": "tv",
+      "label": "wifi, reconnects",
+      "variant": "emphasis",
+      "labelDy": -36
+    },
+    {
+      "id": "test-shim",
+      "from": "test",
+      "to": "shim",
+      "label": "fake adb",
+      "variant": "dashed"
+    },
+    {
+      "id": "panel-config",
+      "from": "panel",
+      "to": "config",
+      "label": "read, persist",
+      "labelDx": -52
+    },
+    {
+      "id": "config-shelljson",
+      "from": "config",
+      "to": "shelljson",
+      "label": "updateEntryInline",
+      "labelAt": [
+        198,
+        122
+      ]
+    },
+    {
+      "id": "theme-panel",
+      "from": "theme",
+      "to": "panel",
+      "label": "inherits",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [
+        395,
+        153
+      ]
+    },
+    {
+      "id": "bindings-panel",
+      "from": "bindings",
+      "to": "panel",
+      "label": "actions",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [
+        530,
+        136
+      ]
+    },
+    {
+      "id": "panel-pad",
+      "from": "panel",
+      "to": "pad",
+      "label": "opened, theme",
+      "labelDy": 24
+    },
+    {
+      "id": "pad-padkey",
+      "from": "pad",
+      "to": "padkey",
+      "label": "x14",
+      "labelDy": -36
+    },
+    {
+      "id": "pad-typefield",
+      "from": "pad",
+      "to": "typefield"
+    },
+    {
+      "id": "pad-setpicker",
+      "from": "pad",
+      "to": "setpicker",
+      "label": "foot of the pad"
+    },
+    {
+      "id": "setpicker-tvrow",
+      "from": "setpicker",
+      "to": "tvrow",
+      "label": "per set",
+      "labelDy": -36
+    },
+    {
+      "id": "setpicker-tvform",
+      "from": "setpicker",
+      "to": "tvform"
+    },
+    {
+      "id": "setpicker-appchooser",
+      "from": "setpicker",
+      "to": "appchooser"
+    },
+    {
+      "id": "setpicker-action",
+      "from": "setpicker",
+      "to": "action",
+      "label": "x3"
+    },
+    {
+      "id": "tvform-formbutton",
+      "from": "tvform",
+      "to": "formbutton"
+    },
+    {
+      "id": "tvform-field",
+      "from": "tvform",
+      "to": "field",
+      "label": "x2",
+      "labelAt": [
+        200,
+        604
+      ]
+    },
+    {
+      "id": "action-hintarea",
+      "from": "action",
+      "to": "hintarea"
+    },
+    {
+      "id": "action-padtext",
+      "from": "action",
+      "to": "padtext"
+    },
+    {
+      "id": "field-typefield",
+      "from": "field",
+      "to": "typefield",
+      "label": "inherits",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelAt": [
+        145,
+        540
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "One split that matters",
+      "items": [
+        "The widget shells out; the script owns all ADB",
+        "So the shim works from a terminal, and has the only test"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Everything reads through panel",
+      "items": [
+        "Panel is a Theme and fronts Config, Service, Bindings",
+        "An arrow means built from; PadText and HintArea drawn once"
+      ]
+    }
+  ]
+}

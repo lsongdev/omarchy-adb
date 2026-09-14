@@ -27,12 +27,14 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   `apps` / `status` / `reauth`. `test/tv-remote.sh` runs it against a fake `adb`.
 - `manifest.json` — declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
-- `docs/architecture.json` and `docs/components.json` — the flow map (how a key press
-  reaches the TV) and the file map (every QML file, once), as
-  [Archify](https://github.com/tt-a1i/archify) specs. The `.html` and `.png` beside each
-  are generated from it: change the spec, never the outputs. The PNGs are 1920-wide
-  headless-chromium screenshots of the HTML, cropped to the diagram panel. A new QML file
-  is a new node in `components.json`.
+- `docs/architecture.json`, `docs/components.json`, `docs/plugin.json` — the flow map
+  (how a key press reaches the TV), the file map (every QML file, once) and the merged
+  map, as [Archify](https://github.com/tt-a1i/archify) specs. The `.html` beside each,
+  and the `.png` for the first two, are generated from it: change the spec, never the
+  outputs. The PNGs are 1920-wide headless-chromium screenshots of the HTML, cropped to
+  the diagram panel. A new QML file is a new node in `components.json` and `plugin.json`.
+  Regions are drawn as the bounding box of what they wrap, so keep a region's files in
+  columns no other region uses on the same rows, or the boxes overlap.
 
 The widget shells out to the script; the script owns all ADB. That split keeps the remote
 usable from a terminal without the shell running, and makes the ADB half testable alone.
@@ -90,6 +92,8 @@ node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/architecture
   docs/architecture.html --quality showcase --repo-root .   # want: ok, 0 errors
 node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/components.json \
   docs/components.html --quality showcase --repo-root .
+node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/plugin.json \
+  docs/plugin.html --quality showcase --repo-root .
 omarchy plugin validate .          # manifest against the plugin schema
 omarchy restart shell              # apply a Panel.qml change
 omarchy plugin update atv.remote   # pull commits into an installed checkout

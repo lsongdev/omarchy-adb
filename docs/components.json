@@ -185,8 +185,8 @@
       "label": "PadKey.qml",
       "sublabel": "one grid button",
       "pos": [
-        380,
-        300
+        720,
+        170
       ],
       "size": [
         138,
@@ -460,7 +460,8 @@
       "id": "pad-padkey",
       "from": "pad",
       "to": "padkey",
-      "label": "x14"
+      "label": "x14",
+      "labelDy": -30
     },
     {
       "id": "pad-typefield",

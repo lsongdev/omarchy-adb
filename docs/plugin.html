@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 2.17.0-dev.1">
-  <title>Android TV Remote: the QML files Diagram</title>
+  <title>Android TV Remote: whole plugin Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -5081,12 +5081,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
            data-preset-badge-blueprint="BLUEPRINT / REV 01"
            data-preset-badge-editorial="EDITORIAL / FIELD NOTE">
         <div class="pulse-dot"></div>
-        <h1>Android TV Remote: the QML files</h1>
+        <h1>Android TV Remote: whole plugin</h1>
       </div>
     </div>
 
-    <script id="archify-guided-views-data" type="application/json">[{"id":"model","label":"Panel and its model","focus":["theme","panel","config","service","bindings"],"note":"Panel is a Theme and fronts Config, Service and Bindings; the components read all of it as panel.x."},{"id":"pad","label":"The pad","focus":["pad","padkey","typefield","setpicker"],"note":"Pad owns focus: keys land on its key catcher, or on the entry, or are forwarded to the open form."},{"id":"picker","label":"The picker","focus":["setpicker","tvrow","action","tvform","appchooser"],"note":"One row per set, three action rows, and whichever of the two forms is open."},{"id":"primitives","label":"The primitives","focus":["field","typefield","hintarea","padtext","formbutton"],"note":"Every readable thing is a PadText and every hover a HintArea; they are inside all of the components above."}]</script>
-    <script id="archify-source-evidence-data" type="application/json">{"schemaVersion":1,"verified":true,"repository":{"url":"https://github.com/swey-l1/omarchy-android-tv-remote","revision":"8ca3315f88162e16c5161352b7334aa1e22575cc","shortRevision":"8ca3315","label":"swey-l1/omarchy-android-tv-remote","linkMode":"local-only"},"referenceCount":17,"nodes":{"theme":[{"path":"Theme.qml"}],"panel":[{"path":"Panel.qml"}],"config":[{"path":"Config.qml"}],"service":[{"path":"Service.qml"}],"bindings":[{"path":"Bindings.qml"}],"pad":[{"path":"Pad.qml"}],"padkey":[{"path":"PadKey.qml"}],"typefield":[{"path":"TypeField.qml"}],"setpicker":[{"path":"SetPicker.qml"}],"tvrow":[{"path":"TvRow.qml"}],"action":[{"path":"Action.qml"}],"tvform":[{"path":"TvForm.qml"}],"appchooser":[{"path":"AppChooser.qml"}],"field":[{"path":"Field.qml"}],"hintarea":[{"path":"HintArea.qml"}],"padtext":[{"path":"PadText.qml"}],"formbutton":[{"path":"FormButton.qml"}]}}</script>
+    <script id="archify-guided-views-data" type="application/json">[{"id":"keypress","label":"A key press","focus":["pad","panel","service","shim","adb","tv"],"note":"The pad hands a key to the Panel, whose action becomes one shim call, one adb command, one TV keyevent."},{"id":"settings","label":"Settings round trip","focus":["tvform","setpicker","panel","config","shelljson"],"note":"A form writes through Config, which merges and hands the whole entry back to the shell."},{"id":"picker","label":"The picker","focus":["setpicker","tvrow","action","tvform","appchooser"],"note":"One row per set, three action rows, and whichever of the two forms is open."},{"id":"primitives","label":"The primitives","focus":["field","typefield","formbutton","hintarea","padtext"],"note":"Every readable thing is a PadText and every hover a HintArea; they sit inside all of the components above."}]</script>
+    <script id="archify-source-evidence-data" type="application/json">{"schemaVersion":1,"verified":true,"repository":{"url":"https://github.com/swey-l1/omarchy-android-tv-remote","revision":"21fa1917e554dd62edeeec99c6980cd236d8d12e","shortRevision":"21fa191","label":"swey-l1/omarchy-android-tv-remote","linkMode":"local-only"},"referenceCount":23,"nodes":{"shelljson":[{"path":"manifest.json"}],"config":[{"path":"Config.qml"}],"theme":[{"path":"Theme.qml"}],"bindings":[{"path":"Bindings.qml"}],"bar":[{"path":"Panel.qml"}],"panel":[{"path":"Panel.qml"}],"service":[{"path":"Service.qml"}],"shim":[{"path":"tv-remote"}],"adb":[{"path":"tv-remote"}],"tv":[{"path":"tv-remote"}],"pad":[{"path":"Pad.qml"}],"padkey":[{"path":"PadKey.qml"}],"test":[{"path":"test/tv-remote.sh"}],"typefield":[{"path":"TypeField.qml"}],"setpicker":[{"path":"SetPicker.qml"}],"tvrow":[{"path":"TvRow.qml"}],"tvform":[{"path":"TvForm.qml"}],"appchooser":[{"path":"AppChooser.qml"}],"action":[{"path":"Action.qml"}],"field":[{"path":"Field.qml"}],"formbutton":[{"path":"FormButton.qml"}],"hintarea":[{"path":"HintArea.qml"}],"padtext":[{"path":"PadText.qml"}]}}</script>
     <script id="archify-i18n-data" type="application/json">{"locale":"en","messages":{"viewer.kind.frontend":"Frontend","viewer.kind.backend":"Backend","viewer.kind.database":"Database","viewer.kind.cloud":"Cloud","viewer.kind.security":"Security","viewer.kind.messagebus":"Message bus","viewer.kind.external":"External","viewer.kind.neutral":"Neutral","viewer.kind.node":"Node","viewer.kind.start":"Start","viewer.kind.active":"Active","viewer.kind.waiting":"Waiting","viewer.kind.decision":"Decision","viewer.kind.success":"Success","viewer.kind.failure":"Failure","viewer.toolbar.actions":"Diagram actions","viewer.theme.toggle.title":"Toggle theme (T)","viewer.theme.toggle":"Toggle color theme","viewer.theme.dark":"Dark","viewer.theme.light":"Light","viewer.preset.choose.title":"Choose visual style (S cycles)","viewer.preset.choose":"Choose visual style","viewer.preset.style":"Style","viewer.preset.menu":"Visual style","viewer.preset.identity":"Visual identity","viewer.preset.cycles":"S cycles","viewer.preset.classic":"Classic","viewer.preset.classic.short":"Classic","viewer.preset.classic.hint":"Stable technical default","viewer.preset.flow":"Signal Flow","viewer.preset.flow.short":"Flow","viewer.preset.flow.hint":"Motion-forward presentation","viewer.preset.blueprint":"Blueprint","viewer.preset.blueprint.hint":"Engineering review","viewer.preset.editorial":"Editorial","viewer.preset.editorial.hint":"Publication and launch notes","viewer.preset.badge.signalFlow":"SIGNAL FLOW","viewer.preset.badge.blueprint":"BLUEPRINT / REV 01","viewer.preset.badge.editorial":"EDITORIAL / FIELD NOTE","viewer.preset.badge.editorialPlate":"ARCHIFY / PLATE 04","viewer.preset.current":"Visual style: {style}. Choose visual style","viewer.motion.live":"Live","viewer.motion.still":"Still","viewer.motion.pause":"Pause motion","viewer.motion.resume":"Resume motion","viewer.motion.reduced":"Motion paused by reduced-motion preference","viewer.motion.hidden":"Motion paused while this page is hidden","viewer.motion.yielding":"Pause motion; currently yielding to {owner}","viewer.motion.yielding.title":"Live preview enabled · yielding to {owner}","viewer.owner.story":"the guided story","viewer.owner.chapter":"the active chapter","viewer.owner.chapterPreview":"the chapter delta preview","viewer.owner.handoff":"the chapter handoff","viewer.owner.route":"Route Probe","viewer.owner.lens":"Semantic Lens","viewer.owner.relationship":"Relationship Preview","viewer.owner.intent":"Intent Trace","viewer.owner.focus":"semantic focus","viewer.owner.legend":"legend preview","viewer.owner.reader":"reader interaction","viewer.present.enter":"Enter presentation stage","viewer.present.enter.title":"Presentation stage (F)","viewer.present.exit":"Exit presentation stage","viewer.present.exit.title":"Exit presentation stage (F or Escape)","viewer.present.present":"Present","viewer.present.exit.label":"Exit","viewer.export.button":"Export","viewer.export.button.title":"Export diagram (E)","viewer.export.diagram":"Export diagram","viewer.export.menu":"Export","viewer.export.subtitle":"Portable, clean outputs","viewer.export.share":"Share","viewer.export.shareCard":"Share Card","viewer.export.routeShareCard":"Route Share Card","viewer.export.reachShareCard":"Reach Share Card","viewer.export.copyShareCard":"Copy Share Card","viewer.export.copyDiagram":"Copy diagram","viewer.export.clipboardPng":"PNG to clipboard","viewer.export.raster":"Raster images","viewer.export.image":"Image","viewer.export.lossless":"Lossless image","viewer.export.compact":"Compact image","viewer.export.modern":"Modern image","viewer.export.vectorMotion":"Vector and motion","viewer.export.vectorMotion.heading":"Vector \u0026 motion","viewer.export.editable":"Editable vector","viewer.export.motion6s":"6s motion","viewer.export.unsupported":"Not supported by this browser","viewer.export.clipboardUnsupported":"Clipboard image write not supported by this browser","viewer.export.clipboardUnsupported.period":"Clipboard image write not supported by this browser.","viewer.export.clipboardUnsupported.short":"Clipboard image write not supported in this browser.","viewer.export.motionUnavailable":"Motion capture unavailable in this browser","viewer.export.webmUnavailable":"WebM unavailable in this browser","viewer.export.failed":"Export failed: {message}","viewer.export.unknownVariant":"Unknown Share Card variant: {variant}","viewer.export.routeRequired":"Trace a route before exporting a Route Share Card","viewer.export.reachRequired":"Trace authored reach before exporting a Reach Share Card","viewer.export.unknown":"unknown","viewer.export.routeFailed":"Route Share Card export failed: {message}","viewer.export.reachFailed":"Reach Share Card export failed: {message}","viewer.export.copyFailed":"Copy failed: {message}","viewer.export.copiedPng":"Copied PNG to clipboard","viewer.export.copiedShare":"Copied Share Card","viewer.export.downloadedShare":"Downloaded Share Card","viewer.export.downloadedRoute":"Downloaded Route Share Card","viewer.export.downloadedReach":"Downloaded Reach Share Card","viewer.export.downloadedWebm":"Downloaded WebM","viewer.export.recording":"Recording 6 seconds of motion…","viewer.export.card.routeSummary.one":"Route: {source} → {target} · {count} directed hop","viewer.export.card.routeSummary.other":"Route: {source} → {target} · {count} directed hops","viewer.export.card.reachSummary":"Authored {direction} from {origin} · {nodes} · {links} · max {hops}","viewer.export.card.node.one":"{count} node","viewer.export.card.node.other":"{count} nodes","viewer.export.card.link.one":"{count} link","viewer.export.card.link.other":"{count} links","viewer.export.card.hop.one":"{count} hop","viewer.export.card.hop.other":"{count} hops","viewer.export.card.routeBadge":"ARCHIFY · ROUTE · {hops}","viewer.export.card.reachBadge":"ARCHIFY · {direction} REACH","viewer.export.card.defaultBadge":"ARCHIFY · {preset} · {theme}","viewer.export.direction.upstream":"Upstream","viewer.export.direction.downstream":"Downstream","viewer.export.error.canvasUnavailable":"Canvas unavailable for {label}","viewer.export.error.contextUnavailable":"2D canvas context unavailable for {label}","viewer.export.error.toBlobUnavailable":"canvas.toBlob unavailable for {label}","viewer.export.error.toBlobNull":"canvas.toBlob returned no data for {label}","viewer.export.error.variantsCombined":"Share Card variants cannot be combined","viewer.export.error.viewerState":"Share Card export could not remove temporary viewer state","viewer.export.error.routeState":"Route Card export could not preserve the resolved route safely","viewer.export.error.reachState":"Reach Card export could not preserve authored reach safely","viewer.export.error.webmRequirements":"WebM motion export requires a trace animation and browser MediaRecorder support","viewer.export.error.mediaRecorder":"MediaRecorder failed","viewer.export.error.emptyWebm":"MediaRecorder produced an empty WebM","viewer.export.error.webmBackground":"SVG background could not be loaded for WebM export","viewer.guided.region":"Guided diagram views","viewer.guided.previous":"Previous guided view","viewer.guided.previous.title":"Previous guided view ([)","viewer.guided.next":"Next guided view","viewer.guided.next.title":"Next guided view (])","viewer.guided.views":"Guided views","viewer.guided.explore":"Explore this system","viewer.guided.intro":"Step through curated paths without changing the source diagram.","viewer.guided.trail":"Story trail","viewer.guided.beat":"Beat","viewer.guided.nextBeat":"Next","viewer.guided.play":"Play guided story","viewer.guided.play.title":"Play guided story (P)","viewer.guided.pause":"Pause guided story","viewer.guided.pause.title":"Pause guided story (P)","viewer.guided.replay":"Replay guided story","viewer.guided.replay.title":"Replay guided story (P)","viewer.guided.playStory":"Play story","viewer.guided.pauseStory":"Pause","viewer.guided.replayStory":"Replay story","viewer.guided.motionUnavailable":"Story playback unavailable while motion is Still","viewer.guided.enableMotion":"Switch motion to Live to play the guided story","viewer.guided.selectBeatLink":"Select a Story Beat to copy its exact link","viewer.guided.copyMoment":"Copy moment","viewer.guided.momentCopied":"Moment link copied","viewer.guided.momentCopyFailed":"Could not copy story moment link","viewer.guided.copied":"Copied","viewer.guided.copyFailed":"Copy failed","viewer.guided.showAll":"Show all","viewer.guided.showAll.aria":"Show entire diagram","viewer.guided.chapters":"Story chapters","viewer.guided.storyTrail":"Story trail for {label}: {count} beats","viewer.guided.chapter.open":"Open chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.current":"Current chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.selectedNodes":"{count} selected nodes","viewer.guided.chapter.stops":"{count} stops","viewer.guided.chapter.stop.one":"{count} stop","viewer.guided.chapter.stop.other":"{count} stops","viewer.guided.chapter.current.title":"{label} — current chapter, {count} stops","viewer.guided.chapter.delta.expanded":"{stay} stay, {enter} enter, {leave} leave","viewer.guided.chapter.delta.aria":"Open chapter {index} of {total}: {label}. Chapter focus delta: {delta}","viewer.guided.chapter.delta.title":"{label} — {delta} chapter focus","viewer.guided.handoff":"{from} → {to} · via {label}","viewer.guided.share.chapter":"Chapter {index} / {total}","viewer.guided.share.initial":"Chapter 01 / 01","viewer.guided.share.default":"Guided chapter","viewer.guided.state.ready":"Ready","viewer.guided.state.playing":"Playing","viewer.guided.state.settled":"Settled","viewer.guided.state.paused":"Paused","viewer.guided.state.pinned":"Pinned","viewer.guided.state.still":"Still","viewer.guided.share.step":"Step {index} / {total} · {label}","viewer.guided.share.staticMoment":"{step} · Static moment","viewer.guided.share.complete":"{count} steps complete · {note}","viewer.guided.share.settled":"Path settled for reading.","viewer.guided.share.staticPath":"{count} steps · Static path","viewer.guided.share.ready":"{count} steps · Ready","viewer.guided.share.aria":"{state} chapter {index} of {total}: {label}. {beat}. {route}","viewer.guided.beat.start":"Beat {index} / {total} · {label} · starting point","viewer.guided.beat.forward":"Beat {index} / {total} · {from} → {to}","viewer.guided.beat.reverse":"Beat {index} / {total} · {from} → {to} · reverse authored link","viewer.guided.beat.multiple":"Beat {index} / {total} · {from} ⇄ {to} · {count} authored links","viewer.guided.beat.group":"Beat {index} / {total} · {from} · {to} · grouped · no direct link","viewer.guided.beat.aria.prefix":"Story beat {index} of {total}: {label}. ","viewer.guided.beat.aria.start":"Starting point.","viewer.guided.beat.aria.forward":"From {from} through one authored forward relationship.","viewer.guided.beat.aria.reverse":"From {from}; the authored relationship points from {to} to {from}.","viewer.guided.beat.aria.multiple":"From {from} through {count} authored relationships; shown without arbitrary motion.","viewer.guided.beat.aria.group":"Grouped from {from} with no direct authored relationship.","viewer.guided.caption.start":"Starting point","viewer.guided.caption.grouped":"Grouped transition · no direct authored link","viewer.guided.caption.more":" +{count} more","viewer.guided.caption.reverse":"Reverse authored relationship","viewer.guided.caption.relationships":"{count} authored relationships","viewer.guided.caption.relationship":"Authored relationship","viewer.guided.caption.direction":"authored direction: {from} → {to}","viewer.guided.caption.starting":"Authored starting point","viewer.guided.beatLink":"Copy link to current story moment: Beat {index} of {total}: {label}","viewer.guided.noStory":"This diagram has no authored guided story.","viewer.guide.eyebrow":"Diagram guide","viewer.guide.close":"Close diagram guide","viewer.guide.inspecting":"Inspecting compiled semantics","viewer.guide.actions":"Diagram exploration actions","viewer.guide.find":"Find any node","viewer.guide.find.hint":"Search labels, responsibilities, kinds, and stable IDs.","viewer.guide.route":"Trace a route","viewer.guide.route.aria":"Trace a directed route","viewer.guide.route.hint":"Ask how two semantic nodes connect in authored direction.","viewer.guide.map":"See the whole system","viewer.guide.map.hint":"Open Semantic Radar with a live viewport and stable nodes.","viewer.guide.lens":"Compare semantic kinds","viewer.guide.lens.hint":"Count roles, reveal their traffic, and compare direct authored links.","viewer.guide.story":"Play the guided story","viewer.guide.story.hint":"Walk the authored chapters and real relationships.","viewer.guide.present":"Enter Presentation Stage","viewer.guide.present.hint":"Give the live diagram the viewport without changing export.","viewer.guide.shortcuts":"Additional keyboard shortcuts","viewer.guide.shortcut.export":"Export","viewer.guide.shortcut.theme":"Theme","viewer.guide.shortcut.style":"Style","viewer.guide.shortcut.reset":"Reset","viewer.guide.shortcut.zoomIn":"Zoom in","viewer.guide.shortcut.zoomOut":"Zoom out","viewer.guide.shortcut.close":"Close","viewer.guide.facts":"{nodes} · {relationships} · {views}","viewer.guide.fact.node.one":"{count} semantic node","viewer.guide.fact.node.other":"{count} semantic nodes","viewer.guide.fact.relationship.one":"{count} relationship","viewer.guide.fact.relationship.other":"{count} relationships","viewer.guide.fact.view.one":"{count} guided view","viewer.guide.fact.view.other":"{count} guided views","viewer.guide.story.available.one":"Walk {count} authored chapter and its real relationships.","viewer.guide.story.available.other":"Walk {count} authored chapters and their real relationships.","viewer.guide.story.unavailable":"No authored guided story in this diagram.","viewer.guide.open":"Open diagram guide","viewer.guide.noStory":"This diagram has no authored guided story.","viewer.finder.title":"Find a node","viewer.finder.close":"Close node finder","viewer.finder.placeholder":"Search labels or IDs","viewer.finder.search":"Search diagram nodes","viewer.finder.results":"Diagram nodes","viewer.finder.empty":"No matching nodes","viewer.finder.result.focus":"Focus {label}","viewer.finder.result.routeStart":"Choose {label} as route start","viewer.finder.result.routeTarget":"Choose {label} as route destination, {links}","viewer.finder.status.empty":"No matching nodes","viewer.finder.status.count.one":"{count} matching node","viewer.finder.status.count.other":"{count} matching nodes","viewer.finder.noun.nodes":"nodes","viewer.finder.link.one":"{count} link","viewer.finder.link.other":"{count} links","viewer.finder.result.focus.one":"Focus {label}, {count} related connection","viewer.finder.result.focus.other":"Focus {label}, {count} related connections","viewer.finder.status.filtered":"{visible} of {available} {noun}","viewer.finder.status.all":"{available} {noun}","viewer.passport.eyebrow":"Semantic passport","viewer.passport.metadata":"Node metadata","viewer.passport.evidence":"Verified source evidence","viewer.passport.verified":"Verified source","viewer.passport.verificationScope":"Verified against local Git at the pinned revision. Remote access has not been checked.","viewer.passport.reach":"Authored reach","viewer.passport.reach.trace":"Trace authored reachability","viewer.passport.upstream":"Upstream","viewer.passport.downstream":"Downstream","viewer.passport.upstream.trace":"Trace upstream authored reachability","viewer.passport.downstream.trace":"Trace downstream authored reachability","viewer.passport.close":"Close semantic passport","viewer.passport.copy":"Copy link","viewer.passport.copy.focus":"Copy link to focused node","viewer.passport.relations":"Relations","viewer.passport.relations.show":"Show connected relationships","viewer.passport.relations.hide":"Hide connected relationships","viewer.passport.relations.list":"Connected relationships","viewer.passport.copyRelation":"Copy relation","viewer.passport.copyNode":"Copy node","viewer.passport.copyPinned":"Copy link to pinned relationship","viewer.passport.copySource":"Copy link to source node","viewer.passport.copy.focused.success":"Focused node link copied","viewer.passport.copy.pinned.success":"Pinned relationship link copied","viewer.passport.copy.focused.failed":"Could not copy focused node link","viewer.passport.copy.pinned.failed":"Could not copy pinned relationship link","viewer.passport.relationship.none":"No connected relationships","viewer.passport.relationship.count.one":"{count} relation","viewer.passport.relationship.count.other":"{count} relations","viewer.passport.relationship.show.one":"Show {count} connected relationship","viewer.passport.relationship.show.other":"Show {count} connected relationships","viewer.passport.relationship.summary":"{out} outgoing · {in} incoming{loops}","viewer.passport.relationship.loops":" · {count} loop","viewer.passport.relationship.explorer":"Direct relationship explorer","viewer.passport.relationship.help":"Use arrow keys to explore relationships. Press Enter or Space to pin details; Escape clears.","viewer.passport.relationship.loopsBack":"loops back","viewer.passport.relationship.connectsTo":"connects to","viewer.passport.relationship.connectsFrom":"connects from","viewer.passport.relationship.pinned":"Pinned relationship · {from} → {to} · {label}","viewer.passport.relationship.inspect":"Inspect relationship {index} of {total}: {from} to {to}, {label}. Press Enter for details.","viewer.passport.relationship.group.out":"Outgoing","viewer.passport.relationship.group.in":"Incoming","viewer.passport.relationship.group.loop":"Self loops","viewer.passport.relationship.row":"{group}: {relationship}, {neighbor}","viewer.passport.relationship.direction.out":"OUT →","viewer.passport.relationship.direction.in":"← IN","viewer.passport.relationship.direction.loop":"LOOP","viewer.passport.sourceCount.one":"{count} verified source reference","viewer.passport.sourceCount.other":"{count} verified source references","viewer.passport.sourceMarker":"SRC","viewer.passport.beacon.one":"{count} verified source; focus this node to inspect","viewer.passport.beacon.other":"{count} verified sources; focus this node to inspect","viewer.passport.repository.open":"Open verified repository revision {revision}","viewer.passport.source.open":"Open verified source {path} at revision {revision}","viewer.passport.source.openLink":"Open ↗","viewer.passport.reach.upstream.one":"Trace {count} upstream authored node","viewer.passport.reach.upstream.other":"Trace {count} upstream authored nodes","viewer.passport.reach.downstream.one":"Trace {count} downstream authored node","viewer.passport.reach.downstream.other":"Trace {count} downstream authored nodes","viewer.passport.reach.noUpstream":"No upstream authored nodes","viewer.passport.reach.noDownstream":"No downstream authored nodes","viewer.passport.reach.status":"{direction} · {nodes} nodes · {links} links · max {hops} hops","viewer.route.eyebrow":"Route probe","viewer.route.start":"Choose a start node","viewer.route.start.find":"Find start","viewer.route.start.find.aria":"Find a route start","viewer.route.copy":"Copy link","viewer.route.copy.aria":"Copy link to traced route","viewer.route.clear":"Clear","viewer.route.clear.aria":"Clear route probe","viewer.route.traced":"Traced route","viewer.route.pickTwo":"Pick two semantic nodes on the diagram","viewer.route.pickOne":"Pick a semantic node on the diagram","viewer.route.controls":"Route journey controls","viewer.route.previous":"Previous route position","viewer.route.play":"Play route journey","viewer.route.pause":"Pause route journey","viewer.route.replay":"Replay route journey","viewer.route.next":"Next route position","viewer.route.journey":"Journey","viewer.route.pause.label":"Pause","viewer.route.replay.label":"Replay","viewer.route.overview":"Overview","viewer.route.overview.aria":"Show complete route overview","viewer.route.instructions":"Choose the source, then the destination. Direction matters.","viewer.route.destination":"Choose a destination from {label}","viewer.route.destination.find":"Find target","viewer.route.destination.find.aria":"Find a reachable route destination","viewer.route.differentDestination":"Choose a different destination","viewer.route.distinct":"A route needs two distinct semantic nodes.","viewer.route.unreachable":"No directed route to {label}","viewer.route.unreachable.detail":"{target} is not reachable from {source}. Pick a highlighted destination.","viewer.route.start.instructions":"Select the source. The next step will reveal only directed destinations.","viewer.route.copy.success":"Traced route link copied","viewer.route.copy.failed":"Could not copy traced route link","viewer.route.position":"Route position {index} of {total}: {label}","viewer.route.step":"Step {index} of {total} · {phase} · {label}","viewer.route.motionRequired":"Automatic journey requires Live motion","viewer.route.trigger.clear":"Clear traced route","viewer.route.overview.status":"{nodes} · {hops} · shortest authored route","viewer.route.overview.node.one":"{count} node","viewer.route.overview.node.other":"{count} nodes","viewer.route.overview.hop.one":"{count} directed hop","viewer.route.overview.hop.other":"{count} directed hops","viewer.route.phase.playing":"Playing","viewer.route.phase.complete":"Complete","viewer.route.phase.inspecting":"Inspecting","viewer.route.destination.count.one":"{count} directed destination available. Pick a highlighted node.","viewer.route.destination.count.other":"{count} directed destinations available. Pick a highlighted node.","viewer.route.noOutgoing":"No outgoing route starts here. Clear and choose another source.","viewer.route.result.title":"{source} to {target}","viewer.route.finder.source.title":"Choose route start","viewer.route.finder.source.placeholder":"Search route sources","viewer.route.finder.source.empty":"No matching route sources","viewer.route.finder.source.results":"Nodes that can start a route","viewer.route.finder.source.noun":"route sources","viewer.route.finder.source.badge":"start","viewer.route.finder.target.title":"Destination from {label}","viewer.route.finder.target.placeholder":"Search reachable destinations","viewer.route.finder.target.empty":"No matching reachable destinations","viewer.route.finder.target.results":"Reachable route destinations","viewer.route.finder.target.noun":"reachable destinations","viewer.route.hop.one":"{count} hop","viewer.route.hop.other":"{count} hops","viewer.lens.eyebrow":"Semantic lens","viewer.lens.title":"Compare system roles","viewer.lens.close":"Close semantic lens","viewer.lens.instruction":"Choose up to two semantic kinds. One reveals its real traffic; two compare only direct authored relationships.","viewer.lens.kinds":"Semantic kinds","viewer.lens.choose":"Choose a kind to inspect its nodes and touching relationships.","viewer.lens.copy":"Copy link to semantic lens","viewer.lens.clear":"Clear semantic lens","viewer.lens.open":"Open semantic lens","viewer.lens.openActive":"Open active semantic lens","viewer.lens.legend":"Semantic legend","viewer.lens.legend.inspect.one":"Inspect {label}, {count} node","viewer.lens.legend.inspect.other":"Inspect {label}, {count} nodes","viewer.lens.kind.count.one":"{label}, {count} node","viewer.lens.kind.count.other":"{label}, {count} nodes","viewer.lens.compare.one":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationship","viewer.lens.compare.other":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationships","viewer.lens.single":"{nodes} · {relationships} · connected peers remain visible","viewer.lens.node.one":"{count} {label} node","viewer.lens.node.other":"{count} {label} nodes","viewer.lens.relationship.one":"{count} touching relationship","viewer.lens.relationship.other":"{count} touching relationships","viewer.radar.title":"Semantic radar","viewer.radar.building":"Building overview","viewer.radar.openFull":"Open full semantic radar","viewer.radar.open":"Open radar","viewer.radar.close":"Close semantic radar","viewer.radar.surface":"Diagram overview. Click a node to focus it, or use arrow keys to pan.","viewer.radar.click":"Click node","viewer.radar.drag":"Drag to pan","viewer.radar.space":"Semantic radar needs more MAP space.","viewer.radar.nodes":"Semantic diagram radar nodes","viewer.radar.focus":"Focus {label} from Semantic Radar","viewer.radar.status":"{count} nodes · {viewport}","viewer.radar.fullMap":"{count} nodes · full map","viewer.radar.compacted":"Radar compacted to avoid covering the Semantic Passport or MAP controls.","viewer.radar.cancelWaiting":"Cancel semantic radar waiting for more MAP space","viewer.radar.needsSpace":"Semantic radar needs more visible MAP space","viewer.radar.viewport.full":"full map","viewer.radar.viewport.width":"{percent}% width","viewer.radar.viewport.scale":"{percent}% viewport","viewer.nav.controls":"Diagram view controls","viewer.nav.route":"Trace a directed route","viewer.nav.route.title":"Trace route (R)","viewer.nav.route.short":"PATH","viewer.nav.radar":"Open semantic radar","viewer.nav.radar.title":"Semantic radar (M)","viewer.nav.radar.short":"MAP","viewer.nav.lens":"Open semantic lens","viewer.nav.lens.title":"Semantic lens (L)","viewer.nav.lens.short":"LENS","viewer.nav.find":"Find a node","viewer.nav.find.title":"Find a node (/)","viewer.nav.guide":"Open diagram guide","viewer.nav.guide.title":"Diagram guide (?)","viewer.nav.zoomOut":"Zoom out","viewer.nav.zoomOut.title":"Zoom out (-)","viewer.nav.reset":"Reset diagram view","viewer.nav.reset.title":"Reset view (0)","viewer.nav.read":"READ","viewer.nav.zoomIn":"Zoom in","viewer.nav.zoomIn.title":"Zoom in (+)","viewer.nav.camera":"{hint}. Reset diagram view","viewer.nav.camera.title":"{semantic}{hint} · reset view (0)","viewer.nav.camera.semantic":"Semantic camera active · ","viewer.nav.level.map":"MAP","viewer.nav.level.read":"READ","viewer.nav.level.full":"FULL","viewer.nav.level.auto":"AUTO","viewer.nav.detail.map":"Zoom in to reveal relationship labels and node context","viewer.nav.detail.read":"Zoom in again to reveal tags and annotations","viewer.nav.detail.full":"Full diagram detail","viewer.intent.summary":"{label}. {out} outgoing, {in} incoming{loops}. {total} connections. Press Enter for details.","viewer.intent.loops":", {count} self loop","viewer.common.copied":"Copied","viewer.common.copyFailed":"Copy failed","viewer.common.copyLink":"Copy link","viewer.common.clear":"Clear","viewer.common.close":"Close"}}</script>
     <div class="guided-views no-print" id="guided-views" hidden aria-label="Guided diagram views">
       <button id="guided-view-prev" type="button" aria-label="Previous guided view" title="Previous guided view ([)">&#8592;</button>
@@ -5130,8 +5130,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 1240 700" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-preset="classic" data-quality-profile="showcase">
-        <title id="archify-diagram-title">Android TV Remote: the QML files</title>
+      <svg viewBox="0 0 1240 750" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-preset="classic" data-quality-profile="showcase">
+        <title id="archify-diagram-title">Android TV Remote: whole plugin</title>
         <desc id="archify-diagram-description">An architecture diagram generated by Archify.</desc>
         <!-- Definitions -->
         <defs>
@@ -5156,320 +5156,442 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Boundaries (behind everything) -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="Panel and its model" x="10" y="10" width="538" height="248" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="omarchy-shell" x="30" y="16" width="158" height="232" rx="12" class="c-region" stroke-width="1"/>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="the pad" x="520" y="140" width="708" height="378" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="Panel and its model" x="200" y="16" width="498" height="232" rx="12" class="c-region" stroke-width="1"/>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="2" data-composition-frame-label="primitives, used everywhere" x="350" y="530" width="878" height="118" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="2" data-composition-frame-label="the pad" x="30" y="256" width="668" height="352" rx="12" class="c-region" stroke-width="1"/>
+
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="3" data-composition-frame-label="primitives, used everywhere" x="30" y="616" width="668" height="112" rx="12" class="c-region" stroke-width="1"/>
+
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="4" data-composition-frame-label="ADB half (bash)" x="710" y="136" width="158" height="232" rx="12" class="c-region" stroke-width="1"/>
 
         <!-- Connection paths (before components for correct z-order) -->
-        <path data-edge-from="theme" data-edge-to="panel" data-edge-label="inherits" data-edge-key="0" data-edge-id="theme-panel" data-composition-points="178,67;210,67" d="M 178 67 L 210 67" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="panel" data-edge-to="config" data-edge-key="1" data-edge-id="panel-config" data-composition-points="210,81;194,81;194,204;178,204" d="M 210 81 L 202 81 Q 194 81 194 89 L 194 196 Q 194 204 186 204 L 178 204" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="panel" data-edge-to="service" data-edge-key="2" data-edge-id="panel-service" data-composition-points="279,108;279,170" d="M 279 108 L 279 170" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="panel" data-edge-to="bindings" data-edge-key="3" data-edge-id="panel-bindings" data-composition-points="348,67;380,67" d="M 348 67 L 380 67" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="panel" data-edge-to="pad" data-edge-label="opened, theme" data-edge-key="4" data-edge-id="panel-pad" data-composition-points="348,81;372,81;372,204;550,204" d="M 348 81 L 364 81 Q 372 81 372 89 L 372 196 Q 372 204 380 204 L 550 204" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="pad" data-edge-to="padkey" data-edge-label="x14" data-edge-key="5" data-edge-id="pad-padkey" data-composition-points="688,197;720,197" d="M 688 197 L 720 197" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="pad" data-edge-to="typefield" data-edge-key="6" data-edge-id="pad-typefield" data-composition-points="619,238;619,300" d="M 619 238 L 619 300" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="pad" data-edge-to="setpicker" data-edge-label="foot of the pad" data-edge-key="7" data-edge-id="pad-setpicker" data-composition-points="688,211;704,211;704,334;720,334" d="M 688 211 L 696 211 Q 704 211 704 219 L 704 326 Q 704 334 712 334 L 720 334" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="setpicker" data-edge-to="tvrow" data-edge-label="per set" data-edge-key="8" data-edge-id="setpicker-tvrow" data-composition-points="782,368;782,399;619,399;619,430" d="M 782 368 L 782 391 Q 782 399 774 399 L 627 399 Q 619 399 619 407 L 619 430" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="setpicker" data-edge-to="action" data-edge-label="x3" data-edge-key="9" data-edge-id="setpicker-action" data-composition-points="858,327;1036,327;1036,457;1060,457" d="M 858 327 L 1028 327 Q 1036 327 1036 335 L 1036 449 Q 1036 457 1044 457 L 1060 457" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="setpicker" data-edge-to="tvform" data-edge-key="10" data-edge-id="setpicker-tvform" data-composition-points="796,368;796,430" d="M 796 368 L 796 430" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="setpicker" data-edge-to="appchooser" data-edge-key="11" data-edge-id="setpicker-appchooser" data-composition-points="858,341;874,341;874,457;890,457" d="M 858 341 L 866 341 Q 874 341 874 349 L 874 449 Q 874 457 882 457 L 890 457" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="field" data-edge-to="typefield" data-edge-label="inherits" data-edge-key="12" data-edge-id="field-typefield" data-composition-points="518,594;534,594;534,334;550,334" d="M 518 594 L 526 594 Q 534 594 534 586 L 534 342 Q 534 334 542 334 L 550 334" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="tvform" data-edge-to="field" data-edge-label="x2" data-edge-key="13" data-edge-id="tvform-field" data-composition-points="782,498;782,529;449,529;449,560" d="M 782 498 L 782 521 Q 782 529 774 529 L 457 529 Q 449 529 449 537 L 449 560" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="tvform" data-edge-to="formbutton" data-edge-key="14" data-edge-id="tvform-formbutton" data-composition-points="796,498;796,560" d="M 796 498 L 796 560" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="appchooser" data-edge-to="formbutton" data-edge-key="15" data-edge-id="appchooser-formbutton" data-composition-points="890,471;874,471;874,594;858,594" d="M 890 471 L 882 471 Q 874 471 874 479 L 874 586 Q 874 594 866 594 L 858 594" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="action" data-edge-to="hintarea" data-edge-key="16" data-edge-id="action-hintarea" data-composition-points="1060,471;1044,471;1044,594;1028,594" d="M 1060 471 L 1052 471 Q 1044 471 1044 479 L 1044 586 Q 1044 594 1036 594 L 1028 594" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="action" data-edge-to="padtext" data-edge-key="17" data-edge-id="action-padtext" data-composition-points="1129,498;1129,560" d="M 1129 498 L 1129 560" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="bar" data-edge-to="panel" data-edge-label="bar, settings" data-edge-key="0" data-edge-id="bar-panel" data-composition-points="178,194;210,194" d="M 178 194 L 210 194" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="panel" data-edge-to="service" data-edge-label="address, actions" data-edge-key="1" data-edge-id="panel-service" data-composition-points="348,194;380,194" d="M 348 194 L 380 194" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="service" data-edge-to="shim" data-edge-label="bash -c" data-edge-key="2" data-edge-id="service-shim" data-composition-points="518,194;720,194" d="M 518 194 L 720 194" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="shim" data-edge-to="adb" data-edge-label="adb -s host:5555" data-edge-key="3" data-edge-id="shim-adb" data-composition-points="858,194;890,194" d="M 858 194 L 890 194" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="adb" data-edge-to="tv" data-edge-label="wifi, reconnects" data-edge-key="4" data-edge-id="adb-tv" data-composition-points="1028,194;1060,194" d="M 1028 194 L 1060 194" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="test" data-edge-to="shim" data-edge-label="fake adb" data-edge-key="5" data-edge-id="test-shim" data-composition-points="789,280;789,228" d="M 789 280 L 789 228" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="panel" data-edge-to="config" data-edge-label="read, persist" data-edge-key="6" data-edge-id="panel-config" data-composition-points="279,160;279,108" d="M 279 160 L 279 108" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="config" data-edge-to="shelljson" data-edge-label="updateEntryInline" data-edge-key="7" data-edge-id="config-shelljson" data-composition-points="210,74;178,74" d="M 210 74 L 178 74" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="theme" data-edge-to="panel" data-edge-label="inherits" data-edge-key="8" data-edge-id="theme-panel" data-composition-points="449,108;449,134;279,134;279,160" d="M 449 108 L 449 126 Q 449 134 441 134 L 287 134 Q 279 134 279 142 L 279 160" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="bindings" data-edge-to="panel" data-edge-label="actions" data-edge-key="9" data-edge-id="bindings-panel" data-composition-points="619,108;619,134;279,134;279,160" d="M 619 108 L 619 126 Q 619 134 611 134 L 287 134 Q 279 134 279 142 L 279 160" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="panel" data-edge-to="pad" data-edge-label="opened, theme" data-edge-key="10" data-edge-id="panel-pad" data-composition-points="279,228;279,280" d="M 279 228 L 279 280" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="pad" data-edge-to="padkey" data-edge-label="x14" data-edge-key="11" data-edge-id="pad-padkey" data-composition-points="348,307;380,307" d="M 348 307 L 380 307" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="pad" data-edge-to="typefield" data-edge-key="12" data-edge-id="pad-typefield" data-composition-points="210,314;194,314;194,434;178,434" d="M 210 314 L 202 314 Q 194 314 194 322 L 194 426 Q 194 434 186 434 L 178 434" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="pad" data-edge-to="setpicker" data-edge-label="foot of the pad" data-edge-key="13" data-edge-id="pad-setpicker" data-composition-points="348,321;364,321;364,427;380,427" d="M 348 321 L 356 321 Q 364 321 364 329 L 364 419 Q 364 427 372 427 L 380 427" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="setpicker" data-edge-to="tvrow" data-edge-label="per set" data-edge-key="14" data-edge-id="setpicker-tvrow" data-composition-points="518,427;550,427" d="M 518 427 L 550 427" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="setpicker" data-edge-to="tvform" data-edge-key="15" data-edge-id="setpicker-tvform" data-composition-points="380,441;364,441;364,554;348,554" d="M 380 441 L 372 441 Q 364 441 364 449 L 364 546 Q 364 554 356 554 L 348 554" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="setpicker" data-edge-to="appchooser" data-edge-key="16" data-edge-id="setpicker-appchooser" data-composition-points="449,468;449,520" d="M 449 468 L 449 520" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="setpicker" data-edge-to="action" data-edge-label="x3" data-edge-key="17" data-edge-id="setpicker-action" data-composition-points="518,441;534,441;534,547;550,547" d="M 518 441 L 526 441 Q 534 441 534 449 L 534 539 Q 534 547 542 547 L 550 547" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="tvform" data-edge-to="formbutton" data-edge-key="18" data-edge-id="tvform-formbutton" data-composition-points="279,588;279,640" d="M 279 588 L 279 640" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="tvform" data-edge-to="field" data-edge-label="x2" data-edge-key="19" data-edge-id="tvform-field" data-composition-points="210,554;194,554;194,674;178,674" d="M 210 554 L 202 554 Q 194 554 194 562 L 194 666 Q 194 674 186 674 L 178 674" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="action" data-edge-to="hintarea" data-edge-key="20" data-edge-id="action-hintarea" data-composition-points="550,561;534,561;534,674;518,674" d="M 550 561 L 542 561 Q 534 561 534 569 L 534 666 Q 534 674 526 674 L 518 674" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="action" data-edge-to="padtext" data-edge-key="21" data-edge-id="action-padtext" data-composition-points="619,588;619,640" d="M 619 588 L 619 640" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="field" data-edge-to="typefield" data-edge-label="inherits" data-edge-key="22" data-edge-id="field-typefield" data-composition-points="109,640;109,468" d="M 109 640 L 109 468" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
 
         <!-- Components -->
-        <g id="node-theme" data-node-id="theme" data-node-label="Theme.qml" tabindex="0" role="button" aria-label="Focus Theme.qml, palette, metrics, Panel and its model" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="palette, metrics" data-node-context="Panel and its model">
-          <title>Theme.qml · palette, metrics · Panel and its model</title>
+        <g id="node-shelljson" data-node-id="shelljson" data-node-label="shell.json" tabindex="0" role="button" aria-label="Focus shell.json, ~/.config/omarchy, omarchy-shell" aria-pressed="false" data-node-kind="database" data-node-sublabel="~/.config/omarchy" data-node-context="omarchy-shell">
+          <title>shell.json · ~/.config/omarchy · omarchy-shell</title>
           <rect x="40" y="40" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="40" y="40" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(46 46) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          <rect x="40" y="40" width="138" height="68" rx="6" class="c-database" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(46 46) scale(0.6875)">
+            <ellipse cx="8" cy="4" rx="5" ry="2"/>
+            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="109" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Theme.qml</text>
-        <text data-detail="context" x="109" y="88" class="t-muted" font-size="9" text-anchor="middle">palette, metrics</text>
-        </g>
-
-        <g id="node-panel" data-node-id="panel" data-node-label="Panel.qml" tabindex="0" role="button" aria-label="Focus Panel.qml, the bar widget, Panel and its model" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="the bar widget" data-node-context="Panel and its model">
-          <title>Panel.qml · the bar widget · Panel and its model</title>
-          <rect x="210" y="40" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="210" y="40" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(216 46) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="279" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Panel.qml</text>
-        <text data-detail="context" x="279" y="88" class="t-muted" font-size="9" text-anchor="middle">the bar widget</text>
+          <text data-node-label="" data-detail-anchor="" x="109" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">shell.json</text>
+        <text data-detail="context" x="109" y="88" class="t-muted" font-size="9" text-anchor="middle">~/.config/omarchy</text>
         </g>
 
         <g id="node-config" data-node-id="config" data-node-label="Config.qml" tabindex="0" role="button" aria-label="Focus Config.qml, shell.json I/O, Panel and its model" aria-pressed="false" data-node-kind="backend" data-node-sublabel="shell.json I/O" data-node-context="Panel and its model">
           <title>Config.qml · shell.json I/O · Panel and its model</title>
-          <rect x="40" y="170" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="40" y="170" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(46 176) scale(0.6875)">
+          <rect x="210" y="40" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="210" y="40" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(216 46) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="109" y="202" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Config.qml</text>
-        <text data-detail="context" x="109" y="218" class="t-muted" font-size="9" text-anchor="middle">shell.json I/O</text>
+          <text data-node-label="" data-detail-anchor="" x="279" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Config.qml</text>
+        <text data-detail="context" x="279" y="88" class="t-muted" font-size="9" text-anchor="middle">shell.json I/O</text>
         </g>
 
-        <g id="node-service" data-node-id="service" data-node-label="Service.qml" tabindex="0" role="button" aria-label="Focus Service.qml, the ADB half, Panel and its model" aria-pressed="false" data-node-kind="backend" data-node-sublabel="the ADB half" data-node-context="Panel and its model">
-          <title>Service.qml · the ADB half · Panel and its model</title>
-          <rect x="210" y="170" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="210" y="170" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(216 176) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+        <g id="node-theme" data-node-id="theme" data-node-label="Theme.qml" tabindex="0" role="button" aria-label="Focus Theme.qml, palette, metrics, Panel and its model" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="palette, metrics" data-node-context="Panel and its model">
+          <title>Theme.qml · palette, metrics · Panel and its model</title>
+          <rect x="380" y="40" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="380" y="40" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(386 46) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="279" y="202" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Service.qml</text>
-        <text data-detail="context" x="279" y="218" class="t-muted" font-size="9" text-anchor="middle">the ADB half</text>
+          <text data-node-label="" data-detail-anchor="" x="449" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Theme.qml</text>
+        <text data-detail="context" x="449" y="88" class="t-muted" font-size="9" text-anchor="middle">palette, metrics</text>
         </g>
 
         <g id="node-bindings" data-node-id="bindings" data-node-label="Bindings.qml" tabindex="0" role="button" aria-label="Focus Bindings.qml, keyMap, Panel and its model" aria-pressed="false" data-node-kind="backend" data-node-sublabel="keyMap" data-node-context="Panel and its model">
           <title>Bindings.qml · keyMap · Panel and its model</title>
-          <rect x="380" y="40" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="380" y="40" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(386 46) scale(0.6875)">
+          <rect x="550" y="40" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="550" y="40" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(556 46) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="449" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Bindings.qml</text>
-        <text data-detail="context" x="449" y="88" class="t-muted" font-size="9" text-anchor="middle">keyMap</text>
+          <text data-node-label="" data-detail-anchor="" x="619" y="72" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Bindings.qml</text>
+        <text data-detail="context" x="619" y="88" class="t-muted" font-size="9" text-anchor="middle">keyMap</text>
+        </g>
+
+        <g id="node-bar" data-node-id="bar" data-node-label="omarchy-shell bar" tabindex="0" role="button" aria-label="Focus omarchy-shell bar, injects bar, settings, omarchy-shell" aria-pressed="false" data-node-kind="external" data-node-sublabel="injects bar, settings" data-node-context="omarchy-shell">
+          <title>omarchy-shell bar · injects bar, settings · omarchy-shell</title>
+          <rect x="40" y="160" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="40" y="160" width="138" height="68" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(46 166) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="109" y="192" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">omarchy-shell bar</text>
+        <text data-detail="context" x="109" y="208" class="t-muted" font-size="9" text-anchor="middle">injects bar, settings</text>
+        </g>
+
+        <g id="node-panel" data-node-id="panel" data-node-label="Panel.qml" tabindex="0" role="button" aria-label="Focus Panel.qml, icon, mode, the model, Panel and its model" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="icon, mode, the model" data-node-context="Panel and its model">
+          <title>Panel.qml · icon, mode, the model · Panel and its model</title>
+          <rect x="210" y="160" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="210" y="160" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(216 166) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="279" y="192" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Panel.qml</text>
+        <text data-detail="context" x="279" y="208" class="t-muted" font-size="9" text-anchor="middle">icon, mode, the model</text>
+        </g>
+
+        <g id="node-service" data-node-id="service" data-node-label="Service.qml" tabindex="0" role="button" aria-label="Focus Service.qml, probe, apps, reauth, Panel and its model" aria-pressed="false" data-node-kind="backend" data-node-sublabel="probe, apps, reauth" data-node-context="Panel and its model">
+          <title>Service.qml · probe, apps, reauth · Panel and its model</title>
+          <rect x="380" y="160" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="380" y="160" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(386 166) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="449" y="192" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Service.qml</text>
+        <text data-detail="context" x="449" y="208" class="t-muted" font-size="9" text-anchor="middle">probe, apps, reauth</text>
+        </g>
+
+        <g id="node-shim" data-node-id="shim" data-node-label="tv-remote" tabindex="0" role="button" aria-label="Focus tv-remote, bash: key, text, app, ADB half (bash)" aria-pressed="false" data-node-kind="backend" data-node-sublabel="bash: key, text, app" data-node-context="ADB half (bash)">
+          <title>tv-remote · bash: key, text, app · ADB half (bash)</title>
+          <rect x="720" y="160" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="720" y="160" width="138" height="68" rx="6" class="c-backend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(726 166) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="789" y="192" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">tv-remote</text>
+        <text data-detail="context" x="789" y="208" class="t-muted" font-size="9" text-anchor="middle">bash: key, text, app</text>
+        </g>
+
+        <g id="node-adb" data-node-id="adb" data-node-label="adb" tabindex="0" role="button" aria-label="Focus adb, local server, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="local server" data-node-context="Architecture component">
+          <title>adb · local server · Architecture component</title>
+          <rect x="890" y="160" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="890" y="160" width="138" height="68" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(896 166) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="959" y="192" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">adb</text>
+        <text data-detail="context" x="959" y="208" class="t-muted" font-size="9" text-anchor="middle">local server</text>
+        </g>
+
+        <g id="node-tv" data-node-id="tv" data-node-label="Android TV" tabindex="0" role="button" aria-label="Focus Android TV, up to three sets, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="up to three sets" data-node-context="Architecture component">
+          <title>Android TV · up to three sets · Architecture component</title>
+          <rect x="1060" y="160" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="1060" y="160" width="138" height="68" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(1066 166) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="1129" y="192" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Android TV</text>
+        <text data-detail="context" x="1129" y="208" class="t-muted" font-size="9" text-anchor="middle">up to three sets</text>
         </g>
 
         <g id="node-pad" data-node-id="pad" data-node-label="Pad.qml" tabindex="0" role="button" aria-label="Focus Pad.qml, the popup, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="the popup" data-node-context="the pad">
           <title>Pad.qml · the popup · the pad</title>
-          <rect x="550" y="170" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="550" y="170" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(556 176) scale(0.6875)">
+          <rect x="210" y="280" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="210" y="280" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(216 286) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="619" y="202" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Pad.qml</text>
-        <text data-detail="context" x="619" y="218" class="t-muted" font-size="9" text-anchor="middle">the popup</text>
+          <text data-node-label="" data-detail-anchor="" x="279" y="312" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Pad.qml</text>
+        <text data-detail="context" x="279" y="328" class="t-muted" font-size="9" text-anchor="middle">the popup</text>
         </g>
 
         <g id="node-padkey" data-node-id="padkey" data-node-label="PadKey.qml" tabindex="0" role="button" aria-label="Focus PadKey.qml, one grid button, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="one grid button" data-node-context="the pad">
           <title>PadKey.qml · one grid button · the pad</title>
-          <rect x="720" y="170" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="720" y="170" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(726 176) scale(0.6875)">
+          <rect x="380" y="280" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="380" y="280" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(386 286) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="789" y="202" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PadKey.qml</text>
-        <text data-detail="context" x="789" y="218" class="t-muted" font-size="9" text-anchor="middle">one grid button</text>
+          <text data-node-label="" data-detail-anchor="" x="449" y="312" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PadKey.qml</text>
+        <text data-detail="context" x="449" y="328" class="t-muted" font-size="9" text-anchor="middle">one grid button</text>
+        </g>
+
+        <g id="node-test" data-node-id="test" data-node-label="test/tv-remote.sh" tabindex="0" role="button" aria-label="Focus test/tv-remote.sh, fake adb, 26 cases, ADB half (bash)" aria-pressed="false" data-node-kind="external" data-node-sublabel="fake adb, 26 cases" data-node-context="ADB half (bash)">
+          <title>test/tv-remote.sh · fake adb, 26 cases · ADB half (bash)</title>
+          <rect x="720" y="280" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="720" y="280" width="138" height="68" rx="6" class="c-external" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(726 286) scale(0.6875)">
+            <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
+            <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="789" y="312" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">test/tv-remote.sh</text>
+        <text data-detail="context" x="789" y="328" class="t-muted" font-size="9" text-anchor="middle">fake adb, 26 cases</text>
         </g>
 
         <g id="node-typefield" data-node-id="typefield" data-node-label="TypeField.qml" tabindex="0" role="button" aria-label="Focus TypeField.qml, entry, history, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="entry, history" data-node-context="the pad">
           <title>TypeField.qml · entry, history · the pad</title>
-          <rect x="550" y="300" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="550" y="300" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(556 306) scale(0.6875)">
+          <rect x="40" y="400" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="40" y="400" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(46 406) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="619" y="332" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">TypeField.qml</text>
-        <text data-detail="context" x="619" y="348" class="t-muted" font-size="9" text-anchor="middle">entry, history</text>
+          <text data-node-label="" data-detail-anchor="" x="109" y="432" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">TypeField.qml</text>
+        <text data-detail="context" x="109" y="448" class="t-muted" font-size="9" text-anchor="middle">entry, history</text>
         </g>
 
         <g id="node-setpicker" data-node-id="setpicker" data-node-label="SetPicker.qml" tabindex="0" role="button" aria-label="Focus SetPicker.qml, strip at the foot, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="strip at the foot" data-node-context="the pad">
           <title>SetPicker.qml · strip at the foot · the pad</title>
-          <rect x="720" y="300" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="720" y="300" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(726 306) scale(0.6875)">
+          <rect x="380" y="400" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="380" y="400" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(386 406) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="789" y="332" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">SetPicker.qml</text>
-        <text data-detail="context" x="789" y="348" class="t-muted" font-size="9" text-anchor="middle">strip at the foot</text>
+          <text data-node-label="" data-detail-anchor="" x="449" y="432" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">SetPicker.qml</text>
+        <text data-detail="context" x="449" y="448" class="t-muted" font-size="9" text-anchor="middle">strip at the foot</text>
         </g>
 
         <g id="node-tvrow" data-node-id="tvrow" data-node-label="TvRow.qml" tabindex="0" role="button" aria-label="Focus TvRow.qml, a set&#39;s row, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="a set&#39;s row" data-node-context="the pad">
           <title>TvRow.qml · a set&#39;s row · the pad</title>
-          <rect x="550" y="430" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="550" y="430" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(556 436) scale(0.6875)">
+          <rect x="550" y="400" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="550" y="400" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(556 406) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="619" y="462" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">TvRow.qml</text>
-        <text data-detail="context" x="619" y="478" class="t-muted" font-size="9" text-anchor="middle">a set&#39;s row</text>
-        </g>
-
-        <g id="node-action" data-node-id="action" data-node-label="Action.qml" tabindex="0" role="button" aria-label="Focus Action.qml, menu-style row, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="menu-style row" data-node-context="the pad">
-          <title>Action.qml · menu-style row · the pad</title>
-          <rect x="1060" y="430" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="1060" y="430" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(1066 436) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="1129" y="462" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Action.qml</text>
-        <text data-detail="context" x="1129" y="478" class="t-muted" font-size="9" text-anchor="middle">menu-style row</text>
+          <text data-node-label="" data-detail-anchor="" x="619" y="432" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">TvRow.qml</text>
+        <text data-detail="context" x="619" y="448" class="t-muted" font-size="9" text-anchor="middle">a set&#39;s row</text>
         </g>
 
         <g id="node-tvform" data-node-id="tvform" data-node-label="TvForm.qml" tabindex="0" role="button" aria-label="Focus TvForm.qml, add or rename, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="add or rename" data-node-context="the pad">
           <title>TvForm.qml · add or rename · the pad</title>
-          <rect x="720" y="430" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="720" y="430" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(726 436) scale(0.6875)">
+          <rect x="210" y="520" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="210" y="520" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(216 526) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="789" y="462" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">TvForm.qml</text>
-        <text data-detail="context" x="789" y="478" class="t-muted" font-size="9" text-anchor="middle">add or rename</text>
+          <text data-node-label="" data-detail-anchor="" x="279" y="552" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">TvForm.qml</text>
+        <text data-detail="context" x="279" y="568" class="t-muted" font-size="9" text-anchor="middle">add or rename</text>
         </g>
 
         <g id="node-appchooser" data-node-id="appchooser" data-node-label="AppChooser.qml" tabindex="0" role="button" aria-label="Focus AppChooser.qml, pick an app, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="pick an app" data-node-context="the pad">
           <title>AppChooser.qml · pick an app · the pad</title>
-          <rect x="890" y="430" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="890" y="430" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(896 436) scale(0.6875)">
+          <rect x="380" y="520" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="380" y="520" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(386 526) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="959" y="462" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">AppChooser.qml</text>
-        <text data-detail="context" x="959" y="478" class="t-muted" font-size="9" text-anchor="middle">pick an app</text>
+          <text data-node-label="" data-detail-anchor="" x="449" y="552" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">AppChooser.qml</text>
+        <text data-detail="context" x="449" y="568" class="t-muted" font-size="9" text-anchor="middle">pick an app</text>
+        </g>
+
+        <g id="node-action" data-node-id="action" data-node-label="Action.qml" tabindex="0" role="button" aria-label="Focus Action.qml, menu-style row, the pad" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="menu-style row" data-node-context="the pad">
+          <title>Action.qml · menu-style row · the pad</title>
+          <rect x="550" y="520" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="550" y="520" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(556 526) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="619" y="552" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Action.qml</text>
+        <text data-detail="context" x="619" y="568" class="t-muted" font-size="9" text-anchor="middle">menu-style row</text>
         </g>
 
         <g id="node-field" data-node-id="field" data-node-label="Field.qml" tabindex="0" role="button" aria-label="Focus Field.qml, a text field, primitives, used everywhere" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="a text field" data-node-context="primitives, used everywhere">
           <title>Field.qml · a text field · primitives, used everywhere</title>
-          <rect x="380" y="560" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="380" y="560" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(386 566) scale(0.6875)">
+          <rect x="40" y="640" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="40" y="640" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(46 646) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="449" y="592" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Field.qml</text>
-        <text data-detail="context" x="449" y="608" class="t-muted" font-size="9" text-anchor="middle">a text field</text>
-        </g>
-
-        <g id="node-hintarea" data-node-id="hintarea" data-node-label="HintArea.qml" tabindex="0" role="button" aria-label="Focus HintArea.qml, hover reporting, primitives, used everywhere" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="hover reporting" data-node-context="primitives, used everywhere">
-          <title>HintArea.qml · hover reporting · primitives, used everywhere</title>
-          <rect x="890" y="560" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="890" y="560" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(896 566) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="959" y="592" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">HintArea.qml</text>
-        <text data-detail="context" x="959" y="608" class="t-muted" font-size="9" text-anchor="middle">hover reporting</text>
-        </g>
-
-        <g id="node-padtext" data-node-id="padtext" data-node-label="PadText.qml" tabindex="0" role="button" aria-label="Focus PadText.qml, themed Text, primitives, used everywhere" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="themed Text" data-node-context="primitives, used everywhere">
-          <title>PadText.qml · themed Text · primitives, used everywhere</title>
-          <rect x="1060" y="560" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="1060" y="560" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(1066 566) scale(0.6875)">
-            <rect x="2" y="3" width="12" height="10" rx="2"/>
-            <path d="M2 6.5h12"/>
-            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
-            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="1129" y="592" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PadText.qml</text>
-        <text data-detail="context" x="1129" y="608" class="t-muted" font-size="9" text-anchor="middle">themed Text</text>
+          <text data-node-label="" data-detail-anchor="" x="109" y="672" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Field.qml</text>
+        <text data-detail="context" x="109" y="688" class="t-muted" font-size="9" text-anchor="middle">a text field</text>
         </g>
 
         <g id="node-formbutton" data-node-id="formbutton" data-node-label="FormButton.qml" tabindex="0" role="button" aria-label="Focus FormButton.qml, SAVE, CANCEL, AUTH, primitives, used everywhere" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="SAVE, CANCEL, AUTH" data-node-context="primitives, used everywhere">
           <title>FormButton.qml · SAVE, CANCEL, AUTH · primitives, used everywhere</title>
-          <rect x="720" y="560" width="138" height="68" rx="6" class="c-mask"/>
-          <rect x="720" y="560" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(726 566) scale(0.6875)">
+          <rect x="210" y="640" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="210" y="640" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(216 646) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="789" y="592" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">FormButton.qml</text>
-        <text data-detail="context" x="789" y="608" class="t-muted" font-size="9" text-anchor="middle">SAVE, CANCEL, AUTH</text>
+          <text data-node-label="" data-detail-anchor="" x="279" y="672" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">FormButton.qml</text>
+        <text data-detail="context" x="279" y="688" class="t-muted" font-size="9" text-anchor="middle">SAVE, CANCEL, AUTH</text>
+        </g>
+
+        <g id="node-hintarea" data-node-id="hintarea" data-node-label="HintArea.qml" tabindex="0" role="button" aria-label="Focus HintArea.qml, hover reporting, primitives, used everywhere" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="hover reporting" data-node-context="primitives, used everywhere">
+          <title>HintArea.qml · hover reporting · primitives, used everywhere</title>
+          <rect x="380" y="640" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="380" y="640" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(386 646) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="449" y="672" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">HintArea.qml</text>
+        <text data-detail="context" x="449" y="688" class="t-muted" font-size="9" text-anchor="middle">hover reporting</text>
+        </g>
+
+        <g id="node-padtext" data-node-id="padtext" data-node-label="PadText.qml" tabindex="0" role="button" aria-label="Focus PadText.qml, themed Text, primitives, used everywhere" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="themed Text" data-node-context="primitives, used everywhere">
+          <title>PadText.qml · themed Text · primitives, used everywhere</title>
+          <rect x="550" y="640" width="138" height="68" rx="6" class="c-mask"/>
+          <rect x="550" y="640" width="138" height="68" rx="6" class="c-frontend" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(556 646) scale(0.6875)">
+            <rect x="2" y="3" width="12" height="10" rx="2"/>
+            <path d="M2 6.5h12"/>
+            <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
+            <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="619" y="672" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PadText.qml</text>
+        <text data-detail="context" x="619" y="688" class="t-muted" font-size="9" text-anchor="middle">themed Text</text>
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="theme" data-edge-to="panel" data-edge-label="inherits" data-edge-key="0" data-edge-id="theme-panel">
-          <rect x="169.8" y="17" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="194" y="27" class="t-backend" font-size="8" text-anchor="middle">inherits</text>
+        <g data-detail="context" data-edge-from="bar" data-edge-to="panel" data-edge-label="bar, settings" data-edge-key="0" data-edge-id="bar-panel">
+          <rect x="157.8" y="232" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="194" y="242" class="t-backend" font-size="8" text-anchor="middle">bar, settings</text>
+        </g>
+        <g data-detail="context" data-edge-from="panel" data-edge-to="service" data-edge-label="address, actions" data-edge-key="1" data-edge-id="panel-service">
+          <rect x="320.6" y="232" width="86.8" height="14" rx="3" class="c-mask"/>
+          <text x="364" y="242" class="t-muted" font-size="8" text-anchor="middle">address, actions</text>
+        </g>
+        <g data-detail="context" data-edge-from="service" data-edge-to="shim" data-edge-label="bash -c" data-edge-key="2" data-edge-id="service-shim">
+          <rect x="597.2" y="174" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="619" y="184" class="t-muted" font-size="8" text-anchor="middle">bash -c</text>
+        </g>
+        <g data-detail="context" data-edge-from="shim" data-edge-to="adb" data-edge-label="adb -s host:5555" data-edge-key="3" data-edge-id="shim-adb">
+          <rect x="830.6" y="138" width="86.8" height="14" rx="3" class="c-mask"/>
+          <text x="874" y="148" class="t-muted" font-size="8" text-anchor="middle">adb -s host:5555</text>
+        </g>
+        <g data-detail="context" data-edge-from="adb" data-edge-to="tv" data-edge-label="wifi, reconnects" data-edge-key="4" data-edge-id="adb-tv">
+          <rect x="1000.6" y="138" width="86.8" height="14" rx="3" class="c-mask"/>
+          <text x="1044" y="148" class="t-backend" font-size="8" text-anchor="middle">wifi, reconnects</text>
+        </g>
+        <g data-detail="context" data-edge-from="test" data-edge-to="shim" data-edge-label="fake adb" data-edge-key="5" data-edge-id="test-shim">
+          <rect x="764.8" y="260" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="789" y="270" class="t-messagebus" font-size="8" text-anchor="middle">fake adb</text>
+        </g>
+        <g data-detail="context" data-edge-from="panel" data-edge-to="config" data-edge-label="read, persist" data-edge-key="6" data-edge-id="panel-config">
+          <rect x="190.8" y="140" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="227" y="150" class="t-muted" font-size="8" text-anchor="middle">read, persist</text>
+        </g>
+        <g data-detail="context" data-edge-from="config" data-edge-to="shelljson" data-edge-label="updateEntryInline" data-edge-key="7" data-edge-id="config-shelljson">
+          <rect x="152.2" y="112" width="91.6" height="14" rx="3" class="c-mask"/>
+          <text x="198" y="122" class="t-muted" font-size="8" text-anchor="middle">updateEntryInline</text>
+        </g>
+        <g data-detail="context" data-edge-from="theme" data-edge-to="panel" data-edge-label="inherits" data-edge-key="8" data-edge-id="theme-panel">
+          <rect x="370.8" y="143" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="395" y="153" class="t-backend" font-size="8" text-anchor="middle">inherits</text>
+        </g>
+        <g data-detail="context" data-edge-from="bindings" data-edge-to="panel" data-edge-label="actions" data-edge-key="9" data-edge-id="bindings-panel">
+          <rect x="508.2" y="126" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="530" y="136" class="t-muted" font-size="8" text-anchor="middle">actions</text>
+        </g>
+        <g data-detail="context" data-edge-from="panel" data-edge-to="pad" data-edge-label="opened, theme" data-edge-key="10" data-edge-id="panel-pad">
+          <rect x="242.8" y="232" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="279" y="242" class="t-muted" font-size="8" text-anchor="middle">opened, theme</text>
+        </g>
+        <g data-detail="context" data-edge-from="pad" data-edge-to="padkey" data-edge-label="x14" data-edge-key="11" data-edge-id="pad-padkey">
+          <rect x="349" y="251" width="30" height="14" rx="3" class="c-mask"/>
+          <text x="364" y="261" class="t-muted" font-size="8" text-anchor="middle">x14</text>
+        </g>
+
+        <g data-detail="context" data-edge-from="pad" data-edge-to="setpicker" data-edge-label="foot of the pad" data-edge-key="13" data-edge-id="pad-setpicker">
+          <rect x="323" y="354" width="82" height="14" rx="3" class="c-mask"/>
+          <text x="364" y="364" class="t-muted" font-size="8" text-anchor="middle">foot of the pad</text>
+        </g>
+        <g data-detail="context" data-edge-from="setpicker" data-edge-to="tvrow" data-edge-label="per set" data-edge-key="14" data-edge-id="setpicker-tvrow">
+          <rect x="512.2" y="371" width="43.6" height="14" rx="3" class="c-mask"/>
+          <text x="534" y="381" class="t-muted" font-size="8" text-anchor="middle">per set</text>
         </g>
 
 
-
-        <g data-detail="context" data-edge-from="panel" data-edge-to="pad" data-edge-label="opened, theme" data-edge-key="4" data-edge-id="panel-pad">
-          <rect x="335.8" y="122.5" width="72.4" height="14" rx="3" class="c-mask"/>
-          <text x="372" y="132.5" class="t-muted" font-size="8" text-anchor="middle">opened, theme</text>
-        </g>
-        <g data-detail="context" data-edge-from="pad" data-edge-to="padkey" data-edge-label="x14" data-edge-key="5" data-edge-id="pad-padkey">
-          <rect x="689" y="147" width="30" height="14" rx="3" class="c-mask"/>
-          <text x="704" y="157" class="t-muted" font-size="8" text-anchor="middle">x14</text>
+        <g data-detail="context" data-edge-from="setpicker" data-edge-to="action" data-edge-label="x3" data-edge-key="17" data-edge-id="setpicker-action">
+          <rect x="519" y="474" width="30" height="14" rx="3" class="c-mask"/>
+          <text x="534" y="484" class="t-muted" font-size="8" text-anchor="middle">x3</text>
         </g>
 
-        <g data-detail="context" data-edge-from="pad" data-edge-to="setpicker" data-edge-label="foot of the pad" data-edge-key="7" data-edge-id="pad-setpicker">
-          <rect x="663" y="252.5" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="704" y="262.5" class="t-muted" font-size="8" text-anchor="middle">foot of the pad</text>
-        </g>
-        <g data-detail="context" data-edge-from="setpicker" data-edge-to="tvrow" data-edge-label="per set" data-edge-key="8" data-edge-id="setpicker-tvrow">
-          <rect x="678.7" y="403" width="43.6" height="14" rx="3" class="c-mask"/>
-          <text x="700.5" y="413" class="t-muted" font-size="8" text-anchor="middle">per set</text>
-        </g>
-        <g data-detail="context" data-edge-from="setpicker" data-edge-to="action" data-edge-label="x3" data-edge-key="9" data-edge-id="setpicker-action">
-          <rect x="1021" y="372" width="30" height="14" rx="3" class="c-mask"/>
-          <text x="1036" y="382" class="t-muted" font-size="8" text-anchor="middle">x3</text>
+        <g data-detail="context" data-edge-from="tvform" data-edge-to="field" data-edge-label="x2" data-edge-key="19" data-edge-id="tvform-field">
+          <rect x="185" y="594" width="30" height="14" rx="3" class="c-mask"/>
+          <text x="200" y="604" class="t-muted" font-size="8" text-anchor="middle">x2</text>
         </g>
 
 
-        <g data-detail="context" data-edge-from="field" data-edge-to="typefield" data-edge-label="inherits" data-edge-key="12" data-edge-id="field-typefield">
-          <rect x="535.8" y="574" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="560" y="584" class="t-backend" font-size="8" text-anchor="middle">inherits</text>
+        <g data-detail="context" data-edge-from="field" data-edge-to="typefield" data-edge-label="inherits" data-edge-key="22" data-edge-id="field-typefield">
+          <rect x="120.8" y="530" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="145" y="540" class="t-backend" font-size="8" text-anchor="middle">inherits</text>
         </g>
-        <g data-detail="context" data-edge-from="tvform" data-edge-to="field" data-edge-label="x2" data-edge-key="13" data-edge-id="tvform-field">
-          <rect x="600.5" y="509" width="30" height="14" rx="3" class="c-mask"/>
-          <text x="615.5" y="519" class="t-muted" font-size="8" text-anchor="middle">x2</text>
-        </g>
-
-
-
-
 
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="Panel and its model">
-          <rect data-graph-role="structural-frame-label-mask" x="14" y="20" width="112.6" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="18" y="33" class="t-cloud" font-size="9" font-weight="600">Panel and its model</text>
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="omarchy-shell">
+          <rect data-graph-role="structural-frame-label-mask" x="34" y="20" width="80.2" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="38" y="33" class="t-cloud" font-size="9" font-weight="600">omarchy-shell</text>
         </g>
 
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="the pad">
-          <rect data-graph-role="structural-frame-label-mask" x="524" y="150" width="47.8" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="528" y="163" class="t-cloud" font-size="9" font-weight="600">the pad</text>
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="Panel and its model">
+          <rect data-graph-role="structural-frame-label-mask" x="204" y="20" width="112.6" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="208" y="33" class="t-cloud" font-size="9" font-weight="600">Panel and its model</text>
         </g>
 
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="2" data-composition-frame-kind="region" data-composition-frame-label="primitives, used everywhere">
-          <rect data-graph-role="structural-frame-label-mask" x="354" y="540" width="155.79999999999998" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="358" y="553" class="t-cloud" font-size="9" font-weight="600">primitives, used everywhere</text>
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="2" data-composition-frame-kind="region" data-composition-frame-label="the pad">
+          <rect data-graph-role="structural-frame-label-mask" x="34" y="260" width="47.8" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="38" y="273" class="t-cloud" font-size="9" font-weight="600">the pad</text>
+        </g>
+
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="3" data-composition-frame-kind="region" data-composition-frame-label="primitives, used everywhere">
+          <rect data-graph-role="structural-frame-label-mask" x="34" y="620" width="155.79999999999998" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="38" y="633" class="t-cloud" font-size="9" font-weight="600">primitives, used everywhere</text>
+        </g>
+
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="4" data-composition-frame-kind="region" data-composition-frame-label="ADB half (bash)">
+          <rect data-graph-role="structural-frame-label-mask" x="714" y="140" width="91" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="718" y="153" class="t-cloud" font-size="9" font-weight="600">ADB half (bash)</text>
         </g>
 
         <!-- Legend -->
@@ -5663,22 +5785,22 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot cyan"></div>
-          <h3>Each file once</h3>
+          <h3>One split that matters</h3>
         </div>
         <ul>
-          <li>&bull; 17 files, 17 nodes, each linked to its source</li>
-          <li>&bull; An arrow means built from; unlabeled is one instance</li>
+          <li>&bull; The widget shells out; the script owns all ADB</li>
+          <li>&bull; So the shim works from a terminal, and has the only test</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
           <div class="card-dot amber"></div>
-          <h3>Two inheritances, two primitives</h3>
+          <h3>Everything reads through panel</h3>
         </div>
         <ul>
-          <li>&bull; Panel is a Theme; TypeField is a Field</li>
-          <li>&bull; PadText, HintArea: inside every component, drawn once</li>
+          <li>&bull; Panel is a Theme and fronts Config, Service, Bindings</li>
+          <li>&bull; An arrow means built from; PadText and HintArea drawn once</li>
         </ul>
       </div>
     </div>
