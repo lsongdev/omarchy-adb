@@ -29,8 +29,8 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   user's `~/.config/omarchy/shell.json`, never here.
 - `docs/architecture.json`, `docs/components.json`, `docs/plugin.json` — the flow map
   (how a key press reaches the TV), the file map (every QML file, once) and the merged
-  map, as [Archify](https://github.com/tt-a1i/archify) specs. The `.html` beside each,
-  and the `.png` for the first two, are generated from it: change the spec, never the
+  map, as [Archify](https://github.com/tt-a1i/archify) specs. The `.html` and `.png`
+  beside each are generated from it: change the spec, never the
   outputs. The PNGs are 1920-wide headless-chromium screenshots of the HTML, cropped to
   the diagram panel. A new QML file is a new node in `components.json` and `plugin.json`.
   Regions are drawn as the bounding box of what they wrap plus `pad` on every side, so set

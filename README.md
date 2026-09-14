@@ -210,13 +210,15 @@ file once, and what each is built from.
 
 ![components](docs/components.png)
 
-[`docs/plugin.html`](docs/plugin.html) merges the two: every file and the
-whole path to the TV on one page, with guided views.
+The third merges the two: every file and the whole path to the TV on one page.
 
-[`docs/architecture.html`](docs/architecture.html) and
-[`docs/components.html`](docs/components.html) are the diagrams above as
-interactive pages: open them in a browser for guided views, search and export.
-All three are generated from the `.json` beside each with
+![whole plugin](docs/plugin.png)
+
+[`docs/architecture.html`](docs/architecture.html),
+[`docs/components.html`](docs/components.html) and
+[`docs/plugin.html`](docs/plugin.html) are the same three as interactive
+pages: open them in a browser for guided views, search and export. All are
+generated from the `.json` beside each with
 [Archify](https://github.com/tt-a1i/archify); see `CLAUDE.md` for the command.
 
 The plugin is plain QML plus a shell script, so edits apply without a rebuild:
