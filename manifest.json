@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "atv.remote",
   "name": "Android TV Remote",
-  "version": "1.2.0",
-  "author": "Omarchy community",
+  "version": "1.3.0",
+  "author": "swey-l1",
   "license": "MIT",
   "description": "Drive an Android TV from the Omarchy bar over ADB: D-pad, volume, inputs, typing and app shortcuts.",
   "kinds": [
