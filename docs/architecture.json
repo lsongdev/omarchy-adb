@@ -295,7 +295,8 @@
       "wraps": [
         "shelljson",
         "bar"
-      ]
+      ],
+      "pad": 10
     },
     {
       "kind": "region",
@@ -307,7 +308,8 @@
         "service",
         "pad",
         "picker"
-      ]
+      ],
+      "pad": 10
     },
     {
       "kind": "region",
@@ -315,7 +317,8 @@
       "wraps": [
         "shim",
         "test"
-      ]
+      ],
+      "pad": 10
     }
   ],
   "connections": [

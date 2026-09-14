@@ -33,8 +33,9 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   and the `.png` for the first two, are generated from it: change the spec, never the
   outputs. The PNGs are 1920-wide headless-chromium screenshots of the HTML, cropped to
   the diagram panel. A new QML file is a new node in `components.json` and `plugin.json`.
-  Regions are drawn as the bounding box of what they wrap, so keep a region's files in
-  columns no other region uses on the same rows, or the boxes overlap.
+  Regions are drawn as the bounding box of what they wrap plus `pad` on every side, so set
+  `pad: 10` on each boundary, keep neighbouring columns at least 24 px apart, and keep a
+  region's files in columns no other region uses on the same rows, or the boxes overlap.
 
 The widget shells out to the script; the script owns all ADB. That split keeps the remote
 usable from a terminal without the shell running, and makes the ADB half testable alone.
