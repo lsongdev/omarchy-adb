@@ -399,7 +399,8 @@
         "config",
         "service",
         "bindings"
-      ]
+      ],
+      "pad": 10
     },
     {
       "kind": "region",
@@ -413,7 +414,8 @@
         "action",
         "tvform",
         "appchooser"
-      ]
+      ],
+      "pad": 10
     },
     {
       "kind": "region",
@@ -423,7 +425,8 @@
         "hintarea",
         "padtext",
         "formbutton"
-      ]
+      ],
+      "pad": 10
     }
   ],
   "connections": [
