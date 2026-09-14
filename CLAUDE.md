@@ -18,8 +18,9 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   whichever of its two forms is open. `TvForm.qml` adds or renames a set; `AppChooser.qml`
   points a shortcut button at an app. Each owns its own state and key handling.
 - `PadKey.qml`, `TvRow.qml`, `Field.qml`, `TypeField.qml`, `Action.qml`, `FormButton.qml`,
-  `HintArea.qml`, `PadText.qml` — the pieces those are built from. Each takes `panel`, since a component in its own file
-  cannot reach the Panel lexically the way an inline one can. Theme values (`textColour`,
+  `HintArea.qml`, `PadText.qml` — the pieces those are built from. Each takes `panel`,
+  since a component in its own file cannot reach the Panel lexically the way an inline one
+  can. Theme values (`textColour`,
   `fontFamily`, the `surface*` colours, `surfaceFor()`) and metrics all come from the
   Panel, never as literals in a component; anything readable on the pad is a `PadText`,
   and any small filled button is a `FormButton`.
@@ -38,6 +39,10 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   Regions are drawn as the bounding box of what they wrap plus `pad` on every side, so set
   `pad: 10` on each boundary, keep neighbouring columns at least 24 px apart, and keep a
   region's files in columns no other region uses on the same rows, or the boxes overlap.
+- `assets/readme/` — the README's visual layer, all pure SVG in the pad's palette
+  (`#111C18` / `#B8C497` / `#98C379`, from `Theme.qml`): the hero, the how-it-works strip,
+  the section and sub-section banners, the keyboard, bar-icon and settings boards, the
+  code cards, and the made-with signature. See **The README is a designed page** below.
 
 The widget shells out to the script; the script owns all ADB. That split keeps the remote
 usable from a terminal without the shell running, and makes the ADB half testable alone.
@@ -161,9 +166,10 @@ from it. Adding a binding anywhere else puts the pad's behaviour and its own doc
 out of step, which is how `+` ended up working as volume up while appearing in no list.
 Buttons name an action (`action: "volUp"`) rather than repeating the keycode.
 
-The README's shortcut table is the one copy that cannot read from `keyMap`, so it is the
-one that drifts: it was still missing `+` after the code stopped being wrong. Change a
-binding, change that table.
+The README holds two copies that cannot read from `keyMap`: the keyboard board
+(`assets/readme/keyboard.svg`, the bound keys drawn on keycaps) and the table folded under
+it. Both drift: the table was still missing `+` after the code stopped being wrong. Change a
+binding, change both.
 
 **The text field must not hold focus by default.** The pad is modal: `keyCatcher` in
 `Pad.qml` owns the keyboard in control mode so single letters can be remote keys, and the
@@ -201,6 +207,30 @@ change -- see `persist()` in `Config.qml`.
 so the first reachability probe runs with an empty address and falls back to "first
 connected device". `onTvAddressChanged` re-probes; without it the widget reports `up` for a
 TV it is not addressing.
+
+## The README is a designed page
+
+Built with the [beautify-github-readme](https://github.com/oil-oil/beautify-github-readme)
+skill (a clone under `/tmp` works; `npx skills add` is blocked here). Its rules, as applied:
+
+- **Every heading is a banner SVG**, numbered `01`..`04` for sections and `01.1`.. for
+  sub-sections; there are no Markdown headings left. Internal links therefore point at
+  `<a name="…">` anchors placed above the banner. A new section needs a banner drawn in the
+  same style: 1200×150 (sections) or 1200×84 (sub-sections).
+- **Every table and code block has a visual above it and stays in Markdown beneath it**, in
+  `<details markdown="1">` (the install command stays visible). Commands are never only in
+  an image. A new code block gets a card: header line `language · where it runs`, `$`
+  prompt for shell lines, `xml:space="preserve"` on lines with aligned comments.
+- **The bar icon in the mouse board is the real glyph**: the outline of Material
+  `md-television_box` (U+F0839) taken from the Nerd Font with fontTools, not a drawing.
+- **Preview before committing.** GitHub is not available offline, so: python-markdown with
+  `tables`, `fenced_code`, `md_in_html` (needed for the details blocks), a GitHub-like
+  stylesheet at 900 px, headless chromium, then look at every changed region. Run the
+  skill's `scripts/audit_readme.py README.md` too. Type sizes: essential text ≥ 20 SVG
+  units on a 1200 canvas, labels ≥ 18.
+- Screenshots of the pad: `docs/pad.png` (as it opens), `docs/screenshot.png` (picker
+  expanded), `docs/edit-mode.png`. Retake all three when the pad's look changes; the
+  no-click method is in the project log in the vault.
 
 ## TV-side behaviour worth knowing
 
