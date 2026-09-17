@@ -29,7 +29,7 @@ import qs.Commons
 Theme {
   id: root
 
-  property string moduleName: "io.github.swey-l1.atv-remote"
+  property string moduleName: "org.lsong.atv-remote"
   property var settings
 
   // ---- the configured sets -------------------------------------------------
@@ -49,6 +49,7 @@ Theme {
   readonly property int    activeIndex: cfg.activeIndex
   readonly property string tvAddress:   cfg.tvAddress
   readonly property int    pollSec:     cfg.setting("pollSec", 60)
+  readonly property int    screenRefreshSec: cfg.setting("screenRefreshSec", 2)
 
   function setting(key, fallback)     { return cfg.setting(key, fallback) }
   function appKey(slot, part)         { return cfg.appKey(slot, part) }
@@ -81,11 +82,23 @@ Theme {
   // mean three times the adb traffic on every tick.
   readonly property var tvStates: svc.states
 
+  // The preview is part of the pad and on by default; `showScreen: false` in
+  // shell.json is the only way to turn it off, so there is no state to keep in
+  // sync between the setting and a button. A boolean in JSON and the string
+  // "false" are both accepted, since the file is hand-edited.
+  readonly property var screenSetting: cfg.setting("showScreen", true)
+  readonly property bool screenVisible: screenSetting !== false && screenSetting !== "false"
+  readonly property string screenSource: svc.screenSource
+  readonly property bool screenLoading: svc.screenLoading
+  readonly property string screenError: svc.screenError
+
   Service {
     id: svc
     address: root.tvAddress
     addresses: root.tvs.map(function (t) { return t.addr })
     pollSec: root.pollSec
+    screenRefreshSec: root.screenRefreshSec
+    screenActive: root.opened && root.screenVisible
   }
 
   implicitWidth: bar ? (bar.vertical ? bar.barSize : 24) : 24
@@ -128,6 +141,7 @@ Theme {
 
   function reprobe()    { svc.reprobe() }
   function reprobeAll() { svc.reprobeAll() }
+  function refreshScreen() { svc.requestScreen() }
 
   // ---- apps ----------------------------------------------------------------
 

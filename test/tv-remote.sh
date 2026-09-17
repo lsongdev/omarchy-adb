@@ -96,6 +96,11 @@ check "inputs: keycode then the picker intent" \
   "input keyevent KEYCODE_TV_INPUT
 am start -a android.media.tv.action.SETUP_INPUTS" "$(shelled)"
 
+shot="$tmp/screen.png"
+run "screenshot" $on FAKE_STATE=device -- screenshot "$shot"
+check "screenshot: adb command" "-s $TV exec-out screencap -p" "$(grep 'exec-out screencap' "$FAKE_LOG")"
+check "screenshot: PNG saved" "89504e470d0a1a0a" "$(od -An -tx1 -N8 "$shot" | tr -d ' \n')"
+
 # ---- failure paths ---------------------------------------------------------
 run "unreachable" $on FAKE_STATE= -- key KEYCODE_HOME
 check "action on a dead TV exits 1" "1" "$status"

@@ -10,13 +10,13 @@ An Omarchy shell plugin that drives an Android TV over ADB from the bar: D-pad, 
 input picker, app shortcuts, and a text field for typing into TV search boxes.
 
 - `Panel.qml`: the bar widget: the icon, the typing mode, and the model the rest reads
-  through `panel`. Plugin id `io.github.swey-l1.atv-remote`, `kinds: ["bar-widget"]`. It *is* a `Theme.qml`,
+  through `panel`. Plugin id `org.lsong.atv-remote`, `kinds: ["bar-widget"]`. It *is* a `Theme.qml`,
   which holds the palette and metrics, so `panel.gap` and `panel.textColour` are inherited.
 - `Pad.qml`: the popup: the key grid, the type-at-the-TV field, the picker and the hint
   line, and the focus plumbing (`keyCatcher`).
 - `Bindings.qml`: `keyMap`, the single definition of every key binding, and its dispatcher.
-- `Service.qml`: everything that shells out to `tv-remote`: reachability, the app list,
-  re-authorising. Takes the active address and the full list, hands back state.
+- `Service.qml`: everything that shells out to `tv-remote`: reachability, screen captures,
+  the app list and re-authorising. Takes the active address and the full list, hands back state.
 - `Config.qml`: everything read from or written back to the widget's `shell.json` entry:
   the sets, the active slot, the shortcut buttons, and `persist()`. Panel re-exports what
   the components use, the same way it fronts Service.
@@ -31,7 +31,7 @@ input picker, app shortcuts, and a text field for typing into TV search boxes.
   Panel, never as literals in a component; anything readable on the pad is a `PadText`,
   and any small filled button is a `FormButton`.
 - `tv-remote`: a plain bash ADB shim: `key` / `text` / `clear` / `app` / `inputs` /
-  `apps` / `status` / `reauth`. `test/tv-remote.sh` runs it against a fake `adb`.
+  `apps` / `screenshot` / `status` / `reauth`. `test/tv-remote.sh` runs it against a fake `adb`.
 - `manifest.json`: declares the widget and its settings **schema**. Values live in the
   user's `~/.config/omarchy/shell.json`, never here.
 - `docs/architecture.json`, `docs/components.json`, `docs/plugin.json`: the flow map
@@ -60,13 +60,13 @@ Needs omarchy with the Quickshell shell (`omarchy-shell`) and `adb`
 switched on and has to be reachable on the network.
 
 ```sh
-omarchy plugin add https://github.com/swey-l1/omarchy-android-tv-remote --enable
+omarchy plugin add https://github.com/lsongdev/omarchy-adb --enable
 ```
 
 `--enable` is what puts the widget into the bar layout in `shell.json`; without it the
-plugin is installed but nothing appears. The installed directory
-(`~/.config/omarchy/plugins/io.github.swey-l1.atv-remote`) is itself a git checkout, so
-`omarchy plugin update io.github.swey-l1.atv-remote` pulls new commits straight into the running plugin.
+plugin is installed but nothing appears. For local development, point
+`~/.config/omarchy/plugins/org.lsong.atv-remote` at this repository with a symlink
+and restart the shell after QML changes. Do not use `omarchy plugin update` on the symlink.
 
 Add a TV from the pad rather than by hand: open it, click the picker along the foot, then
 **+ Add TV**. It writes the `tv1Label` / `tv1Address` pair into the widget's `shell.json`
@@ -78,17 +78,15 @@ Confirm the shim can reach it before touching anything else, since every other s
 looks the same when it cannot:
 
 ```sh
-TV_ADB_ADDR=<host:port> ~/.config/omarchy/plugins/io.github.swey-l1.atv-remote/tv-remote status   # want: up
+TV_ADB_ADDR=<host:port> ~/.config/omarchy/plugins/org.lsong.atv-remote/tv-remote status   # want: up
 ```
 
 ### Working from a clone instead
 
-Editing the installed checkout directly is the shortest loop. Working in a clone elsewhere
-is fine, but the files still have to reach `~/.config/omarchy/plugins/io.github.swey-l1.atv-remote` to run at
-all, and copying over that directory leaves it dirty, at which point
-`omarchy plugin update` refuses to fast-forward and reports "local changes" even though
-nothing was edited there. Push first, `git checkout -- .` in the installed copy, then
-update. Otherwise the two drift and it is not obvious which one the bar is running.
+The recommended development setup is a symlink from
+`~/.config/omarchy/plugins/org.lsong.atv-remote` to the repository. This avoids
+copying files after every edit while keeping the fork's plugin ID separate from
+the original plugin.
 
 ## Commands
 
@@ -111,7 +109,7 @@ node /tmp/archify/archify/bin/archify.mjs deliver architecture docs/plugin.json 
 for d in architecture components plugin; do docs/diagram-shot.sh $d; done   # the PNGs
 omarchy plugin validate .          # manifest against the plugin schema
 omarchy restart shell              # apply a Panel.qml change
-omarchy plugin update io.github.swey-l1.atv-remote   # pull commits into an installed checkout
+omarchy plugin update org.lsong.atv-remote   # pull commits into an installed checkout
 ```
 
 ## Only the shim has tests; verify the rest by looking
@@ -127,7 +125,7 @@ unit-testable, so **verify visually and never infer success from the absence of 
 ```sh
 grim -g "1150,0 450x30" /tmp/bar.png        # the bar icon (logical coords)
 adb exec-out screencap -p > /tmp/tv.png     # what the TV actually shows
-journalctl --user --since "30 seconds ago" | grep -i io.github.swey-l1.atv-remote
+journalctl --user --since "30 seconds ago" | grep -i org.lsong.atv-remote
 ```
 
 A clean log only proves nothing crashed. It does **not** prove an edit loaded: a silently
@@ -136,7 +134,7 @@ failed string replacement, or a file in the wrong directory, both log nothing.
 Two traps worth knowing:
 
 - **A QML syntax error makes the widget vanish from the bar**, and the only sign is
-  `WARN qml: Plugin widget io.github.swey-l1.atv-remote failed: … Unexpected token`, with no "Error:" and no
+  `WARN qml: Plugin widget org.lsong.atv-remote failed: … Unexpected token`, with no "Error:" and no
   stack. Grep for `WARN qml` or `Plugin widget .* failed`, not for `Error`.
 - **Saving into `~/.config/omarchy/plugins/` does not reliably re-render an open pad.**
   The log says `Local plugin changed, reloading`, and the pad keeps drawing the previous
@@ -172,10 +170,9 @@ from it. Adding a binding anywhere else puts the pad's behaviour and its own doc
 out of step, which is how `+` ended up working as volume up while appearing in no list.
 Buttons name an action (`action: "volUp"`) rather than repeating the keycode.
 
-The README holds two copies that cannot read from `keyMap`: the keyboard board
-(`assets/readme/keyboard.svg`, the bound keys drawn on keycaps) and the table folded under
-it. Both drift: the table was still missing `+` after the code stopped being wrong. Change a
-binding, change both.
+The README keyboard table cannot read from `keyMap`, so update it whenever a binding
+changes. The old SVG keyboard assets are retained only as historical artwork and are not
+embedded in the current README.
 
 **The text field must not hold focus by default.** The pad is modal: `keyCatcher` in
 `Pad.qml` owns the keyboard in control mode so single letters can be remote keys, and the
@@ -214,29 +211,11 @@ so the first reachability probe runs with an empty address and falls back to "fi
 connected device". `onTvAddressChanged` re-probes; without it the widget reports `up` for a
 TV it is not addressing.
 
-## The README is a designed page
+## README maintenance
 
-Built with the [beautify-github-readme](https://github.com/oil-oil/beautify-github-readme)
-skill (a clone under `/tmp` works; `npx skills add` is blocked here). Its rules, as applied:
-
-- **Every heading is a banner SVG**, numbered `01`..`04` for sections and `01.1`.. for
-  sub-sections; there are no Markdown headings left. Internal links therefore point at
-  `<a name="…">` anchors placed above the banner. A new section needs a banner drawn in the
-  same style: 1200×150 (sections) or 1200×84 (sub-sections).
-- **Every table and code block has a visual above it and stays in Markdown beneath it**, in
-  `<details markdown="1">` (the install command stays visible). Commands are never only in
-  an image. A new code block gets a card: header line `language · where it runs`, `$`
-  prompt for shell lines, `xml:space="preserve"` on lines with aligned comments.
-- **The bar icon in the mouse board is the real glyph**: the outline of Material
-  `md-television_box` (U+F0839) taken from the Nerd Font with fontTools, not a drawing.
-- **Preview before committing.** GitHub is not available offline, so: python-markdown with
-  `tables`, `fenced_code`, `md_in_html` (needed for the details blocks), a GitHub-like
-  stylesheet at 900 px, headless chromium, then look at every changed region. Run the
-  skill's `scripts/audit_readme.py README.md` too. Type sizes: essential text ≥ 20 SVG
-  units on a 1200 canvas, labels ≥ 18.
-- Screenshots of the pad: `docs/pad.png` (as it opens), `docs/screenshot.png` (picker
-  expanded), `docs/edit-mode.png`. Retake all three when the pad's look changes; the
-  no-click method is in the project log in the vault.
+Keep `README.md` as straightforward Markdown. Do not reintroduce SVG headings or duplicate
+code snippets as artwork. Update the keyboard table whenever `Bindings.qml` changes, and
+document user-visible settings and shim commands when they are added.
 
 ## TV-side behaviour worth knowing
 

@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Io
 import qs.Commons
 
@@ -57,6 +58,20 @@ Item {
   property var appList: []
   property bool appsLoading: false
 
+  // Optional screen preview. It is deliberately a sequence of screenshots,
+  // not a video stream: this keeps the plugin dependency-free and avoids
+  // moving a full-resolution frame over wireless ADB continuously.
+  property bool screenActive: false
+  property int screenRefreshSec: 2
+  property bool screenLoading: false
+  property string screenError: ""
+  property int screenRevision: 0
+  property bool screenPending: false
+  readonly property string runtimeDir: Quickshell.env("XDG_RUNTIME_DIR") || "/tmp"
+  readonly property string screenPath: runtimeDir + "/org.lsong.atv-remote-screen.png"
+  readonly property string screenSource: screenRevision > 0
+    ? "file://" + screenPath + "?revision=" + screenRevision : ""
+
   // The one place that knows how to invoke the shim. An empty address is
   // deliberately left off rather than exported blank: the shim falls back to the
   // first connected device only when TV_ADB_ADDR is unset, which is what makes
@@ -90,7 +105,12 @@ Item {
   // with an empty address and falls back to "first connected device". Without
   // this the verdict would stand until the next poll, up to pollSec seconds of
   // lying about which set it is talking to.
-  onAddressChanged: Qt.callLater(svc.reprobe)
+  onAddressChanged: {
+    screenRevision = 0
+    screenError = ""
+    Qt.callLater(svc.reprobe)
+    if (screenActive) Qt.callLater(svc.requestScreen)
+  }
 
   // One process for every set rather than one each: the shim takes a single
   // address, so the loop lives in the shell command and each set reports back
@@ -142,6 +162,45 @@ Item {
     appList = []
     appsLoading = true
     appsProc.running = true
+  }
+
+  Process {
+    id: screenProc
+    command: ["bash", "-c", svc.shimCmd(svc.address,
+              "screenshot " + Util.shellQuote(svc.screenPath))]
+    onExited: function(exitCode) {
+      svc.screenLoading = false
+      if (exitCode === 0) {
+        svc.screenError = ""
+        svc.screenRevision += 1
+      } else {
+        svc.screenError = svc.state === svc.stateName.noadb
+          ? "adb is not installed" : "Screen capture failed"
+      }
+      if (svc.screenPending && svc.screenActive) {
+        svc.screenPending = false
+        Qt.callLater(svc.requestScreen)
+      }
+    }
+  }
+
+  Timer {
+    interval: Math.max(1, svc.screenRefreshSec) * 1000
+    running: svc.screenActive
+    repeat: true
+    onTriggered: svc.requestScreen()
+  }
+
+  function requestScreen() {
+    if (!screenActive) return
+    if (screenProc.running) { screenPending = true; return }
+    screenLoading = true
+    screenProc.running = true
+  }
+
+  onScreenActiveChanged: {
+    if (screenActive) requestScreen()
+    else screenPending = false
   }
 
   // Re-showing the prompt bounces the whole adb server, which drops the other

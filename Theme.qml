@@ -67,4 +67,6 @@ Item {
   readonly property int helpListHeight: Style.space(120)
 
   readonly property int padWidth: keyWidth * 3 + gap * 2
+  // The preview is the full pad width, so opening it never widens the pad.
+  readonly property int screenHeight: Math.round(padWidth * 9 / 16)
 }

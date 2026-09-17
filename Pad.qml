@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Commons
 import qs.Ui
 
 // The remote pad: the key grid, the type-at-the-TV field, the set picker and
@@ -59,44 +60,84 @@ KeyboardPanel {
     id: pane
     spacing: panel.gap
 
-    Row {
-      spacing: panel.gap
-      Key { glyph: "󰐥"; action: "power" }
-      Key { label: "INPT"; action: "inputs" }
-      Key { glyph: "󰋜"; action: "home" }
+    // No toggle: the preview is part of the pad, and is turned off in
+    // shell.json (`showScreen`) rather than from a button. Clicking it still
+    // refreshes it immediately.
+    Rectangle {
+      width: panel.padWidth
+      height: panel.screenVisible ? panel.screenHeight : 0
+      visible: panel.screenVisible
+      radius: Style.cornerRadius
+      clip: true
+      color: "black"
+
+      Image {
+        id: screenImage
+        anchors.fill: parent
+        source: panel.screenSource
+        fillMode: Image.PreserveAspectFit
+        asynchronous: true
+        cache: false
+      }
+
+      PadText {
+        panel: pad.panel
+        anchors.centerIn: parent
+        width: parent.width - panel.inset * 2
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.Wrap
+        font.pixelSize: 9
+        opacity: 0.7
+        visible: panel.screenSource === "" || panel.screenError !== ""
+        text: panel.screenError !== "" ? panel.screenError
+              : panel.screenLoading ? "Capturing screen…" : "Waiting for screen…"
+      }
+
+      HintArea {
+        panel: pad.panel
+        anchors.fill: parent
+        hint: "Click to refresh the TV screen"
+        onClicked: panel.refreshScreen()
+      }
     }
 
-    Row {
+    Column {
+      width: panel.padWidth
       spacing: panel.gap
-      Item { width: panel.keyWidth; height: panel.keyHeight }
-      Key { glyph: "󰁝"; action: "dpadUp" }
-      Item { width: panel.keyWidth; height: panel.keyHeight }
-    }
-    Row {
-      spacing: panel.gap
-      Key { glyph: "󰁍"; action: "dpadLeft" }
-      Key { label: "OK"; action: "ok" }
-      Key { glyph: "󰁔"; action: "dpadRight" }
-    }
-    Row {
-      spacing: panel.gap
-      Item { width: panel.keyWidth; height: panel.keyHeight }
-      Key { glyph: "󰁅"; action: "dpadDown" }
-      Item { width: panel.keyWidth; height: panel.keyHeight }
-    }
 
-    Row {
-      spacing: panel.gap
-      Key { glyph: "󰁮"; action: "back" }
-      Key { glyph: "󰕿"; action: "volDown" }
-      Key { glyph: "󰕾"; action: "volUp" }
-    }
-    Row {
-      spacing: panel.gap
-      Key { glyph: "󰝟"; action: "mute" }
-      Key { glyph: "󰐊"; action: "playPause" }
-      Key { glyph: "󰒫"; action: "rewind" }
-    }
+      // power and Input flank the D-pad's Up, Home and back flank Down,
+      // so the two pairs of side keys read as part of the cross.
+      Row {
+        spacing: panel.gap
+        Key { glyph: "󰐥"; action: "power" }
+        Key { glyph: "󰁝"; action: "dpadUp" }
+        Key { label: "INPT"; action: "inputs" }
+      }
+      Row {
+        spacing: panel.gap
+        Key { glyph: "󰁍"; action: "dpadLeft" }
+        Key { label: "OK"; action: "ok" }
+        Key { glyph: "󰁔"; action: "dpadRight" }
+      }
+      Row {
+        spacing: panel.gap
+        Key { glyph: "󰋜"; action: "home" }
+        Key { glyph: "󰁅"; action: "dpadDown" }
+        Key { glyph: "󰁮"; action: "back" }
+      }
+
+      Row {
+        spacing: panel.gap
+        Key { glyph: "󰕿"; action: "volDown" }
+        Key { glyph: "󰝟"; action: "mute" }
+        Key { glyph: "󰕾"; action: "volUp" }
+      }
+      Row {
+        spacing: panel.gap
+        Key { glyph: "󰒮"; action: "previous" }
+        Key { glyph: "󰐊"; action: "playPause" }
+        Key { glyph: "󰒭"; action: "next" }
+      }
 
     Row {
       spacing: panel.gap
@@ -159,6 +200,7 @@ KeyboardPanel {
       text: panel.hoverHint
       opacity: 0.55
       font.pixelSize: 9
+    }
     }
   }
 }
